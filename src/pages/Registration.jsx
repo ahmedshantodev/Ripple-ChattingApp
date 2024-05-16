@@ -22,9 +22,7 @@ const Registration = () => {
         }
       >
         <Box
-          className={
-            "w-full sm:w-[45%] sm:border-r-2 border-primaryBorder "
-          }
+          className={"w-full sm:w-[45%] sm:border-r-2 border-primaryBorder "}
         >
           <Typography
             className={
@@ -109,7 +107,7 @@ const Registration = () => {
                 />
                 <Typography
                   text="Please Enter Your First Name"
-                  className="absolute -bottom-[12px] left-[12px] text-red-600 text-[8px] sm:text-[14px]"
+                  className="absolute -bottom-[12px] sm:-bottom-[22px] left-[12px] sm:left-[20px] text-red-600 text-[8px] sm:text-[14px]"
                 />
               </Box>
               <Box className={"relative w-[48%] sm:w-[49%]"}>
@@ -123,7 +121,7 @@ const Registration = () => {
                 />
                 <Typography
                   text="Please Enter Your Last Name"
-                  className="absolute -bottom-[12px] left-[12px] text-red-600 text-[8px] sm:text-[14px]"
+                  className="absolute -bottom-[12px] sm:-bottom-[22px] left-[12px] sm:left-[20px] text-red-600 text-[8px] sm:text-[14px]"
                 />
               </Box>
             </Flex>
@@ -136,7 +134,10 @@ const Registration = () => {
                   "w-[100%] border border-primaryBorder placeholder:text-secoundaryText placeholder:text-[13px] sm:placeholder:text-[16px] focus:outline-[#141975] py-[6px] sm:py-4 px-2.5 sm:px-5 rounded-[40px]"
                 }
               />
-               <Typography text="Please Enter Your Email" className=" absolute -bottom-[12px] left-[12px] text-red-600 text-[8px] sm:text-[14px]"/>
+              <Typography
+                text="Please Enter Your Email"
+                className="absolute -bottom-[12px] sm:-bottom-[22px] left-[12px] sm:left-[20px] text-red-600 text-[8px] sm:text-[14px]"
+              />
             </Box>
             <Box className={"relative mb-5 sm:mb-8"}>
               <Input
@@ -160,7 +161,7 @@ const Registration = () => {
               )}
               <Typography
                 text="Please Enter Your Password"
-                className="absolute -bottom-[12px] left-[12px] text-red-600 text-[8px] sm:text-[14px]"
+                className="absolute -bottom-[12px] sm:-bottom-[22px] left-[12px] sm:left-[20px] text-red-600 text-[8px] sm:text-[14px]"
               />
             </Box>
             <Button
