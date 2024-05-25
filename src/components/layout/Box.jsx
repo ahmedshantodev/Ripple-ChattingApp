@@ -1,7 +1,11 @@
 import React from "react";
 
-const Box = ({ className, children }) => {
-  return <div className={className}>{children}</div>;
+const Box = ({ onClick, className, children }) => {
+  return (
+    <div onClick={onClick} className={className}>
+      {children}
+    </div>
+  );
 };
 
 export default Box;

@@ -12,9 +12,15 @@ import Pages from "./pages/Pages";
 import EmailVerification from "./pages/EmailVerification";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
-import Group from "./pages/Group";
+import Groups from "./pages/Groups";
 import AccountSettings from "./pages/AccountSettings";
 import ForgotPassword from "./pages/ForgotPassword";
+import Friends from "./pages/Friends";
+import AllFriends from "./components/section/AllFriends";
+import AddFriends from "./components/section/AddFriends";
+import FriendRequsts from "./components/section/FriendRequsts";
+import BlockList from "./components/section/BlockList";
+import Feeds from "./pages/Feeds";
 
 const App = () => {
   const router = createBrowserRouter(
@@ -25,11 +31,18 @@ const App = () => {
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/pages" element={<Pages />} >
-          <Route path="home" element={<Home />}/>
-          <Route path="chat" element={<Chat />}/>
-          <Route path="group" element={<Group />}/>
-          <Route path="account-setting" element={<AccountSettings />}/>
+        <Route path="/pages" element={<Pages />}>
+          <Route path="home" element={<Home />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="groups" element={<Groups />} />
+          <Route path="friends" element={<Friends />}>
+            <Route path="all-friends" element={<AllFriends />} />
+            <Route path="add-friends" element={<AddFriends />} />
+            <Route path="friend-requsts" element={<FriendRequsts />} />
+            <Route path="block-list" element={<BlockList />} />
+          </Route>
+          <Route path="feeds" element={<Feeds />} />
+          <Route path="account-setting" element={<AccountSettings />} />
         </Route>
       </Route>
     )

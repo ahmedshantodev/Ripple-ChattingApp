@@ -48,7 +48,7 @@ const Registration = () => {
 
   useEffect(() => {
     if (activeUserData?.email) {
-      navigate("/pages");
+      navigate("/pages/home");
     }
   }, []);
 
@@ -111,8 +111,7 @@ const Registration = () => {
           updateProfile(auth.currentUser, {
             displayName:
               registrationData.firstName + " " + registrationData.lastName,
-            photoURL:
-              "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defaul%20profile%2Fdefault%20profile.png?alt=media&token=136e9216-2400-49d4-bbe1-1736e4ec0527",
+            photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault%20profile.png?alt=media&token=66982e58-1271-405f-b98e-83992f8bec46",
           })
             .then(() => {
               localStorage.setItem("user", JSON.stringify(userInformation));
@@ -125,24 +124,24 @@ const Registration = () => {
               });
             })
             .then(() => {
-              sendEmailVerification(auth.currentUser).then(() => {
-                toast.success(
-                  "Registration Successfull, Please check your email for verification",
-                  {
-                    position: "bottom-center",
-                    autoClose: 2500,
-                  }
-                );
+              // sendEmailVerification(auth.currentUser).then(() => {
+              //   toast.success(
+              //     "Registration Successfull, Please check your email for verification",
+              //     {
+              //       position: "bottom-center",
+              //       autoClose: 2500,
+              //     }
+              //   );
                 setRegistrationData({
                   firstName: "",
                   lastName: "",
                   email: "",
                   password: "",
                 });
-                navigate("/email-verification");
+                // navigate("/email-verification");
                 setSignupLodingBtnShow(false);
-                // navigate("/pages/home");
-              });
+                navigate("/pages/home");
+              // });
             })
             .catch((error) => {
               console.log(error);

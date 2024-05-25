@@ -13,7 +13,8 @@ export default {
       },
       colors: {
         "secoundaryText" : "#6c6c73",
-        "primaryBorder" : "#cacad8"
+        "primaryBorder" : "#cacad8",
+        "primaryBgColor" : "#dddcea"
       },
       screens: {
         'sm': "576px",
@@ -21,6 +22,9 @@ export default {
         'lg': "992px",
         'xl': "1200px",
         '2xl': "1400px"
+      },
+      aspectRatio: {
+        '3/1.05': '3 / 1.05',
       }
     },
   },
