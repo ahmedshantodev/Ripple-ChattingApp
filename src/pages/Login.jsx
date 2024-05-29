@@ -115,7 +115,7 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSingUp = () => {
+  const handleGoogleLogin = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const userInformation = result.user;
@@ -175,7 +175,7 @@ const Login = () => {
             className={"gap-x-2 sm:gap-x-3 md:gap-x-2 lg:gap-x-5 2xl:gap-x-7"}
           >
             <Button
-              onClick={handleGoogleSingUp}
+              onClick={handleGoogleLogin}
               className={
                 "flex items-center gap-x-1 sm:gap-x-2 lg:gap-x-3 bg-[#4474f4] text-white text-[8px] sm:text-[10px] md:text-[11px] lg:text-[13px] xl:text-[15px] 2xl:text-[16px] font-poppins pl-2 sm:pl-2.5 pr-5 py-2 sm:py-2.5 md:py-2 lg:py-2.5 rounded-[30px] box-content"
               }

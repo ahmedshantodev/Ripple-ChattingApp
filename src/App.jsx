@@ -27,7 +27,7 @@ const App = () => {
     createRoutesFromElements(
       <Route>
         <Route path="/*" element={<Error />} />
-        <Route path="/registration" element={<Registration />} />
+        <Route  path="/registration" element={<Registration />} />
         <Route path="/email-verification" element={<EmailVerification />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
