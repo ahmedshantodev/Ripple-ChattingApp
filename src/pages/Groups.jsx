@@ -34,6 +34,7 @@ import SearchBox from "../components/layout/SearchBox";
 import { activeGroup } from "../slices/activeGroupSlice";
 import GroupPhotoUploadModal from "../components/layout/GroupPhotoUploadModal";
 import GroupInvitationListItem from "../components/layout/GroupInvitationListItem";
+import noGroupPHoto from "/public/images/no chat image.jpg"
 
 const Group = () => {
   const db = getDatabase();
@@ -269,7 +270,7 @@ const Group = () => {
         >
           <Box>
             <Image
-              src={"/public/images/no chat image.jpg"}
+              src={noGroupPHoto}
               alt={"no chat image"}
               className={"w-[400px]"}
             />
