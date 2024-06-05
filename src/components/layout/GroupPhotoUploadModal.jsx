@@ -100,7 +100,7 @@ const GroupPhotoUploadModal = ({ modalClose, modalRef }) => {
         {!image ? (
           <Box className={"ml-[40px]"}>
             <Typography className="text-lg text-center font-bold mb-3">
-              Choose profile picture
+              Choose Group Photo
             </Typography>
             <Box className={"w-[300px] mx-auto"}>
               <label
