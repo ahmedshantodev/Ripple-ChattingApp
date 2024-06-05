@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CiLogout } from "react-icons/ci";
 import { getAuth, signOut } from "firebase/auth";
 import { activeUser } from "../../slices/activeUserSlice";
+import { activeGroup } from "../../slices/activeGroupSlice";
 
 const SidebarMenu = () => {
   const auth = getAuth();
@@ -27,6 +28,8 @@ const SidebarMenu = () => {
       .then(() => {
         localStorage.removeItem("user");
         dispatch(activeUser(null));
+        localStorage.removeItem("activeGroup");
+        dispatch(activeGroup(null))
         navigate("/login");
       })
       .catch((error) => {});

@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { increment } from "firebase/database";
 
 export const activeUserSlice = createSlice({
   name: "user",

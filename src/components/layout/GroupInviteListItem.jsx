@@ -5,7 +5,13 @@ import Typography from "./Typography";
 import Flex from "./Flex";
 import Button from "./Button";
 
-const GroupInviteListItem = ({ profile, profileAlt, name, button }) => {
+const GroupInviteListItem = ({
+  profile,
+  profileAlt,
+  name,
+  button,
+  addButton,
+}) => {
   return (
     <Box
       className={
@@ -16,7 +22,7 @@ const GroupInviteListItem = ({ profile, profileAlt, name, button }) => {
         <Image
           src={profile}
           alt={profileAlt}
-          className={"w-[70px] h-[70px] object-cover rounded-full"}
+          className={"w-[65px] h-[65px] object-cover rounded-full"}
         />
         <Typography
           variant={"h3"}
@@ -26,12 +32,19 @@ const GroupInviteListItem = ({ profile, profileAlt, name, button }) => {
         </Typography>
       </Flex>
       {button == "add" ? (
-        <Button className={"bg-[#cacad8] w-[90px] py-2 rounded-md mr-2 transition-all ease-in-out duration-200 active:scale-[0.97]"}>
+        <Button
+          onClick={addButton}
+          className={
+            "bg-[#cacad8] w-[90px] py-2 rounded-md mr-2 transition-all ease-in-out duration-200 active:scale-[0.97] font-semibold"
+          }
+        >
           Add
         </Button>
       ) : (
-        <Button className={"bg-[#cacad8] w-[90px] py-2 rounded-md mr-2"}>
-          Cancel
+        <Button
+          className={"bg-[#cacad8] w-[90px] py-2 rounded-md mr-2 font-semibold"}
+        >
+          Pending
         </Button>
       )}
     </Box>

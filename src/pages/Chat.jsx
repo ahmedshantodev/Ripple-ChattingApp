@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "../components/layout/Box";
 import Typography from "../components/layout/Typography";
 import Flex from "../components/layout/Flex";
 import Input from "../components/layout/Input";
 import Image from "../components/layout/Image";
-import { BiSolidEdit } from "react-icons/bi";
-import { IoMdSearch } from "react-icons/io";
-import profile from "/public/images/shanto.jpeg";
-import profilephoto from "/public/images/shanto.jpeg";
 import coverphoto from "/public/images/coverPhoto2.jpg";
 import ChatItem from "../components/layout/ChatItem";
 import { IoCall } from "react-icons/io5";
@@ -17,16 +13,39 @@ import { FaPlus, FaRegImage, FaFile } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { MdThumbUpAlt } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { getDatabase, onValue, ref } from "firebase/database";
+import { useSelector } from "react-redux";
+import SearchBox from "../components/layout/SearchBox";
 
 const Chat = () => {
+  const db = getDatabase();
+  const activeUserData = useSelector((state) => state.user.information);
   const [friendsProfileOpen, setFriendsProfileOpen] = useState(false);
+  const [friendList, setFriendList] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    const friendListRef = ref(db, "friends");
+    onValue(friendListRef, (snapshot) => {
+      const FriendListArray = [];
+      snapshot.forEach((item) => {
+        if (
+          activeUserData.uid == item.val().reciveruid ||
+          activeUserData.uid == item.val().senderuid
+        ) {
+          FriendListArray.push(item.val());
+        }
+      });
+      setFriendList(FriendListArray);
+    });
+  }, []);
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
       <Box
         className={"w-1/4 h-full bg-white rounded-2xl pt-6 pr-2.5 pb-5 pl-2.5"}
       >
-        <Box className={"px-2.5  h-[16%]"}>
+        <Box className={"px-2.5  h-[15%]"}>
           <Flex
             justifyContent={"between"}
             alignItems={"center"}
@@ -37,106 +56,25 @@ const Chat = () => {
             </Typography>
             <BsThreeDotsVertical className=" box-content bg-[#dedede] text-xl p-2 rounded-full transition-all ease duration-300 cursor-pointer hover:bg-[#32375c] hover:text-white" />
           </Flex>
-          <Flex
-            alignItems={"center"}
-            className={
-              "border border-[#dedede] rounded-3xl overflow-hidden mt-4 bg-[#f4f4f4]"
-            }
-          >
-            <IoMdSearch className="box-content text-2xl pl-[15px] text-[#514f4f8e]" />
-            <Input
-              placeholder={"search messenger"}
-              className={
-                "bg-[#f4f4f4] py-3 pr-5 pl-[8px] w-full outline-none group-"
-              }
-            />
-          </Flex>
+          <SearchBox
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder={"Search messenger"}
+            className={"mt-4"}
+          />
         </Box>
-        <Box className={"h-[84%] overflow-y-auto"}>
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
-          <ChatItem
-            profile={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
-            profileAltText={"usr name"}
-            userName={"Monsur Ahmed Shanto"}
-            lastMessege={"random messege...."}
-            lastMessegeSentTime={"30 min"}
-          />
+        <Box className={"h-[85%] overflow-y-auto"}>
+          {friendList.filter((item) => {
+            let name = (activeUserData.uid == item.senderuid ? item.recivername : item.sendername)
+            return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase())
+          }).map((item) => (
+            <ChatItem
+              profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+              profileAltText={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+              userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+              lastMessege={"random messege...."}
+              lastMessegeSentTime={"30 min"}
+            />
+          ))}
         </Box>
       </Box>
       <Box className={"w-[75%] ml-4 flex"}>
@@ -163,7 +101,7 @@ const Chat = () => {
                 className={"w-12 h-12 rounded-full"}
               />
               <Typography variant="h3" className="ml-3 text-lg font-semibold">
-                Mohammad Abdullah 
+                Mohammad Abdullah
               </Typography>
             </Box>
             <Flex alignItems={"center"}>
@@ -178,7 +116,6 @@ const Chat = () => {
             </Flex>
           </Flex>
           <Box className={"bg-[#dedede] opacity-50 h-full"}>messege</Box>
-
           <Flex
             justifyContent={"between"}
             alignItems={"center"}
@@ -222,7 +159,9 @@ const Chat = () => {
               className={"w-full h-[180px] object-cover"}
             />
             <Image
-              src={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"}
+              src={
+                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D"
+              }
               alt={"random image"}
               className={
                 "w-[120px] h-[120px] rounded-full object-cover absolute bottom-0 translate-y-2/4 left-2/4 -translate-x-2/4 border border-[#dedede]"

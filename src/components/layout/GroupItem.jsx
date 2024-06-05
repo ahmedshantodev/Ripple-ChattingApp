@@ -1,20 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import Box from "./Box";
 import Image from "./Image";
 import Typography from "./Typography";
 
 const GroupItem = ({
+  activeItem,
+  onClick,
   profile,
   profileAltText,
-  userName,
+  groupName,
   lastMessege,
   lastMessegeSentTime,
 }) => {
-
   return (
     <Box
+      onClick={onClick}
       className={
-        "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative transition-all ease-linear duration-200 hover:bg-[#dddcea]  cursor-pointer"
+        activeItem == groupName
+          ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#dddcea]  cursor-pointer"
+          : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative cursor-pointer transition-all ease-linear duration-200 hover:bg-[#f0f0f0]"
       }
     >
       <Image
@@ -24,7 +28,7 @@ const GroupItem = ({
       />
       <Box>
         <Typography variant="h3" className="text-lg font-semibold">
-          {userName}
+          {groupName}
         </Typography>
         <Typography
           variant="p"
