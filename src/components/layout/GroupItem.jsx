@@ -7,7 +7,6 @@ const GroupItem = ({
   activeItem,
   onClick,
   profile,
-  profileAltText,
   groupName,
   lastMessege,
   lastMessegeSentTime,

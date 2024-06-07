@@ -6,6 +6,8 @@ import Button from "./Button";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 const ChatItem = ({
+  activeItem,
+  onClick,
   profile,
   userName,
   lastMessege,
@@ -15,9 +17,12 @@ const ChatItem = ({
 
   return (
     <Box
+    onClick={onClick}
       className={
-        "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative transition-all ease-linear duration-300 hover:bg-[#dddcea] cursor-pointer"
-      }
+        activeItem == userName
+        ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#dddcea] cursor-pointer mb-[2px]"
+        : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative transition-all ease-linear duration-300 hover:bg-[#f4f4f4] cursor-pointer mb-[2px]"
+      }  
     >
       <Image
         src={profile}

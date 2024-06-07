@@ -24,6 +24,7 @@ import { CiEdit } from "react-icons/ci";
 import { PiNewspaperClipping } from "react-icons/pi";
 import { IoImagesSharp } from "react-icons/io5";
 import ProfileUploadModal from "../layout/ProfileUploadModal";
+import { MdLogout } from "react-icons/md";
 
 const SidebarMenu = () => {
   const auth = getAuth();
@@ -143,8 +144,8 @@ const SidebarMenu = () => {
             onClick={() => setAccountSettingShow(!accountSettingShow)}
             className={
               accountSettingShow
-                ? "flex items-center w-[180px] bg-[#dddcea] px-1 py-2 rounded-md absolute bottom-5 left-2/4 -translate-x-2/4"
-                : "flex items-center w-[180px] px-1 py-2 rounded-md absolute bottom-5 left-2/4 -translate-x-2/4 transition-all duration-200 ease-linear hover:bg-[#dddcea] cursor-pointer"
+                ? "flex items-center w-[180px] bg-[#f0f0f0] px-1 py-2 rounded-md absolute bottom-5 left-2/4 -translate-x-2/4"
+                : "flex items-center w-[180px] px-1 py-2 rounded-md absolute bottom-5 left-2/4 -translate-x-2/4 transition-all duration-200 ease-linear hover:bg-[#f0f0f0] cursor-pointer"
             }
           >
             <Image
@@ -254,7 +255,7 @@ const SidebarMenu = () => {
                     "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
                   }
                 >
-                  <CiLogout className="text-black" /> Log Out
+                  <MdLogout className="text-black" /> Log Out
                 </Button>
               </Box>
               <Box
