@@ -8,7 +8,6 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 const FriendListItem = ({
   className,
   profile,
-  profileAlt,
   userName,
   unfriendButton,
   blockButton,
@@ -35,7 +34,7 @@ const FriendListItem = ({
       <Box className={"flex items-center"}>
         <Image
           src={profile}
-          alt={profileAlt}
+          alt={userName}
           className={"w-[100px] aspect-square object-cover rounded-lg"}
         />
         <Box className={""}>

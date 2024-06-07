@@ -7,7 +7,6 @@ import Button from "./Button";
 
 const GroupInviteListItem = ({
   profile,
-  profileAlt,
   name,
   button,
   addButton,
@@ -21,7 +20,7 @@ const GroupInviteListItem = ({
       <Flex alignItems={"center"} className={"gap-x-3"}>
         <Image
           src={profile}
-          alt={profileAlt}
+          alt={name}
           className={"w-[65px] h-[65px] object-cover rounded-full"}
         />
         <Typography

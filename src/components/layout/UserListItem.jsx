@@ -8,7 +8,6 @@ import { FaUserTimes } from "react-icons/fa";
 const UserListItem = ({
   className,
   profile,
-  profileAlt,
   userName,
   sendRequstBtn,
   button,
@@ -20,13 +19,13 @@ const UserListItem = ({
     >
       <Image
         src={profile}
-        alt={profileAlt}
+        alt={userName}
         className={"w-full aspect-square object-cover"}
       />
       <Box className={"pt-2.5 pb-2 px-2"}>
         <Typography
           variant="h3"
-          className="font-inter font-semibold text-[20px] mt-2.5 mb-[2px] ml-1"
+          className="font-inter font-semibold text-[18px] mt-2.5 mb-[2px] ml-1 w-[98%] whitespace-nowrap overflow-hidden text-ellipsis capitalize"
         >
           {userName}
         </Typography>

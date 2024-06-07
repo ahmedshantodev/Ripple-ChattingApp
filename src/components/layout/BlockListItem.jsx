@@ -7,7 +7,6 @@ import Button from "./Button";
 const BlockListItem = ({
   className,
   profile,
-  profileAlt,
   userName,
   unblockButton,
 }) => {
@@ -17,7 +16,7 @@ const BlockListItem = ({
     >
       <Image
         src={profile}
-        alt={profileAlt}
+        alt={userName}
         className={"w-full aspect-square object-cover"}
       />
       <Box className={"pt-2.5 pb-2 px-2"}>

@@ -13,7 +13,6 @@ import EmailVerification from "./pages/EmailVerification";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import Groups from "./pages/Groups";
-import AccountSettings from "./pages/AccountSettings";
 import ForgotPassword from "./pages/ForgotPassword";
 import Friends from "./pages/Friends";
 import AllFriends from "./components/section/AllFriends";
@@ -42,7 +41,6 @@ const App = () => {
             <Route path="block-list" element={<BlockList />} />
           </Route>
           <Route path="feeds" element={<Feeds />} />
-          <Route path="account-setting" element={<AccountSettings />} />
         </Route>
       </Route>
     )

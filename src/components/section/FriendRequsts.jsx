@@ -50,14 +50,13 @@ const FriendRequsts = () => {
       </Typography>
       <Box
         className={
-          "h-[93%] flex gap-x-[15px] items-start flex-wrap overflow-y-auto"
+          "h-[93%] flex gap-x-[22px] items-start flex-wrap overflow-y-auto"
         }
       >
         {friendRequstList.map((item) => (
           <FriendRequstItem
-            className={"w-[24%] mb-[15px]"}
+            className={"w-[18.50%] mb-[15px]"}
             profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-            profileAlt={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
             userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
             friendRequstConfirm={() => handleFriendRequstConfirm(item)}
             friendRequstDelete={() => handleFriendRequstDelete(item)}

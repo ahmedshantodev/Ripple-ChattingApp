@@ -74,28 +74,17 @@ const AddFriends = () => {
       </Typography>
       <Box
         className={
-          "h-[93%] flex gap-x-[15px] items-start flex-wrap overflow-y-auto"
+          "h-[93%] flex gap-x-[22px] items-start flex-wrap overflow-y-auto"
         }
       >
         {userlist.map((item) => (
           <UserListItem
-            className={"w-[24%] mb-[15px]"}
+            className={"w-[18.50%] mb-[15px]"}
             profile={item.userprofile}
-            profileAlt={item.username}
             userName={item.username}
             sendRequstBtn={() => handleSendFriendRequst(item)}
             cencelRequstBtn={() => handleCencelRequstBtn(item)}
-            button={
-              pendingButtonList.includes(activeUserData.uid + item.userid) ||
-              pendingButtonList.includes(item.userid + activeUserData.uid)
-                ? "pending"
-                : friendsButtonLIst.includes(
-                    activeUserData.uid + item.userid
-                  ) ||
-                  friendsButtonLIst.includes(item.userid + activeUserData.uid)
-                ? "friends"
-                : "sendrequst"
-            }
+            button={pendingButtonList.includes(activeUserData.uid + item.userid) || pendingButtonList.includes(item.userid + activeUserData.uid) ? "pending" : friendsButtonLIst.includes( activeUserData.uid + item.userid) || friendsButtonLIst.includes(item.userid + activeUserData.uid) ? "friends" : "sendrequst"}
           />
         ))}
       </Box>

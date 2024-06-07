@@ -82,7 +82,7 @@ const ProfileUploadModal = ({ profileUploadModalClose, profileUploadref }) => {
   return (
     <section
       className={
-        "w-full h-dvh bg-white/70 absolute top-0 left-0 flex justify-center items-center "
+        "w-full h-dvh bg-white/70 absolute top-0 left-0 flex justify-center items-center z-50"
       }
     >
       <div

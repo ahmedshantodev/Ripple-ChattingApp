@@ -18,8 +18,7 @@ const AllFriends = () => {
     onValue(friendRequstRef, (snapshot) => {
       let friendListArray = [];
       snapshot.forEach((item) => {
-        // if ((activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid)
-        //   && !(blockList.includes(activeUserData.uid == item.val().reciveruid ? item.val().senderuid : item.val().reciveruid))) {
+        // if ((activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid) && !(blockList.includes(activeUserData.uid == item.val().reciveruid ? item.val().senderuid : item.val().reciveruid))) {
         if (activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid) {
           friendListArray.push({ ...item.val(), friendId: item.key });
         }
@@ -33,25 +32,16 @@ const AllFriends = () => {
       blockbyuid: activeUserData.uid,
       blockbyname: activeUserData.displayName,
       blockbyprofile: activeUserData.photoURL,
-      blockeduserid:
-        activeUserData.uid == item.reciveruid
-          ? item.senderuid
-          : item.reciveruid,
-      blockedusername:
-        activeUserData.uid == item.reciveruid
-          ? item.sendername
-          : item.recivername,
-      blockeduserprofile:
-        activeUserData.uid == item.reciveruid
-          ? item.senderprofile
-          : item.reciverprofile,
+      blockeduserid: activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid,
+      blockedusername: activeUserData.uid == item.reciveruid ? item.sendername : item.recivername,
+      blockeduserprofile: activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
     }).then(() => {
       // remove(ref( db , "friends/" + item.friendId))
     })
   };
   
   const handleUnfriend = (item) => {
-    // remove(ref( db , "friends/" + item.friendId))
+    remove(ref( db , "friends/" + item.friendId))
   };
 
   useEffect(() => {
@@ -86,21 +76,8 @@ const AllFriends = () => {
           {friendList.map((item) => (
             <FriendListItem
               className={"w-[49.5%] mb-[15px]"}
-              profile={
-                activeUserData.uid == item.senderuid
-                  ? item.reciverprofile
-                  : item.senderprofile
-              }
-              profileAlt={
-                activeUserData.uid == item.senderuid
-                  ? item.recivername
-                  : item.sendername
-              }
-              userName={
-                activeUserData.uid == item.senderuid
-                  ? item.recivername
-                  : item.sendername
-              }
+              profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+              userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
               blockButton={() => handleBlock(item)}
               unfriendButton={() => handleUnfriend(item)}
             />

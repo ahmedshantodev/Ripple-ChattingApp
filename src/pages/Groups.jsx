@@ -26,7 +26,6 @@ import {
   remove,
   set,
 } from "firebase/database";
-import { BiSolidUserPlus } from "react-icons/bi";
 import { FiBell } from "react-icons/fi";
 import { FiBellOff } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
@@ -34,7 +33,8 @@ import SearchBox from "../components/layout/SearchBox";
 import { activeGroup } from "../slices/activeGroupSlice";
 import GroupPhotoUploadModal from "../components/layout/GroupPhotoUploadModal";
 import GroupInvitationListItem from "../components/layout/GroupInvitationListItem";
-import noGroupPHoto from "/public/images/no chat image.jpg"
+import noGroupPHoto from "/public/images/no chat image.jpg";
+import { PiUserCirclePlus } from "react-icons/pi";
 
 const Group = () => {
   const db = getDatabase();
@@ -60,7 +60,8 @@ const Group = () => {
   const groupCreateModalRef = useRef();
   const groupCreateButtonRef = useRef();
 
-  const [GroupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
+  const [GroupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
+    useState(false);
   const groupPhotoModalRef = useRef();
   const groupPhotoButtonRef = useRef();
 
@@ -152,12 +153,16 @@ const Group = () => {
       let groupMemberArray = [];
       snapshot.forEach((item) => {
         if (activeGroupData.groupuid == item.val().groupuid) {
-          groupMemberArray.push(item.val());
+          groupMemberArray.push({ ...item.val(), groupmemberid: item.key });
         }
       });
       setGroupMemberLlist(groupMemberArray);
     });
   }, [activeGroupData]);
+
+  const handleMemberRemove = (item) => {
+    remove(ref(db, "groupmembers/" + item.groupmemberid));
+  };
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -173,11 +178,20 @@ const Group = () => {
             <Typography variant="h4" className="font-bold text-[28px]">
               Groups
             </Typography>
-            <div ref={groupCreateButtonRef}>
+            <div ref={groupCreateButtonRef} className="relative group">
               <FaPlus
                 onClick={() => setGroupCreateModal(true)}
-                className=" box-content bg-[#dedede] text-lg p-2 rounded-full transition-all ease duration-300 cursor-pointer hover:bg-[#32375c] hover:text-white"
+                className=" box-content bg-[#dedede] text-lg p-2 rounded-full cursor-pointer"
               />
+              <Box
+                className={
+                  "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block z-50"
+                }
+              >
+                <Typography className="w-[155px] text-center mt-1 py-1 rounded-md bg-[#dedede] border border-white">
+                  Create New Group
+                </Typography>
+              </Box>
             </div>
             {groupCreateModal && (
               <GroupCreateModal
@@ -241,20 +255,13 @@ const Group = () => {
               </Box>
             )}
           </Box>
-          {groupList
-            .filter((item) => {
-              return searchValue == ""
-                ? item
-                : item.groupname
-                    .toLowerCase()
-                    .includes(searchValue.toLowerCase());
-            })
-            .map((item) => (
+          {groupList.filter((item) => {
+              return searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase());
+            }).map((item) => (
               <GroupItem
                 activeItem={activeGroupData?.groupname}
                 onClick={() => handleActiveGroupOpen(item)}
                 profile={item?.groupphoto}
-                profileAltText={item?.groupname}
                 groupName={item?.groupname}
                 lastMessege={"random messege...."}
                 lastMessegeSentTime={"30 min"}
@@ -388,10 +395,20 @@ const Group = () => {
               className={"mt-5"}
             >
               <div
+                className="relative mr-6 group"
                 ref={memberInviteButtonRef}
                 onclick={() => setMemberInviteModal(true)}
               >
-                <BiSolidUserPlus className="box-content text-[25px] mr-6 p-2 rounded-full cursor-pointer text-[#252b2f] transition-all ease-in-out duration-300 bg-[#dedede]" />
+                <PiUserCirclePlus className="box-content text-[28px] p-2 rounded-full cursor-pointer text-[#252b2f] bg-[#dedede]" />
+                <Box
+                  className={
+                    "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
+                  }
+                >
+                  <Typography className="w-[110px] mt-1 py-1 rounded-md bg-[#dedede]">
+                    Add People
+                  </Typography>
+                </Box>
               </div>
               {memberInviteModal && (
                 <GroupMemberInviteModal
@@ -400,18 +417,39 @@ const Group = () => {
                 />
               )}
               {groupNotificationOn ? (
-                <FiBell
-                  onClick={() => setGroupNotificationOn(!groupNotificationOn)}
-                  className="box-content text-[22px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#dedede] transition-all ease-in-out duration-300"
-                />
+                <Box className={"relative group"}>
+                  <FiBell
+                    onClick={() => setGroupNotificationOn(!groupNotificationOn)}
+                    className="box-content text-[22px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#dedede] transition-all ease-in-out duration-300"
+                  />
+                  <Box
+                    className={
+                      "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
+                    }
+                  >
+                    <Typography className="w-[65px] mt-1 py-1 rounded-md bg-[#dedede]">
+                      Mute
+                    </Typography>
+                  </Box>
+                </Box>
               ) : (
-                <FiBellOff
-                  onClick={() => setGroupNotificationOn(!groupNotificationOn)}
-                  className={`box-content text-[22px] p-2.5 rounded-full cursor-pointer text-[#dedede] bg-[#252b2f]`}
-                />
+                <Box className={"relative group"}>
+                  <FiBellOff
+                    onClick={() => setGroupNotificationOn(!groupNotificationOn)}
+                    className={`box-content text-[22px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#dedede]`}
+                  />
+                  <Box
+                    className={
+                      "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
+                    }
+                  >
+                    <Typography className="w-[70px] mt-1 py-1 rounded-md bg-[#dedede]">
+                      unmute
+                    </Typography>
+                  </Box>
+                </Box>
               )}
             </Flex>
-
             <Box className={"mt-7 text-start px-5"}>
               <Flex
                 onClick={() => setChatiInfoShow(!chatiInfoShow)}
@@ -469,6 +507,7 @@ const Group = () => {
                           memberProfile={item.memberprofile}
                           memberName={item.membername}
                           addedBy={item.addedbyname}
+                          removeButton={() => handleMemberRemove(item)}
                         />
                       ))
                     ) : (

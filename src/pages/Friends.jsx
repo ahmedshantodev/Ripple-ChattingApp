@@ -2,9 +2,6 @@ import React from "react";
 import Box from "../components/layout/Box";
 import Flex from "../components/layout/Flex";
 import Typography from "../components/layout/Typography";
-import Input from "../components/layout/Input";
-import { IoMdSearch } from "react-icons/io";
-import { FaPlus } from "react-icons/fa6";
 import {
   RiUserAddLine,
   RiUserFollowLine,
@@ -13,7 +10,7 @@ import {
 import { MdBlock } from "react-icons/md";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import SearchBox from './../components/layout/SearchBox';
 
 const Friends = () => {

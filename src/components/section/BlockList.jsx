@@ -44,7 +44,6 @@ const BlockList = () => {
           <BlockListItem
             className={"w-[24%] mb-[15px]"}
             profile={item.blockeduserprofile}
-            profileAlt={item.blockedusername}
             userName={item.blockedusername}
             unblockButton={() => handleUnblock(item)}
           />

@@ -23,7 +23,7 @@ const GroupItem = ({
     >
       <Image
         src={profile}
-        alt={profileAltText}
+        alt={groupName}
         className={"w-[52px] h-[52px] object-cover rounded-full "}
       />
       <Box>

@@ -69,7 +69,6 @@ const Chat = () => {
           }).map((item) => (
             <ChatItem
               profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-              profileAltText={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
               userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
               lastMessege={"random messege...."}
               lastMessegeSentTime={"30 min"}

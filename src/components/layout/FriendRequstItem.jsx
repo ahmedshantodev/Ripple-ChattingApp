@@ -7,7 +7,6 @@ import Button from "./Button";
 const FriendRequstItem = ({
   className,
   profile,
-  profileAlt,
   userName,
   friendRequstConfirm,
   friendRequstDelete,
@@ -18,20 +17,20 @@ const FriendRequstItem = ({
     >
       <Image
         src={profile}
-        alt={profileAlt}
+        alt={userName}
         className={"w-full aspect-square object-cover"}
       />
       <Box className={"pt-2.5 pb-2 px-2"}>
         <Typography
           variant="h3"
-          className="font-inter font-semibold text-[20px] mt-2.5  mb-[2px] ml-1"
+          className="font-inter font-semibold text-[18px] mt-2.5 mb-[2px] ml-1 w-[98%] whitespace-nowrap overflow-hidden text-ellipsis capitalize"
         >
           {userName}
         </Typography>
         <Button
           onClick={friendRequstConfirm}
           className={
-            "bg-[#2176ff] w-full py-2.5 text-white font-semibold rounded-lg mt-1 active:scale-[0.97]"
+            "bg-[#2176ff] w-full py-2 text-white font-semibold rounded-lg mt-1 active:scale-[0.97]"
           }
         >
           Confirm
@@ -39,7 +38,7 @@ const FriendRequstItem = ({
         <Button
           onClick={friendRequstDelete}
           className={
-            "bg-[#4e4f50] w-full py-2.5 text-white font-semibold rounded-lg mt-1 active:scale-[0.97]"
+            "bg-[#4e4f50] w-full py-2 text-white font-semibold rounded-lg mt-1 active:scale-[0.97]"
           }
         >
           Delete

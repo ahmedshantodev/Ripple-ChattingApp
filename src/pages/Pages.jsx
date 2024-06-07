@@ -20,7 +20,7 @@ const Pages = () => {
       <Flex>
         <Box
           className={
-            "w-[10%] h-[100dvh] bg-white pt-12 pl-6 relative shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
+            "w-[10%] h-[100dvh] bg-white pt-12 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
           }
         >
           <SidebarMenu />

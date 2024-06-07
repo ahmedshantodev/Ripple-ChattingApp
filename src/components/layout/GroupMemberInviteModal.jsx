@@ -83,7 +83,6 @@ const GroupMemberInviteModal = ({modalClose , modalRef}) => {
           }).map((item) => (
             <GroupInviteListItem
               profile={activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile}
-              profileAlt={activeUserData.uid == item.reciveruid ? item.sendername : item.recivername}
               name={activeUserData.uid == item.reciveruid ? item.sendername : item.recivername}
               button={groupInvitePendingList.includes(activeGroupData.groupuid + (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid)) || groupInvitePendingList.includes((activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid) + activeGroupData.groupuid) ? "pending" : "add"}
               addButton={() => handleInvite(item)}

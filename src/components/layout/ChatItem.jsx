@@ -7,7 +7,6 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 
 const ChatItem = ({
   profile,
-  profileAltText,
   userName,
   lastMessege,
   lastMessegeSentTime,
@@ -22,7 +21,7 @@ const ChatItem = ({
     >
       <Image
         src={profile}
-        alt={profileAltText}
+        alt={userName}
         className={"w-[52px] h-[52px] rounded-full "}
       />
       <Box>
