@@ -36,7 +36,7 @@ const SenderMessege = ({
         }
       >
         <TbTriangleFilled className="text-[22px] text-[#5a3bff] absolute -bottom-[3px] right-[2px] translate-x-2/4" />
-        <Typography className="font-poppins py-3 px-6 rounded-[10px] bg-[#5a3bff] text-white break-words">
+        <Typography className="text-start font-poppins py-3 px-6 rounded-[10px] bg-[#5a3bff] text-white break-words">
           {messege}
         </Typography>
         <Flex

@@ -134,7 +134,7 @@ const ProfileUploadModal = ({ modalShow, modalClose }) => {
             </Typography>
             <Box className={"flex items-center"}>
               <Box className="box w-[350px] mr-[15px]">
-                <div className="img-preview overflow-hidden mx-auto max-w-[300px] min-w-[300px] aspect-square rounded-full" />
+                <div className="img-preview overflow-hidden mx-auto max-w-[300px] min-w-[300px] max-h-[300px] min-h-[300px] aspect-square rounded-full" />
               </Box>
               <Box className={""}>
                 <Cropper

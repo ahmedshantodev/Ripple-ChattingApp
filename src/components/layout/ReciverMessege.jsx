@@ -8,6 +8,7 @@ import Flex from "./Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
+import moment from "moment";
 
 const ReciverMessege = ({
   messege,

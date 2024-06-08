@@ -1,64 +1,83 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import Typography from "./Typography";
 import Box from "./Box";
 import Input from "./Input";
 import Button from "./Button";
-import { getDatabase, push, ref, set } from "firebase/database";
-import { useSelector } from "react-redux";
+import { getDatabase, ref, set } from "firebase/database";
+import { useDispatch, useSelector } from "react-redux";
 import { ColorRing } from "react-loader-spinner";
 import { toast } from "react-toastify";
+import { activeGroup } from "../../slices/activeGroupSlice";
 
-const GroupCreateModal = ({ modalRef, modalClose }) => {
+const GroupNameChangeModal = ({modalShow, modalClose}) => {
   const db = getDatabase();
+  const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
-  const [groupCreateLoadingButton, setGroupCreateLoadingButton] = useState(false);
-  const [groupCreateInfo, setGroupCreateInfo] = useState("");
-  const [groupCreateError, setGroupCreateError] = useState("");
-  const defaultGroupPhoto = "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defualt%20group%20%20photo%2Fgroup%20defualt%20profile.png?alt=media&token=511df1b9-d171-4ab9-b201-a4ae882bab6f"
+  const activeGroupData = useSelector((state) => state.activeGroup.information);
+  const [loadingButton, setLoadingButton] = useState(false);
+  const [newGroupName, setNewGroupName] = useState(activeGroupData?.groupname);
+  const [error, setError] = useState("");
 
   const handleInputValue = (e) => {
-    setGroupCreateInfo(e.target.value)
-    setGroupCreateError("");
+    setNewGroupName(e.target.value);
+    setError("");
   };
 
   const handleCreateGroup = () => {
-    if (!groupCreateInfo) {
-      setGroupCreateError("Please enter group name");
+    if (!newGroupName) {
+      setError("Please enter group name");
     } else {
-      setGroupCreateLoadingButton(true);
-      set(push(ref(db, "groups")), {
-        groupname: groupCreateInfo,
-        groupphoto: defaultGroupPhoto,
+      setLoadingButton(true);
+      set(ref(db, "groups/" + activeGroupData?.groupuid), {
+        groupname: newGroupName,
+        groupphoto: activeGroupData.groupphoto,
         groupcreatoruid: activeUserData.uid,
         groupcreatorname: activeUserData.displayName,
         groupcreatoprofile: activeUserData.photoURL,
       }).then(() => {
         toast.success(
-          `Your group ${groupCreateInfo.groupname} has been created. Join the conversation now!`,
+          `Your group name has been changed from ${activeGroupData?.groupname} to ${newGroupName}`,
           { position: "bottom-center", autoClose: 2500 }
         );
-        setGroupCreateInfo("");
-        setGroupCreateLoadingButton(false);
+        localStorage.setItem(
+          "activeGroup",
+          JSON.stringify({ ...activeGroupData, groupname: newGroupName })
+        );
+        dispatch(activeGroup({ ...activeGroupData, groupname: newGroupName }));
+        setNewGroupName("");
+        setLoadingButton(false);
         modalClose(false);
       });
     }
   };
 
+  const modalRef = useRef();
+  const boxRef = useRef();
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+        modalClose(false);
+      }
+    });
+  }, []);
+
   return (
     <section
+      ref={modalRef}
       className={
-        "w-full h-dvh bg-white/70 absolute top-0 left-0 z-20 flex justify-center items-center"
+        `w-full h-dvh bg-white/70 absolute top-0 left-0 z-20 ${modalShow ? "flex" : "hidden"} justify-center items-center`
       }
     >
       <div
-        ref={modalRef}
+        ref={boxRef}
         className={
           "bg-white w-[600px] py-5 rounded-lg border border-primaryBorder shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] relative"
         }
       >
         <Typography className="pb-5 text-center font-bold text-xl border-b-[2px] border-primaryBorder">
-          Create Group
+          Change Group Name
         </Typography>
         <RxCross2
           onClick={() => modalClose(false)}
@@ -68,30 +87,28 @@ const GroupCreateModal = ({ modalRef, modalClose }) => {
           <Box className={"mb-6 relative"}>
             <Input
               autoFocus={true}
-              value={groupCreateInfo}
+              value={newGroupName}
               type={"text"}
               name={"groupname"}
               onChange={handleInputValue}
-              placeholder={"Group Name"}
+              placeholder={"Enter New Group Name"}
               className={`w-full border ${
-                groupCreateError ? "border-red-600" : "border-primaryBorder"
+                error ? "border-red-600" : "border-primaryBorder"
               } ${
-                groupCreateError
-                  ? "focus:outline-red-600"
-                  : "focus:outline-[#141975]"
+                error ? "focus:outline-red-600" : "focus:outline-[#141975]"
               } ${
-                groupCreateError
+                error
                   ? "placeholder:text-red-600"
                   : "placeholder:text-secoundaryText"
               } placeholder:text-[13px]  sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
             />
-            {groupCreateError && (
+            {error && (
               <Typography className="absolute -bottom-[20px] left-[20px] text-red-600 text-[8px] sm:text-[11px] md:text-[10px] lg:text-[14px]">
-                Please enter Group Name
+                Please enter new group name
               </Typography>
             )}
           </Box>
-          {groupCreateLoadingButton ? (
+          {loadingButton ? (
             <Button
               onClick={handleCreateGroup}
               className={
@@ -115,7 +132,7 @@ const GroupCreateModal = ({ modalRef, modalClose }) => {
                 "w-full bg-[#141975] text-white font-poppins py-[7px] sm:py-[12px] md:py-[14px] lg:py-4 rounded-[30px]"
               }
             >
-              Create Group
+              Change Group Name
             </Button>
           )}
         </Box>
@@ -124,4 +141,4 @@ const GroupCreateModal = ({ modalRef, modalClose }) => {
   );
 };
 
-export default GroupCreateModal;
+export default GroupNameChangeModal;

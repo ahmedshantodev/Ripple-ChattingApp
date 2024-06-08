@@ -181,9 +181,7 @@ const Chat = () => {
       ) : (
         <Box className={"w-[75%] ml-4 flex"}>
           <Box
-            className={`${
-              friendsProfileOpen ? "w-[70%]" : "w-full"
-            } h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100`}
+            className={`${friendsProfileOpen ? "w-[70%]" : "w-full"} h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100`}
           >
             <Flex
               justifyContent={"between"}

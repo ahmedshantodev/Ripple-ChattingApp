@@ -1,4 +1,4 @@
-import React, { createRef, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import Box from "./Box";
@@ -19,7 +19,7 @@ import { getDatabase, set, ref as databaseRef } from "firebase/database";
 import { toast } from "react-toastify";
 import { activeGroup } from "../../slices/activeGroupSlice";
 
-const GroupPhotoUploadModal = ({ modalClose, modalRef }) => {
+const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
   const storage = getStorage();
   const activeUserData = useSelector((state) => state.user.information);
@@ -53,7 +53,6 @@ const GroupPhotoUploadModal = ({ modalClose, modalRef }) => {
         getDownloadURL(groupPhotoRef).then((downloadURL) => {
           set(databaseRef(db, "groups/" + activeGroupData.groupuid), {
             groupname: activeGroupData.groupname,
-            groupslogan: activeGroupData.groupslogan,
             groupphoto: downloadURL,
             groupcreatoruid: activeUserData.uid,
             groupcreatorname: activeUserData.displayName,
@@ -81,14 +80,26 @@ const GroupPhotoUploadModal = ({ modalClose, modalRef }) => {
     }
   };
 
+  const modalRef = useRef();
+  const boxRef = useRef();
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+        modalClose(false)
+      }
+    });
+  }, []);
+
   return (
     <section
+      ref={modalRef}
       className={
-        "w-full h-dvh bg-white/70 absolute top-0 left-0 flex justify-center items-center "
+        `w-full h-dvh bg-white/70 fixed z-50 top-0 left-0 ${modalShow ? "flex" : "hidden"} justify-center items-center`
       }
     >
       <div
-        ref={modalRef}
+        ref={boxRef}
         className={
           "bg-white pt-[50px] pb-6 pr-[70px] pl-[30px] rounded-lg border border-primaryBorder shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] relative"
         }
@@ -124,7 +135,7 @@ const GroupPhotoUploadModal = ({ modalClose, modalRef }) => {
             </Typography>
             <Box className={"flex items-center"}>
               <Box className="box w-[350px] mr-[15px]">
-                <div className="img-preview overflow-hidden mx-auto max-w-[300px] min-w-[300px]  aspect-square rounded-full" />
+                <div className="img-preview overflow-hidden mx-auto max-w-[300px] min-w-[300px] max-h-[300px] min-h-[300px]  aspect-square rounded-full" />
               </Box>
               <Box>
                 <Cropper

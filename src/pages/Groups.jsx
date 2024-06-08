@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+// Reusble Components
 import Box from "../components/layout/Box";
 import Flex from "../components/layout/Flex";
 import Typography from "../components/layout/Typography";
@@ -12,12 +13,19 @@ import GroupMemberInviteModal from "../components/layout/GroupMemberInviteModal"
 import { useDispatch, useSelector } from "react-redux";
 import { FcInvite } from "react-icons/fc";
 import { IoIosArrowDown } from "react-icons/io";
-import { IoCall } from "react-icons/io5";
-import { IoVideocam } from "react-icons/io5";
+import { IoCall, IoVideocam } from "react-icons/io5";
 import { HiDotsVertical } from "react-icons/hi";
 import { FaPlus, FaRegImage, FaFile } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
-import { MdThumbUpAlt } from "react-icons/md";
+import {
+  MdOutlineNotificationsNone,
+  MdOutlineNotificationsOff,
+  MdThumbUpAlt,
+} from "react-icons/md";
+import { LuFileSpreadsheet } from "react-icons/lu";
+import { RiMovieLine } from "react-icons/ri";
+import { TbPhotoPlus } from "react-icons/tb";
+import { FiEdit } from "react-icons/fi";
 import {
   getDatabase,
   onValue,
@@ -26,7 +34,6 @@ import {
   remove,
   set,
 } from "firebase/database";
-import { FiBell , FiBellOff } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
 import SearchBox from "../components/layout/SearchBox";
 import { activeGroup } from "../slices/activeGroupSlice";
@@ -34,6 +41,11 @@ import GroupPhotoUploadModal from "../components/layout/GroupPhotoUploadModal";
 import GroupInvitationListItem from "../components/layout/GroupInvitationListItem";
 import noGroupPHoto from "/public/images/no chat image.jpg";
 import { PiUserCirclePlus } from "react-icons/pi";
+import Button from "../components/layout/Button";
+import ReciverMessege from "../components/layout/ReciverMessege";
+import SenderMessege from "../components/layout/SenderMessege";
+import ModalImage from "react-modal-image";
+import GroupNameChangeModal from "../components/layout/GroupNameChangeModal";
 
 const Group = () => {
   const db = getDatabase();
@@ -44,12 +56,14 @@ const Group = () => {
   const [dropDownShow, setDropDownShow] = useState(false);
   const [groupProfileOpen, setGroupProfileOpen] = useState(false);
   const [groupNotificationOn, setGroupNotificationOn] = useState(true);
-  const [chatiInfoShow, setChatiInfoShow] = useState(false);
   const [groupMemberShow, setGroupMemberShow] = useState(false);
   const [membarRequstShow, setMembarRequstShow] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [groupInvitationList, setGroupInvitationList] = useState([]);
   const [groupMemberLlist, setGroupMemberLlist] = useState([]);
+  const [mediaShow, setMediaShow] = useState(false);
+  const [chatInfoShow, setChatInfoShow] = useState(false);
+  const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
 
   const [memberInviteModal, setMemberInviteModal] = useState(false);
   const memberInviteModalRef = useRef();
@@ -59,10 +73,8 @@ const Group = () => {
   const groupCreateModalRef = useRef();
   const groupCreateButtonRef = useRef();
 
-  const [GroupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
+  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
     useState(false);
-  const groupPhotoModalRef = useRef();
-  const groupPhotoButtonRef = useRef();
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
@@ -80,16 +92,6 @@ const Group = () => {
         setMemberInviteModal(true);
       } else if (!memberInviteModalRef.current.contains(e.target)) {
         setMemberInviteModal(false);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (groupPhotoButtonRef.current.contains(e.target)) {
-        setGroupPhotoUploadModalShow(true);
-      } else if (!groupPhotoModalRef.current.contains(e.target)) {
-        setGroupPhotoUploadModalShow(false);
       }
     });
   }, []);
@@ -254,9 +256,15 @@ const Group = () => {
               </Box>
             )}
           </Box>
-          {groupList.filter((item) => {
-              return searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase());
-            }).map((item) => (
+          {groupList
+            .filter((item) => {
+              return searchValue == ""
+                ? item
+                : item.groupname
+                    .toLowerCase()
+                    .includes(searchValue.toLowerCase());
+            })
+            .map((item) => (
               <GroupItem
                 activeItem={activeGroupData?.groupname}
                 onClick={() => handleActiveGroupOpen(item)}
@@ -298,7 +306,7 @@ const Group = () => {
             <Flex
               justifyContent={"between"}
               alignItems={"center"}
-              className={"py-3 px-3 border-b-[2px] border-b-[#dedede]"}
+              className={"h-[10%] py-3 px-3 border-b border-b-[#dedede]"}
             >
               <Box
                 className={
@@ -325,12 +333,58 @@ const Group = () => {
                 />
               </Flex>
             </Flex>
-            <Box className={"bg-[#dedede] opacity-50 h-full"}>messege</Box>
+            <Box className={"h-[81%] bg-white px-6 overflow-y-scroll pb-2"}>
+              <Box className={"mt-10 mb-10 text-center"}>
+                <Image
+                  src={activeGroupData?.groupphoto}
+                  alt={activeGroupData?.groupname}
+                  className={
+                    "w-[120px] aspect-square object-cover rounded-full mx-auto"
+                  }
+                />
+                <Typography
+                  variant="h3"
+                  className=" font-poppins text-lg font-semibold mt-2"
+                >
+                  {activeGroupData?.groupname}
+                </Typography>
+                <Typography className="text-sm text-secoundaryText">
+                  You're a Member of {activeGroupData?.groupname}
+                </Typography>
+              </Box>
+
+              <ReciverMessege
+                messege={"hi"}
+                messegeSentTime={"2024-06-08-10-11"}
+              />
+              <SenderMessege
+                messege={"Hello"}
+                messegeSentTime={"2024-06-08-10-11"}
+              />
+              <ReciverMessege
+                messege={"hi"}
+                messegeSentTime={"2024-06-08-10-11"}
+              />
+              <SenderMessege
+                messege={"Hello"}
+                messegeSentTime={"2024-06-08-10-11"}
+              />
+              <ReciverMessege
+                messege={"hi"}
+                messegeSentTime={"2024-06-08-10-11"}
+              />
+              <SenderMessege
+                messege={
+                  "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut iste ullam earum accusamus repudiandae vero harum corporis labore distinctio at eum, reprehenderit facere delectus sint molestias consequatur voluptates. Suscipit quae aspernatur reiciendis doloribus, nisi molestiae ratione repellat dolor soluta debitis quas temporibus ex mollitia voluptates nemo, consectetur vitae animi. Doloremque, quaerat quod minima sint at, adipisci eius odio perferendis necessitatibus pariatur voluptatum facilis ipsum ducimus quae deleniti! Incidunt obcaecati itaque vitae necessitatibus dolorem culpa molestias. Libero esse dicta sapiente adipisci ut ducimus corporis maxime vitae, qui nemo fugit ipsa omnis tempore molestias id quisquam, cumque obcaecati eveniet quas commodi aliquam veritatis eos. Incidunt vero dignissimos, architecto nesciunt illo sequi"
+                }
+                messegeSentTime={"2024-06-08-10-11"}
+              />
+            </Box>
             <Flex
               justifyContent={"between"}
               alignItems={"center"}
               className={
-                "bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5"
+                "h-[9%] bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
               }
             >
               <Flex>
@@ -364,24 +418,20 @@ const Group = () => {
                 : "w-0 ml-0 h-full bg-white rounded-2xl overflow-hidden text-center overflow-y-auto"
             }
           >
-            <div
-              ref={groupPhotoButtonRef}
-              className={"mx-auto w-[120px] rounded-full cursor-pointer"}
-            >
-              <Image
-                src={activeGroupData?.groupphoto}
-                alt={"random image"}
+            <Box className={"mx-auto w-[120px]"}>
+              <ModalImage
+                small={activeGroupData?.groupphoto}
+                large={activeGroupData?.groupphoto}
+                alt={activeGroupData?.groupname}
                 className={
-                  "w-[120px] h-[120px] rounded-full object-cover border border-[#dedede] mt-10"
+                  "w-[120px] h-[120px] rounded-full object-cover border border-[#dedede] mt-10 cursor-pointer"
                 }
               />
-            </div>
-            {GroupPhotoUploadModalShow && (
-              <GroupPhotoUploadModal
-                modalRef={groupPhotoModalRef}
-                modalClose={setGroupPhotoUploadModalShow}
-              />
-            )}
+            </Box>
+            <GroupPhotoUploadModal
+              modalShow={groupPhotoUploadModalShow}
+              modalClose={setGroupPhotoUploadModalShow}
+            />
             <Typography
               variant="h3"
               className="font-poppins font-semibold text-[20px] mt-[15px]"
@@ -398,7 +448,7 @@ const Group = () => {
                 ref={memberInviteButtonRef}
                 onclick={() => setMemberInviteModal(true)}
               >
-                <PiUserCirclePlus className="box-content text-[28px] p-2 rounded-full cursor-pointer text-[#252b2f] bg-[#dedede]" />
+                <PiUserCirclePlus className="box-content text-[28px] p-2 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
                 <Box
                   className={
                     "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
@@ -417,9 +467,9 @@ const Group = () => {
               )}
               {groupNotificationOn ? (
                 <Box className={"relative group"}>
-                  <FiBell
+                  <MdOutlineNotificationsNone
                     onClick={() => setGroupNotificationOn(!groupNotificationOn)}
-                    className="box-content text-[22px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#dedede] transition-all ease-in-out duration-300"
+                    className="box-content text-[22px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5] transition-all ease-in-out duration-300"
                   />
                   <Box
                     className={
@@ -433,7 +483,7 @@ const Group = () => {
                 </Box>
               ) : (
                 <Box className={"relative group"}>
-                  <FiBellOff
+                  <MdOutlineNotificationsOff
                     onClick={() => setGroupNotificationOn(!groupNotificationOn)}
                     className={`box-content text-[22px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#dedede]`}
                   />
@@ -450,34 +500,95 @@ const Group = () => {
               )}
             </Flex>
             <Box className={"mt-7 text-start px-5"}>
-              <Flex
-                onClick={() => setChatiInfoShow(!chatiInfoShow)}
-                alignItems={"center"}
-                justifyContent={"between"}
-                className={
-                  chatiInfoShow
-                    ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-primaryBorder cursor-pointer text-black"
-                    : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-primaryBorder cursor-pointer hover:text-black"
-                }
-              >
-                <Typography>Chat info</Typography>
-                <IoIosArrowDown
-                  className={chatiInfoShow ? "rotate-180" : "rotate-0"}
-                />
-              </Flex>
-              {chatiInfoShow && (
-                <Box
+              <Box>
+                <Flex
+                  onClick={() => setChatInfoShow(!chatInfoShow)}
+                  alignItems={"center"}
+                  justifyContent={"between"}
                   className={
-                    "px-2.5 py-2 border border-primaryBorder rounded-md mb-1"
+                    chatInfoShow
+                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
+                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
                   }
                 >
-                  <ul>
-                    <li>chat info</li>
-                    <li>chat info</li>
-                    <li>chat info</li>
-                  </ul>
-                </Box>
-              )}
+                  <Typography>Chat info</Typography>
+
+                  <IoIosArrowDown
+                    className={chatInfoShow ? "rotate-180" : "rotate-0"}
+                  />
+                </Flex>
+                {chatInfoShow && (
+                  <Box className={"ml-2"}>
+                    <Button
+                      onClick={() => setGroupPhotoUploadModalShow(true)}
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <TbPhotoPlus className="text-xl" />
+                      <Typography>Change group photo</Typography>
+                    </Button>
+                    <Button
+                      onClick={() => setGroupNameChangeModal(true)}
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <FiEdit className="text-xl" />
+                      <Typography>Change group name</Typography>
+                    </Button>
+                    <GroupNameChangeModal
+                      modalShow={groupNameChangeModal}
+                      modalClose={setGroupNameChangeModal}
+                    />
+                  </Box>
+                )}
+              </Box>
+              <Box className={"mt-1"}>
+                <Flex
+                  onClick={() => setMediaShow(!mediaShow)}
+                  alignItems={"center"}
+                  justifyContent={"between"}
+                  className={
+                    mediaShow
+                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
+                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                  }
+                >
+                  <Typography>View media</Typography>
+                  <IoIosArrowDown
+                    className={mediaShow ? "rotate-180" : "rotate-0"}
+                  />
+                </Flex>
+                {mediaShow && (
+                  <Box className={"ml-2"}>
+                    <Button
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <FaRegImage className="text-xl" />
+                      <Typography>Images</Typography>
+                    </Button>
+                    <Button
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <RiMovieLine className="text-xl" />
+                      <Typography>Videos</Typography>
+                    </Button>
+                    <Button
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <LuFileSpreadsheet className="text-xl" />
+                      <Typography>Files</Typography>
+                    </Button>
+                  </Box>
+                )}
+              </Box>
               <Box>
                 <Flex
                   onClick={() => setGroupMemberShow(!groupMemberShow)}
@@ -485,8 +596,8 @@ const Group = () => {
                   justifyContent={"between"}
                   className={
                     groupMemberShow
-                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-primaryBorder cursor-pointer text-black"
-                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-primaryBorder cursor-pointer hover:text-black"
+                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
+                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
                   }
                 >
                   <Typography>Group Members</Typography>
@@ -522,8 +633,8 @@ const Group = () => {
                   justifyContent={"between"}
                   className={
                     membarRequstShow
-                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-primaryBorder cursor-pointer text-black"
-                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-primaryBorder cursor-pointer hover:text-black"
+                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
+                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
                   }
                 >
                   <Typography>Members Requst</Typography>
@@ -547,7 +658,7 @@ const Group = () => {
                 alignItems={"center"}
                 justifyContent={"between"}
                 className={
-                  "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-primaryBorder cursor-pointer hover:text-black"
+                  "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
                 }
               >
                 <Typography>Leave Group</Typography>
