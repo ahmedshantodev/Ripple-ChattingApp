@@ -8,6 +8,7 @@ import Flex from "./Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
+import moment from "moment";
 
 const SenderMessege = ({
   messege,
@@ -108,7 +109,7 @@ const SenderMessege = ({
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText">
-        {messegeSentTime}
+        {moment(messegeSentTime, "YYYYMMDDh:mm").fromNow()}
       </Typography>
     </Box>
   );

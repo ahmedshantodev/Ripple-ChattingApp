@@ -104,7 +104,7 @@ const ReciverMessege = ({
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText">
-        {messegeSentTime}
+        {moment(messegeSentTime, "YYYYMMDDh:mm").fromNow()}
       </Typography>
     </Box>
   );
