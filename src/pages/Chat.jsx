@@ -12,7 +12,7 @@ import { FaPlus, FaRegImage, FaFile } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { MdThumbUpAlt } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { getDatabase, onValue, ref } from "firebase/database";
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
 import SearchBox from "../components/layout/SearchBox";
 import { activeChat } from "./../slices/activeChatSlice";
@@ -32,13 +32,24 @@ const Chat = () => {
   const [friendList, setFriendList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [messege, setMessege] = useState("");
+  const [messegeList, setMessegeList] = useState([]);
+
+  const time = new Date();
+  const year = time.getFullYear();
+  const month = time.getMonth() + 1;
+  const date = time.getDate();
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
 
   useEffect(() => {
     const friendListRef = ref(db, "friends");
     onValue(friendListRef, (snapshot) => {
       const FriendListArray = [];
       snapshot.forEach((item) => {
-        if (activeUserData.uid == item.val().reciveruid || activeUserData.uid == item.val().senderuid) {
+        if (
+          activeUserData.uid == item.val().reciveruid ||
+          activeUserData.uid == item.val().senderuid
+        ) {
           FriendListArray.push(item.val());
         }
       });
@@ -49,20 +60,77 @@ const Chat = () => {
   const handleActiveChatOpen = (item) => {
     dispatch(
       activeChat({
-        uid: activeUserData.uid == item.senderuid ? item.reciveuid : item.senderuid,
-        name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
-        profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
+        uid:
+          activeUserData.uid == item.senderuid
+            ? item.reciveruid
+            : item.senderuid,
+        name:
+          activeUserData.uid == item.senderuid
+            ? item.recivername
+            : item.sendername,
+        profile:
+          activeUserData.uid == item.senderuid
+            ? item.reciverprofile
+            : item.senderprofile,
       })
     );
     localStorage.setItem(
       "activeChat",
       JSON.stringify({
-        uid: activeUserData.uid == item.senderuid ? item.reciveuid : item.senderuid,
-        name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
-        profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
+        uid:
+          activeUserData.uid == item.senderuid
+            ? item.reciveuid
+            : item.senderuid,
+        name:
+          activeUserData.uid == item.senderuid
+            ? item.recivername
+            : item.sendername,
+        profile:
+          activeUserData.uid == item.senderuid
+            ? item.reciverprofile
+            : item.senderprofile,
       })
     );
   };
+
+  useEffect(() => {
+    setMessege("");
+  }, [activeChatData]);
+
+  const handleMessegeSend = () => {
+    set(push(ref(db, "messege/")), {
+      messege: messege,
+      messegereciveruid: activeChatData?.uid,
+      messegesreciverame: activeChatData?.name,
+      messegesreciverrofile: activeChatData?.profile,
+      messegesenderuid: activeUserData?.uid,
+      messegesendername: activeUserData?.displayName,
+      messegesenderprofile: activeUserData?.photoURL,
+      messegesenttime: `${year} - ${month} - ${date} - ${hours} - ${minutes}`,
+    }).then(() => {
+      setMessege("");
+    });
+  };
+
+  useEffect(() => {
+    let messegeRef = ref(db, "messege/");
+    onValue(messegeRef, (snapshot) => {
+      let messegeArray = [];
+      snapshot.forEach((item) => {
+        if (
+          (activeUserData.uid == item.val().messegesenderuid &&
+            activeChatData.uid == item.val().messegereciveruid) ||
+          (activeUserData.uid == item.val().messegereciveruid &&
+            activeChatData.uid == item.val().messegesenderuid)
+        ) {
+          messegeArray.push(item.val());
+        }
+      });
+      setMessegeList(messegeArray);
+    });
+  }, [activeChatData]);
+
+  console.log(messegeList);
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -87,15 +155,30 @@ const Chat = () => {
           />
         </Box>
         <Box className={"h-[85%] overflow-y-auto"}>
-          {friendList.filter((item) => {
-              let name =activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
-              return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase());
-            }).map((item) => (
+          {friendList
+            .filter((item) => {
+              let name =
+                activeUserData.uid == item.senderuid
+                  ? item.recivername
+                  : item.sendername;
+              return searchValue == ""
+                ? item
+                : name.toLowerCase().includes(searchValue.toLowerCase());
+            })
+            .map((item) => (
               <ChatItem
                 activeItem={activeChatData?.name}
                 onClick={() => handleActiveChatOpen(item)}
-                profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-                userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+                profile={
+                  activeUserData.uid == item.senderuid
+                    ? item.reciverprofile
+                    : item.senderprofile
+                }
+                userName={
+                  activeUserData.uid == item.senderuid
+                    ? item.recivername
+                    : item.sendername
+                }
                 lastMessege={"random messege...."}
                 lastMessegeSentTime={"30 min"}
               />
@@ -132,7 +215,7 @@ const Chat = () => {
             <Flex
               justifyContent={"between"}
               alignItems={"center"}
-              className={" h-[10%] py-3 px-3 border-b-[2px] border-b-[#dedede]"}
+              className={" h-[10%] py-3 px-3 border-b border-b-[#dedede]"}
             >
               <Box
                 className={
@@ -159,64 +242,26 @@ const Chat = () => {
                 />
               </Flex>
             </Flex>
-            <Box className={"h-[81%] bg-white px-6 overflow-y-auto"}>
-              <ReciverMessege
-                messege={"hi"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <SenderMessege
-                messege={"hello"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <ReciverMessege
-                messege={"How are you doing?"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <SenderMessege
-                messege={"I am good  and hoew about you?"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <ReciverMessege
-                messege={"I am doing well. Can we meet up tomorrow?"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <SenderMessege
-                messege={"Sure!"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <SenderImage
-                src={"/public/images/registretion bg image.png"}
-                alt={"random image"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <ReciverMessege
-                messege={
-                  "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati magnam labore, sed fugit quod cum beatae perferendis? Tempore doloremque sequi, voluptas blanditiis pariatur minus ab aperiam adipisci ipsa! Soluta nihil excepturi perspiciatis accusamus nemo rerum explicabo, eligendi ab reiciendis, eos minima architecto rem error fuga. Quia minus veritatis veniam nihil fugit atque eius provident debitis magnam eum maxime in eos a, impedit modi deserunt dolor culpa ipsam vel rerum placeat doloribus ratione labore? Error veniam omnis minima magni facere, iusto eos quibusdam ut natus dolorum, distinctio sunt rerum. Fuga temporibus ipsam exercitationem, error laboriosam reiciendis rerum voluptatem dolores accusamus repellendus."
-                }
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <SenderMessege
-                messege={
-                  "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati magnam labore, sed fugit quod cum beatae perferendis? Tempore doloremque sequi, voluptas blanditiis pariatur minus ab aperiam adipisci ipsa! Soluta nihil excepturi perspiciatis accusamus nemo rerum explicabo, eligendi ab reiciendis, eos minima architecto rem error fuga. Quia minus veritatis veniam nihil fugit atque eius provident debitis magnam eum maxime in eos a, impedit modi deserunt dolor culpa ipsam vel rerum placeat doloribus ratione labore? Error veniam omnis minima magni facere, iusto eos quibusdam ut natus dolorum, distinctio sunt rerum. Fuga temporibus ipsam exercitationem, error laboriosam reiciendis rerum voluptatem dolores accusamus repellendus.!"
-                }
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <ReciverImage
-                src={"/public/images/registretion bg image.png"}
-                alt={"random image"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
-              <SenderImage
-                src={"/public/images/email verification image.jpg"}
-                alt={"random image"}
-                messegeSentTime={"Today, 2:02pm"}
-              />
+            <Box className={"h-[81%] bg-white px-6 overflow-y-scroll pb-2"}>
+              {messegeList.map((item) => (
+                activeChatData.uid == item.messegesenderuid ? (
+                  <ReciverMessege
+                    messege={item.messege}
+                    messegeSentTime={"Today, 2:02pm"}
+                  />
+                ) : (
+                  <SenderMessege
+                    messege={item.messege}
+                    messegeSentTime={"Today, 2:02pm"}
+                  />
+                )
+              ))}
             </Box>
             <Flex
               justifyContent={"between"}
               alignItems={"center"}
               className={
-                "h-[9%] bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5"
+                "h-[9%] bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
               }
             >
               <Flex>
@@ -225,25 +270,24 @@ const Chat = () => {
                 <FaFile className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
               </Flex>
               <Flex alignItems={"center"} className={"w-[80%]"}>
-                <Flex
-                  alignItems={"center"}
-                  className={
-                    "w-full bg-[#f3f3f3] overflow-hidden rounded-[25px] border border-[#dedede]"
-                  }
-                >
+                <Box className={"relative w-full"}>
                   <Input
+                    value={messege}
                     onChange={(e) => setMessege(e.target.value)}
                     placeholder={"enter your messege"}
                     className={
-                      "bg-[#f3f3f3] py-3 pr-0 pl-5 w-full outline-none"
+                      "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
                     }
                   />
-                  <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                </Flex>
+                  <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede] absolute right-0 top-2/4 -translate-y-2/4" />
+                </Box>
                 {messege == "" ? (
                   <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                 ) : (
-                  <IoSend className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                  <IoSend
+                    onClick={handleMessegeSend}
+                    className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                  />
                 )}
               </Flex>
             </Flex>

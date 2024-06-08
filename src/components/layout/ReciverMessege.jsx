@@ -9,7 +9,13 @@ import { BsFillTriangleFill } from "react-icons/bs";
 import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
 
-const ReciverMessege = ({ messege, messegeSentTime, removeButton, forwardButton }) => {
+const ReciverMessege = ({
+  messege,
+  messegeSentTime,
+  editButton,
+  removeButton,
+  forwardButton,
+}) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
 
@@ -25,16 +31,16 @@ const ReciverMessege = ({ messege, messegeSentTime, removeButton, forwardButton 
     <Box className={"mt-4 group"}>
       <Box className={"max-w-[70%] inline-block relative mb-2 ml-2.5"}>
         <TbTriangleFilled className="text-[22px] text-[#f0f0f0] absolute -bottom-[3px] left-[2px] -translate-x-2/4" />
-        <Typography className="font-poppins py-3 px-6 rounded-[10px] bg-[#f0f0f0]">
+        <Typography className="font-poppins py-3 px-6 rounded-[10px] bg-[#f0f0f0] break-words">
           {messege}
         </Typography>
         <Flex
           alignItems={"center"}
-          className={
-            `absolute top-2/4 -translate-y-2/4 -right-[120px] ${menuShow ? "flex" : "hidden"} group-hover:flex`
-          }
+          className={`absolute top-2/4 -translate-y-2/4 -right-[120px] ${
+            menuShow ? "flex" : "hidden"
+          } group-hover:flex`}
         >
-          <Box className={"relative group/tooltip"}>
+          <Box className={"relative group/tooltip z-10"}>
             <BsEmojiSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
@@ -44,7 +50,7 @@ const ReciverMessege = ({ messege, messegeSentTime, removeButton, forwardButton 
               <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip"}>
+          <Box className={"relative group/tooltip z-10"}>
             <FaReply className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
@@ -64,14 +70,22 @@ const ReciverMessege = ({ messege, messegeSentTime, removeButton, forwardButton 
             {menuShow && (
               <Box
                 className={
-                  "w-[120px] bg-white rounded-md p-1 absolute left-2/4 -translate-x-2/4 bottom-[50px] z-[1] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px]"
+                  "w-[110px] rounded-md p-1 absolute left-2/4 -translate-x-2/4 bottom-[50px] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] bg-white"
                 }
               >
-                <BsFillTriangleFill className=" absolute left-2/4 -translate-x-2/4 top-[99%] rotate-180 text-[#ffffff] " />
+                <BsFillTriangleFill className="absolute left-2/4 -translate-x-2/4 top-[99%] rotate-180 text-[#ffffff]" />
+                <Button
+                  onClick={editButton}
+                  className={
+                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
+                  }
+                >
+                  Edit
+                </Button>
                 <Button
                   onClick={removeButton}
                   className={
-                    "w-full py-2 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
+                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
                 >
                   Remove
@@ -79,7 +93,7 @@ const ReciverMessege = ({ messege, messegeSentTime, removeButton, forwardButton 
                 <Button
                   onClick={forwardButton}
                   className={
-                    "w-full py-2 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
+                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
                 >
                   Forward
