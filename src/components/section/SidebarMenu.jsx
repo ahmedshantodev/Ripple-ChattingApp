@@ -26,6 +26,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { activeUser } from "../../slices/activeUserSlice";
 import { activeGroup } from "../../slices/activeGroupSlice";
 import { activeChat } from "../../slices/activeChatSlice";
+import Flex from "../layout/Flex";
 
 const SidebarMenu = () => {
   const auth = getAuth();
@@ -188,8 +189,8 @@ const SidebarMenu = () => {
             ref={outerDivRef}
             className={
               accountSettingShow
-                ? "block fixed top-0 left-0 w-full h-dvh"
-                : "hidden fixed top-0 left-0 w-full h-dvh"
+                ? "block fixed top-0 left-0 w-full h-dvh z-50"
+                : "hidden fixed top-0 left-0 w-full h-dvh z-50"
             }
           >
             <div
@@ -302,24 +303,24 @@ const SidebarMenu = () => {
         <Typography className=" font-open-sans  text-3xl font-semibold mb-5">
           Are you sure?
         </Typography>
-        <Typography className="text-lg font-semibold text-secoundaryText w-[360px] mb-3">
+        <Typography className="text-lg font-semibold text-secoundaryText w-[360px] mb-4">
           You want to logout? Once you logout you need to login again. Are you
           Ok?
         </Typography>
-        <Box>
+        <Flex justifyContent={"between"}>
           <Button
             onClick={handleLogOut}
-            className={"bg-[#d2201f] w-2/4 py-3 text-white font-semibold"}
+            className={"bg-[#d2201f] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"}
           >
             Yes, Logout!
           </Button>
           <Button
             onClick={() => setLogoutModalShow(false)}
-            className={"bg-[#c7f1db] w-2/4 py-3 font-semibold"}
+            className={"bg-[#c7f1db] w-[48%] rounded-lg text-lg py-3 font-semibold"}
           >
             Cancel
           </Button>
-        </Box>
+        </Flex>
       </Modal>
       <ProfileUploadModal
         modalShow={profileUploadModal}

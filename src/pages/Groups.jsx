@@ -26,8 +26,7 @@ import {
   remove,
   set,
 } from "firebase/database";
-import { FiBell } from "react-icons/fi";
-import { FiBellOff } from "react-icons/fi";
+import { FiBell , FiBellOff } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
 import SearchBox from "../components/layout/SearchBox";
 import { activeGroup } from "../slices/activeGroupSlice";
