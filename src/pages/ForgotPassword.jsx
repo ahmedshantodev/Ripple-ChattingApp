@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import Box from "../components/layout/Box";
 import Typography from "../components/layout/Typography";
 import Input from "../components/layout/Input";
+import Flex from "../components/layout/Flex";
 import { MdOutlineMail } from "react-icons/md";
 import Button from "../components/layout/Button";
 import { toast } from "react-toastify";
 import { ColorRing } from "react-loader-spinner";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const auth = getAuth();
@@ -72,10 +73,11 @@ const ForgotPassword = () => {
             }
           />
         </Box>
+        <Flex justifyContent={"between"}>
         {loadingButtonShow ? (
           <Button
             className={
-              "bg-[#1565c0] w-full rounded-md flex justify-center py-[4px]"
+              "bg-[#1565c0] w-[49%] rounded-md flex justify-center py-[4px]"
             }
           >
             <ColorRing
@@ -91,12 +93,21 @@ const ForgotPassword = () => {
           <Button
             onClick={handleSendButtonClick}
             className={
-              "rounded-md w-full py-2.5 capitalize text-[16px] bg-[#1565c0] text-white font-semibold"
+              "rounded-md w-[49%] py-2.5 capitalize text-[16px] bg-[#1565c0] text-white font-semibold"
             }
           >
             Send reset Email
           </Button>
         )}
+        <NavLink
+          to={"/login"}
+          className={
+            "rounded-md w-[49%] py-2.5 capitalize text-[16px] bg-[#dddcea] font-semibold text-center"
+          }
+        >
+          back
+        </NavLink>
+        </Flex>
       </Box>
     </section>
   );

@@ -1,4 +1,4 @@
-import React, { createRef, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import Box from "./Box";
@@ -20,7 +20,7 @@ import { activeUser } from "../../slices/activeUserSlice";
 import { toast } from "react-toastify";
 import { getAuth, updateProfile } from "firebase/auth";
 
-const ProfileUploadModal = ({ profileUploadModalClose, profileUploadref }) => {
+const ProfileUploadModal = ({ modalShow, modalClose }) => {
   const auth = getAuth();
   const db = getDatabase();
   const storage = getStorage();
@@ -72,27 +72,39 @@ const ProfileUploadModal = ({ profileUploadModalClose, profileUploadref }) => {
             });
             setUploadLoadingButton(false);
             setImage("");
-            profileUploadModalClose(false);
+            modalClose(false);
           }).catch((error) => {});
         });
       });
     }
   };
 
+  const modalRef = useRef();
+  const boxRef = useRef();
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+        modalClose(false)
+      }
+    });
+  }, []);
+
   return (
     <section
+      ref={modalRef}
       className={
-        "w-full h-dvh bg-white/70 absolute top-0 left-0 flex justify-center items-center z-50"
+        `w-full h-dvh bg-white/70 fixed top-0 left-0 ${modalShow ? "flex" : "hidden"} justify-center items-center z-50`
       }
     >
       <div
-        ref={profileUploadref}
+        ref={boxRef}
         className={
           "bg-white pt-[50px] pb-6 pr-[70px] pl-[30px] rounded-lg border border-primaryBorder shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] relative"
         }
       >
         <RxCross2
-          onClick={() => profileUploadModalClose(false)}
+          onClick={() => modalClose(false)}
           className="absolute top-3 right-3 bg-primaryBgColor box-content p-2 text-lg rounded-full cursor-pointer"
         />
         {!image ? (

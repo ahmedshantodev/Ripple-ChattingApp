@@ -1,20 +1,31 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
-const Modal = ({ modalShow }) => {
-  const [show, setShow] = useState(modalShow);
+const Modal = ({ modalShow, modalClose, children, className }) => {
+  const modalRef = useRef();
+  const boxRef = useRef();
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+        modalClose(false)
+      }
+    });
+  }, []);
+
   return (
     <section
+      ref={modalRef}
       className={`${
-        show ? "block" : "hidden"
-      } w-full h-dvh bg-white/70 absolute top-0 left-0 flex justify-center items-center z-50`}
+        modalShow ? "block" : "hidden"
+      } w-full h-dvh bg-white/70 fixed top-0 left-0 flex justify-center items-center z-50`}
     >
       <div
-        ref={profileUploadref}
+        ref={boxRef}
         className={
-          "bg-white pt-[50px] pb-6 pr-[70px] pl-[30px] rounded-lg border border-primaryBorder shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] relative"
+          `bg-white rounded-lg border border-primaryBorder shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] relative ${className}`
         }
       >
-        lasjdljf;sdl
+        {children}
       </div>
     </section>
   );

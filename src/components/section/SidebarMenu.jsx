@@ -11,10 +11,6 @@ import { HiOutlineUser, HiOutlineUsers } from "react-icons/hi2";
 import { IoNewspaperOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import coverphoto from "/public/images/1711471680698.jpg";
-import { CiLogout } from "react-icons/ci";
-import { getAuth, signOut } from "firebase/auth";
-import { activeUser } from "../../slices/activeUserSlice";
-import { activeGroup } from "../../slices/activeGroupSlice";
 import { GoKey } from "react-icons/go";
 import { RiDeleteBin2Line } from "react-icons/ri";
 import { MdPhotoCamera } from "react-icons/md";
@@ -25,6 +21,11 @@ import { PiNewspaperClipping } from "react-icons/pi";
 import { IoImagesSharp } from "react-icons/io5";
 import ProfileUploadModal from "../layout/ProfileUploadModal";
 import { MdLogout } from "react-icons/md";
+import Modal from "./../layout/Modal";
+import { getAuth, signOut } from "firebase/auth";
+import { activeUser } from "../../slices/activeUserSlice";
+import { activeGroup } from "../../slices/activeGroupSlice";
+import { activeChat } from "../../slices/activeChatSlice";
 
 const SidebarMenu = () => {
   const auth = getAuth();
@@ -33,22 +34,12 @@ const SidebarMenu = () => {
   const { pathname } = useLocation();
   const activeUserData = useSelector((state) => state?.user?.information);
   const [accountSettingShow, setAccountSettingShow] = useState(false);
-  const [profileUploadModal, setProfileUploadModal] = useState(false);
   const profileUploadModalRef = useRef();
   const profileUploadModalButtonRef = useRef();
   const profileSettingModalRef = useRef();
+  const [logoutModalShow, setLogoutModalShow] = useState(false);
 
-  const handleLogOut = () => {
-    signOut(auth)
-      .then(() => {
-        localStorage.removeItem("user");
-        dispatch(activeUser(null));
-        localStorage.removeItem("activeGroup");
-        dispatch(activeGroup(null));
-        navigate("/login");
-      })
-      .catch((error) => {});
-  };
+  const [profileUploadModal, setProfileUploadModal] = useState(false);
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
@@ -60,9 +51,37 @@ const SidebarMenu = () => {
     });
   }, []);
 
+  // useEffect(() => {
+  //   document.body.addEventListener("click", (e) => {
+  //     if (!profileSettingModalRef.current.contains(e.target)) {
+  //       setAccountSettingShow(false);
+  //     }
+  //   });
+  // }, []);
+
+  const handleLogOut = () => {
+    signOut(auth)
+      .then(() => {
+        localStorage.removeItem("user");
+        dispatch(activeUser(null));
+        localStorage.removeItem("activeGroup");
+        dispatch(activeGroup(null));
+        localStorage.removeItem("activeChat");
+        dispatch(activeChat(null));
+        navigate("/login");
+      })
+      .catch((error) => {});
+  };
+
+  const outerDivRef = useRef();
+  const menuRef = useRef();
+
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (!profileSettingModalRef.current.contains(e.target)) {
+      if (
+        outerDivRef.current.contains(e.target) &&
+        !menuRef.current.contains(e.target)
+      ) {
         setAccountSettingShow(false);
       }
     });
@@ -165,8 +184,16 @@ const SidebarMenu = () => {
               </Typography>
             </Box>
           </Button>
-          {accountSettingShow && (
-            <Box
+          <div
+            ref={outerDivRef}
+            className={
+              accountSettingShow
+                ? "block fixed top-0 left-0 w-full h-dvh"
+                : "hidden fixed top-0 left-0 w-full h-dvh"
+            }
+          >
+            <div
+              ref={menuRef}
               className={
                 "absolute left-10 bottom-[100px] z-40 w-[530px] px-8 pt-8 rounded-lg bg-white shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]"
               }
@@ -250,7 +277,7 @@ const SidebarMenu = () => {
                   <RiDeleteBin2Line className="text-black" /> Delete Account
                 </Button>
                 <Button
-                  onClick={handleLogOut}
+                  onClick={() => setLogoutModalShow(true)}
                   className={
                     "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
                   }
@@ -263,16 +290,41 @@ const SidebarMenu = () => {
                   "bg-white w-[25px] h-[25px] rotate-45 absolute bottom-0 translate-y-2/4 left-10 -z-50"
                 }
               ></Box>
-            </Box>
-          )}
+            </div>
+          </div>
         </div>
       </section>
-      {profileUploadModal && (
-        <ProfileUploadModal
-          profileUploadModalClose={setProfileUploadModal}
-          profileUploadref={profileUploadModalRef}
-        />
-      )}
+      <Modal
+        modalShow={logoutModalShow}
+        modalClose={setLogoutModalShow}
+        className={"text-center py-7 px-10"}
+      >
+        <Typography className=" font-open-sans  text-3xl font-semibold mb-5">
+          Are you sure?
+        </Typography>
+        <Typography className="text-lg font-semibold text-secoundaryText w-[360px] mb-3">
+          You want to logout? Once you logout you need to login again. Are you
+          Ok?
+        </Typography>
+        <Box>
+          <Button
+            onClick={handleLogOut}
+            className={"bg-[#d2201f] w-2/4 py-3 text-white font-semibold"}
+          >
+            Yes, Logout!
+          </Button>
+          <Button
+            onClick={() => setLogoutModalShow(false)}
+            className={"bg-[#c7f1db] w-2/4 py-3 font-semibold"}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Modal>
+      <ProfileUploadModal
+        modalShow={profileUploadModal}
+        modalClose={setProfileUploadModal}
+      />
     </>
   );
 };
