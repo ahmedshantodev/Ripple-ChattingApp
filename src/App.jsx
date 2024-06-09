@@ -10,7 +10,6 @@ import {
 } from "react-router-dom";
 import Pages from "./pages/Pages";
 import EmailVerification from "./pages/EmailVerification";
-import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import Groups from "./pages/Groups";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -31,7 +30,6 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/pages" element={<Pages />}>
-          <Route path="home" element={<Home />} />
           <Route path="chat" element={<Chat />} />
           <Route path="groups" element={<Groups />} />
           <Route path="friends" element={<Friends />}>

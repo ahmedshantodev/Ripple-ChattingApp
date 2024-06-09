@@ -19,7 +19,9 @@ const FriendListItem = ({
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (buttonRef.current.contains(e.target)) {
+      if (menuRef.current.contains(e.target)) {
+        setDropdownShow(false);
+      } else if (buttonRef.current.contains(e.target)) {
         setDropdownShow(true);
       } else if (!menuRef.current.contains(e.target)) {
         setDropdownShow(false);

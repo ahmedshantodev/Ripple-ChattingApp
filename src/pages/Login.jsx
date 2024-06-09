@@ -43,7 +43,7 @@ const Login = () => {
 
   useEffect(() => {
     if (activeUserData?.email) {
-      navigate("/pages/home");
+      navigate("/pages/chat");
     }
   }, []);
 
@@ -99,7 +99,7 @@ const Login = () => {
             email: "",
             password: "",
           });
-          navigate("/pages/home");
+          navigate("/pages/chat");
           setLoginLodingBtnShow(false);
         })
         .catch((error) => {
@@ -127,7 +127,7 @@ const Login = () => {
           useremail: userInformation.email,
           userprofile: userInformation.photoURL,
         });
-        navigate("/pages/home");
+        navigate("/pages/chat");
       })
       .catch((error) => {});
   };

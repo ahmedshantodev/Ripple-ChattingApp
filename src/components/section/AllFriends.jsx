@@ -8,8 +8,7 @@ import { useSelector } from "react-redux";
 
 const AllFriends = () => {
   const db = getDatabase();
-  const activeUserData = useSelector((state) => state?.user?.information);
-
+  const activeUserData = useSelector((state) => state.user.information);
   const [friendList, setFriendList] = useState([]);
   const [blockList, setBlockList] = useState([]);
 
@@ -18,7 +17,6 @@ const AllFriends = () => {
     onValue(friendRequstRef, (snapshot) => {
       let friendListArray = [];
       snapshot.forEach((item) => {
-        // if ((activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid) && !(blockList.includes(activeUserData.uid == item.val().reciveruid ? item.val().senderuid : item.val().reciveruid))) {
         if (activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid) {
           friendListArray.push({ ...item.val(), friendId: item.key });
         }
@@ -35,8 +33,6 @@ const AllFriends = () => {
       blockeduserid: activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid,
       blockedusername: activeUserData.uid == item.reciveruid ? item.sendername : item.recivername,
       blockeduserprofile: activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
-    }).then(() => {
-      // remove(ref( db , "friends/" + item.friendId))
     })
   };
   
@@ -49,22 +45,19 @@ const AllFriends = () => {
     onValue(blockListRef, (snapshot) => {
       let blockListArray = [];
       snapshot.forEach((item) => {
-        if (activeUserData.uid == item.val().blockbyuid) {
-          blockListArray.push(item.val().blockeduserid);
-        }
+        blockListArray.push(item.val().blockeduserid + item.val().blockbyuid);
       });
       setBlockList(blockListArray);
     });
   }, []);
 
-  // console.log(blockList)
-  // if (blockList.includes("TZ7RNBpnJERDIOhVjI582XYTY7X2")) {
-  //   console.log("kaj kortac")
-  // }
-
+  const filteredList = friendList.filter((item) => {
+    const uid = (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid)
+    return (!blockList.includes(uid + activeUserData.uid)) && (!blockList.includes(activeUserData.uid + uid))
+  })
 
   return (
-    <Box className={"h-full"}>
+    <Box className={"h-ful"}>
       <Typography
         variant="h4"
         className="h-[7%] font-inter text-[28px] font-semibold"
@@ -73,7 +66,7 @@ const AllFriends = () => {
       </Typography>
       <Box className={"h-[93%] overflow-y-auto"}>
         <Flex className={"flex-wrap w-full gap-x-[12px]"}>
-          {friendList.map((item) => (
+          {filteredList.map((item) => (
             <FriendListItem
               className={"w-[49.5%] mb-[15px]"}
               profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}

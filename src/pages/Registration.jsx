@@ -47,7 +47,7 @@ const Registration = () => {
 
   useEffect(() => {
     if (activeUserData?.email) {
-      navigate("/pages/home");
+      navigate("/pages/chat");
     }
   }, []);
 
@@ -139,7 +139,7 @@ const Registration = () => {
                 });
                 // navigate("/email-verification");
                 setSignupLodingBtnShow(false);
-                navigate("/pages/home");
+                navigate("/pages/chat");
               // });
             })
             .catch((error) => {
@@ -173,7 +173,7 @@ const Registration = () => {
           useremail: userInformation.email,
           userprofile: userInformation.photoURL,
         });
-        navigate("/pages/home");
+        navigate("/pages/chat");
       })
       .catch((error) => {});
   };

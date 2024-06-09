@@ -68,8 +68,7 @@ const Chat = () => {
   }, []);
 
   const handleActiveChatOpen = (item) => {
-    dispatch(
-      activeChat({
+    dispatch(activeChat({
         uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
         name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
         profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
@@ -78,7 +77,7 @@ const Chat = () => {
     localStorage.setItem(
       "activeChat",
       JSON.stringify({
-        uid: activeUserData.uid == item.senderuid ? item.reciveuid : item.senderuid,
+        uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
         name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
         profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
       })
@@ -98,7 +97,7 @@ const Chat = () => {
       messegesenderuid: activeUserData?.uid,
       messegesendername: activeUserData?.displayName,
       messegesenderprofile: activeUserData?.photoURL,
-      messegesenttime: `${year} - ${month} - ${date} - ${hours} - ${minutes}`,
+      messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     }).then(() => {
       setMessege("");
     });
@@ -119,6 +118,19 @@ const Chat = () => {
       setMessegeList(messegeArray);
     });
   }, [activeChatData]);
+
+  const [blockList, setBlockList] = useState([]);
+
+  useEffect(() => {
+    const blockListRef = ref(db, "block/");
+    onValue(blockListRef, (snapshot) => {
+      let blockListArray = [];
+      snapshot.forEach((item) => {
+        blockListArray.push(item.val().blockeduserid + item.val().blockbyuid);
+      });
+      setBlockList(blockListArray);
+    });
+  }, []);
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -213,7 +225,9 @@ const Chat = () => {
                 />
               </Flex>
             </Flex>
-            <Box className={"h-[81%] bg-white px-6 overflow-y-scroll pb-2"}>
+            <Box
+              className={`${blockList.includes(activeChatData?.uid + activeUserData?.uid) ? "h-[74%]" : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? "h-[79%]" : "h-[81%]"} bg-white px-6 overflow-y-scroll pb-2`}
+            >
               <Box className={"mt-10 mb-10 text-center"}>
                 <Image
                   src={activeChatData?.profile}
@@ -236,16 +250,42 @@ const Chat = () => {
                 activeChatData.uid == item.messegesenderuid ? (
                   <ReciverMessege
                     messege={item.messege}
-                    messegeSentTime={"Today, 2:02pm"}
+                    time={item.messegesenttime}
                   />
                 ) : (
                   <SenderMessege
                     messege={item.messege}
-                    messegeSentTime={item.messegesenttime}
+                    time={item.messegesenttime}
                   />
                 )
               )}
             </Box>
+            {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
+                <Box className={
+                  "text-center bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
+                }>
+                  <Typography className="text-lg font-semibold mb-1">
+                    You've blocked messages and calls from {activeChatData?.name}
+                  </Typography>
+                  <Typography className="text-secoundaryText mb-3">
+                    You can't message or call {activeChatData?.name} in this chat, and you won't receive their messages or calls.
+                  </Typography>
+                  <Button className={"w-full bg-[#e9e9e9] py-2 font-bold text-lg rounded-md transition-all duration-200 active:scale-[0.99]"}>
+                    Unblock
+                  </Button>
+                </Box>
+            ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
+              <Box className={
+                "text-center bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
+              }>
+                <Typography className="text-lg font-semibold mb-1">
+                  {activeChatData?.name} has blocked you from messaging and calling
+                </Typography>
+                <Typography className="text-secoundaryText mb-4">
+                  You can't message or call {activeChatData?.name} in this chat, and you won't receive their messages or calls.
+                </Typography>
+              </Box>
+          ) : (
             <Flex
               justifyContent={"between"}
               alignItems={"center"}
@@ -344,10 +384,10 @@ const Chat = () => {
                   </Box>
                 ) : (
                   <Box className={"relative group/tooltip mr-[5px]"}>
-                    <IoSend className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
                       variant="span"
-                      className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hiddens group-hover/tooltip:block"
+                      className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
                     >
                       Click to Send
                       <Box
@@ -360,6 +400,7 @@ const Chat = () => {
                 )}
               </Flex>
             </Flex>
+            )}
           </Box>
           <Box
             className={

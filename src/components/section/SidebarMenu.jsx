@@ -98,18 +98,6 @@ const SidebarMenu = () => {
           <List>
             <ListItem className={"mb-4"}>
               <NavLink
-                to={"/pages/home"}
-                className={
-                  pathname.includes("/pages/home")
-                    ? "w-[138px] bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[138px] py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
-                }
-              >
-                <TiHome className="text-[24px] mb-[3px]" /> Home
-              </NavLink>
-            </ListItem>
-            <ListItem className={"mb-4"}>
-              <NavLink
                 to={"/pages/chat"}
                 className={
                   pathname.includes("/pages/chat")

@@ -12,7 +12,7 @@ import moment from "moment";
 
 const SenderMessege = ({
   messege,
-  messegeSentTime,
+  time,
   removeButton,
   forwardButton,
   editButton,
@@ -109,7 +109,7 @@ const SenderMessege = ({
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText">
-        {moment(messegeSentTime, "YYYYMMDDh:mm").fromNow()}
+        {moment(time, "YYYYMMDDh:mm").fromNow()}
       </Typography>
     </Box>
   );

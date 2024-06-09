@@ -131,7 +131,6 @@ const Group = () => {
     set(push(ref(db, "groupmembers/")), {
       groupuid: item.groupuid,
       groupname: item.groupname,
-      groupslogan: item.groupslogan,
       groupphoto: item.groupphoto,
       memberuid: item.invitationreciveruid,
       membername: item.invitationrecivername,
@@ -459,12 +458,10 @@ const Group = () => {
                   </Typography>
                 </Box>
               </div>
-              {memberInviteModal && (
-                <GroupMemberInviteModal
-                  modalRef={memberInviteModalRef}
-                  modalClose={setMemberInviteModal}
-                />
-              )}
+              <GroupMemberInviteModal
+                modalShow={memberInviteModal}
+                modalClose={setMemberInviteModal}
+              />
               {groupNotificationOn ? (
                 <Box className={"relative group"}>
                   <MdOutlineNotificationsNone

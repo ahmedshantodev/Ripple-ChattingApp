@@ -43,7 +43,7 @@ const EmailVerification = () => {
       if (user.emailVerified == true) {
         localStorage.setItem("user", JSON.stringify(user));
         dispatch(activeUser(user));
-        navigate("/pages/home");
+        navigate("/pages/chat");
         toast.success("Your email has been verified, Enjoy your experience!", {
           position: "bottom-center",
           autoClose: 2500,
