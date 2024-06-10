@@ -11,15 +11,14 @@ import { MdBlock } from "react-icons/md";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import SearchBox from './../components/layout/SearchBox';
 
 const Friends = () => {
   const { pathname } = useLocation();
 
   return (
     <section className="bg-primaryBgColor p-4 h-full flex">
-      <Box className={"w-1/4 h-full bg-white rounded-2xl pt-6 px-2.5 pb-5"}>
-        <Box className={"px-2.5  h-[15%]"}>
+      <Box className={"w-1/4 h-full bg-white rounded-2xl pt-6 px-2.5 pb-5 overflow-hidden"}>
+        <Box className={"px-2.5 pb-4"}>
           <Flex
             justifyContent={"between"}
             alignItems={"center"}
@@ -30,9 +29,8 @@ const Friends = () => {
             </Typography>
             <BsThreeDotsVertical className=" box-content bg-[#dedede] text-xl p-2 rounded-full transition-all ease duration-300 cursor-pointer hover:bg-[#32375c] hover:text-white" />
           </Flex>
-          <SearchBox placeholder={"Search messenger"} className={"mt-4"}/>
         </Box>
-        <Box className={"h-[85%]"}>
+        <Box className={""}>
           <Link
             to={"/pages/friends/all-friends"}
            className={`group ${ pathname == "/pages/friends/all-friends" ? "bg-primaryBgColor" : "bg-[#ededf9]"} hover:bg-primaryBgColor py-3 px-3 rounded-md flex items-center justify-between mb-2 cursor-pointer transition-all ease duration-300`}>

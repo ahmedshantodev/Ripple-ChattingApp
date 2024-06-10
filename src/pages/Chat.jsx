@@ -12,6 +12,7 @@ import SenderMessege from "../components/layout/SenderMessege";
 import SenderImage from "../components/layout/SenderImage";
 import ReciverImage from "../components/layout/ReciverImage";
 import Button from "../components/layout/Button";
+import Modal from "../components/layout/Modal"
 // React Icons
 import { IoCall , IoVideocam } from "react-icons/io5";
 import { HiDotsVertical } from "react-icons/hi";
@@ -26,7 +27,7 @@ import { RiPhoneFill, RiMovieLine } from "react-icons/ri";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { AiTwotoneVideoCamera } from "react-icons/ai";
 // Firebase
-import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 // Redux slices
 import { useDispatch, useSelector } from "react-redux";
 import { activeChat } from "./../slices/activeChatSlice";
@@ -46,6 +47,9 @@ const Chat = () => {
   const [messegeNotification, setMessegeNotification] = useState(false);
   const [mediaShow, setMediaShow] = useState(true);
   const [privacyShow, setPrivacyShow] = useState(true);
+  const [blockList, setBlockList] = useState([]);
+  const [blockModalShow, setBlockModalShow] = useState(false)
+  const [unblockModalShow, setUnblockModalShow] = useState(false)
 
   const time = new Date();
   const year = time.getFullYear();
@@ -119,8 +123,6 @@ const Chat = () => {
     });
   }, [activeChatData]);
 
-  const [blockList, setBlockList] = useState([]);
-
   useEffect(() => {
     const blockListRef = ref(db, "block/");
     onValue(blockListRef, (snapshot) => {
@@ -131,6 +133,24 @@ const Chat = () => {
       setBlockList(blockListArray);
     });
   }, []);
+
+  const handleBlock = () => {
+    set(ref(db, "block/" + (activeUserData.uid + activeChatData.uid)), {
+      blockbyuid: activeUserData.uid,
+      blockbyname: activeUserData.displayName,
+      blockbyprofile: activeUserData.photoURL,
+      blockeduserid: activeChatData.uid,
+      blockedusername: activeChatData.name,
+      blockeduserprofile: activeChatData.profile,
+    }).then(() => {
+      setBlockModalShow(false)
+    })
+  };
+
+  const handleUnBlock = () => {
+    remove(ref(db, "block/" + (activeUserData.uid + activeChatData.uid)))
+    setUnblockModalShow(false)
+  }
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -270,9 +290,38 @@ const Chat = () => {
                   <Typography className="text-secoundaryText mb-3">
                     You can't message or call {activeChatData?.name} in this chat, and you won't receive their messages or calls.
                   </Typography>
-                  <Button className={"w-full bg-[#e9e9e9] py-2 font-bold text-lg rounded-md transition-all duration-200 active:scale-[0.99]"}>
+                  <Button
+                    onClick={() => setUnblockModalShow(true)}
+                    className={"w-full bg-[#e9e9e9] py-2 font-bold text-lg rounded-md transition-all duration-200 active:scale-[0.99]"}
+                  >
                     Unblock
                   </Button>
+                  <Modal
+                    modalShow={unblockModalShow}
+                    modalClose={setUnblockModalShow}
+                    className={"text-center py-7 px-10 w-[550px]"}
+                  >
+                    <Typography className=" font-open-sans text-3xl font-semibold mb-5">
+                      Unblock {activeChatData?.name}?
+                    </Typography>
+                    <Typography className="text-lg font-semibold text-secoundaryText w-[360px] mx-auto mb-4 ">
+                      Your will start receiving messages or calls from {activeChatData?.name}'s account.
+                    </Typography>
+                    <Flex justifyContent={"between"}>
+                      <Button
+                        onClick={handleUnBlock}
+                        className={"bg-[#4e4f50] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"}
+                      >
+                        Yes, Unblock
+                      </Button>
+                      <Button
+                        onClick={() => setUnblockModalShow(false)}
+                        className={"bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"}
+                      >
+                        Cancel
+                      </Button>
+                    </Flex>
+                  </Modal>
                 </Box>
             ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
               <Box className={
@@ -563,7 +612,21 @@ const Chat = () => {
                       <MdOutlineNotificationsOff className="text-xl" />
                       <Typography>Mute notifications</Typography>
                     </Button>
-                    <Button
+                    {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
+                      <Button
+                      onClick={() => setUnblockModalShow(true)}
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <MdBlock className="text-xl" />
+                      <Typography>Unblock</Typography>
+                    </Button>
+                    ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
+                      <></>
+                    ) : (
+                      <Button
+                      onClick={() => setBlockModalShow(true)}
                       className={
                         "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
                       }
@@ -571,6 +634,37 @@ const Chat = () => {
                       <MdBlock className="text-xl" />
                       <Typography>Block</Typography>
                     </Button>
+                    )}
+                    <Modal
+                      modalShow={blockModalShow}
+                      modalClose={setBlockModalShow}
+                      className={"text-center py-7 px-10 w-[550px]"}
+                    >
+                      <Typography
+                        className=" font-open-sans text-3xl font-semibold mb-5"
+                      >
+                        Block {activeChatData?.name}?
+                      </Typography>
+                      <Typography
+                        className="text-lg font-semibold text-secoundaryText mx-auto mb-4 px-[10px]"
+                      >
+                        You can't message or call {activeChatData?.name} in this chat, and you won't receive their messages or calls.
+                      </Typography>
+                      <Flex justifyContent={"between"}>
+                        <Button
+                          onClick={handleBlock}
+                          className={"bg-[#f87171]/80 w-[48%] rounded-lg text-lg py-3 text-white font-semibold"}
+                        >
+                          Yes, Block
+                        </Button>
+                        <Button
+                          onClick={() => setBlockModalShow(false)}
+                          className={"bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"}
+                        >
+                          Cancel
+                        </Button>
+                      </Flex>
+                    </Modal>
                   </Box>
                 )}
               </Box>

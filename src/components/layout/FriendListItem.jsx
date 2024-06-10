@@ -65,7 +65,7 @@ const FriendListItem = ({
           <div
             ref={menuRef}
             className={
-              "w-[150px] bg-white rounded-md p-1 absolute right-[140%] top-[0px] z-[1] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] border border-primaryBorder after:content-[''] after:bg-white after:w-5 after:h-5 after:absolute after:right-0 after:translate-x-2/4 after:top-0 after:translate-y-2/4 after:rotate-45 after:z-[-1] after:border-t after:border-r after:border-primaryBorder"
+              "w-[150px] bg-white rounded-md p-1 absolute right-[140%] top-[0px] z-50 shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] border border-primaryBorder after:content-[''] after:bg-white after:w-5 after:h-5 after:absolute after:right-0 after:translate-x-2/4 after:top-0 after:translate-y-2/4 after:rotate-45 after:z-[-1] after:border-t after:border-r after:border-primaryBorder"
             }
           >
             <Button

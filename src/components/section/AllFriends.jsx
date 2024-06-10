@@ -5,12 +5,14 @@ import Flex from "../layout/Flex";
 import FriendListItem from "../layout/FriendListItem";
 import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { useSelector } from "react-redux";
+import SearchBox from './../layout/SearchBox';
 
 const AllFriends = () => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
   const [friendList, setFriendList] = useState([]);
   const [blockList, setBlockList] = useState([]);
+  const [searchValue, setSearchValue] = useState("")
 
   useEffect(() => {
     let friendRequstRef = ref(db, "friends");
@@ -26,7 +28,7 @@ const AllFriends = () => {
   }, []);
 
   const handleBlock = (item) => {
-    set(push(ref(db, "block/")), {
+    set(ref(db, "block/" + (activeUserData.uid + (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid))), {
       blockbyuid: activeUserData.uid,
       blockbyname: activeUserData.displayName,
       blockbyprofile: activeUserData.photoURL,
@@ -53,29 +55,51 @@ const AllFriends = () => {
 
   const filteredList = friendList.filter((item) => {
     const uid = (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid)
-    return (!blockList.includes(uid + activeUserData.uid)) && (!blockList.includes(activeUserData.uid + uid))
+    const name = (activeUserData.uid == item.reciveruid ? item.sendername : item.recivername)
+    return (
+      !blockList.includes(uid + activeUserData.uid)) &&
+      (!blockList.includes(activeUserData.uid + uid)) &&
+      (searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase())
+    )
   })
 
+  console.log(friendList)
+
   return (
-    <Box className={"h-ful"}>
-      <Typography
-        variant="h4"
-        className="h-[7%] font-inter text-[28px] font-semibold"
-      >
-        Friend List
-      </Typography>
-      <Box className={"h-[93%] overflow-y-auto"}>
-        <Flex className={"flex-wrap w-full gap-x-[12px]"}>
-          {filteredList.map((item) => (
-            <FriendListItem
-              className={"w-[49.5%] mb-[15px]"}
-              profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-              userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
-              blockButton={() => handleBlock(item)}
-              unfriendButton={() => handleUnfriend(item)}
-            />
-          ))}
-        </Flex>
+    <Box className={"h-full"}>
+      <Box className={"h-[14%]"}>
+        <Typography
+          variant="h4"
+          className="font-inter text-[28px] font-semibold ml-2"
+          >
+          Friend List
+        </Typography>
+        <SearchBox
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder={"Search friend"}
+          className={"mt-2"}
+        />
+      </Box>
+      <Box className={"h-[86%] overflow-y-auto"}>
+        {filteredList.length == 0 ? (
+          <Box className={"flex h-full justify-center items-center"}>
+            <Typography className="font-mono text-3xl text-secoundaryText">
+              You don't have any friends
+            </Typography>
+          </Box>
+        ) : (
+          <Flex className={"flex-wrap w-full gap-x-[12px]"}>
+            {filteredList.map((item) => (
+              <FriendListItem
+                className={"w-[49.5%] mb-[15px]"}
+                profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+                userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+                blockButton={() => handleBlock(item)}
+                unfriendButton={() => handleUnfriend(item)}
+              />
+            ))}
+          </Flex>
+        )}
       </Box>
     </Box>
   );

@@ -4,11 +4,14 @@ import Typography from "../layout/Typography";
 import FriendRequstItem from "../layout/FriendRequstItem";
 import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { useSelector } from "react-redux";
+import SearchBox from "../layout/SearchBox";
+import Flex from "../layout/Flex";
 
 const FriendRequsts = () => {
   const db = getDatabase();
-  const activeUserData = useSelector((state) => state?.user?.information);
+  const activeUserData = useSelector((state) => state.user.information);
   const [friendRequstList, setFriendRequstList] = useState([]);
+  const [searchValue, setSearchValue] = useState("")
 
   useEffect(() => {
     let friendRequstRef = ref(db, "friendrequsts");
@@ -40,28 +43,51 @@ const FriendRequsts = () => {
     remove(ref(db , "friendrequsts/" + item.friendRequstId))
   }
 
+  const filteredList = friendRequstList.filter((item) => {
+    const name = (activeUserData.uid == item.reciveruid ? item.sendername : item.recivername)
+    return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase())
+  })
+
+
   return (
     <Box className={"h-full"}>
-      <Typography
-        variant="h4"
-        className="h-[7%] font-inter text-[28px] font-semibold"
-      >
-        Friend Requests
-      </Typography>
+      <Box className={"h-[14%]"}>
+        <Typography
+          variant="h4"
+          className="font-inter text-[28px] font-semibold ml-2"
+          >
+          Friend Requests
+        </Typography>
+        <SearchBox
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder={"Search friend"}
+          className={"mt-2"}
+        />
+      </Box>
       <Box
         className={
-          "h-[93%] flex gap-x-[22px] items-start flex-wrap overflow-y-auto"
+          "h-[86%] overflow-y-auto"
         }
       >
-        {friendRequstList.map((item) => (
-          <FriendRequstItem
-            className={"w-[18.50%] mb-[15px]"}
-            profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-            userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
-            friendRequstConfirm={() => handleFriendRequstConfirm(item)}
-            friendRequstDelete={() => handleFriendRequstDelete(item)}
-          />
-        ))}
+        {filteredList.length == 0 ? (
+          <Box className={"flex h-full justify-center items-center"}>
+            <Typography className="font-mono text-3xl text-secoundaryText">
+              No one has sent you a friend requst
+            </Typography>
+          </Box>
+        ) : (
+          <Flex className={"flex-wrap w-full gap-x-[22px]"}>
+            {filteredList.map((item) => (
+              <FriendRequstItem
+                className={"w-[18.50%] mb-[15px]"}
+                profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+                userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+                friendRequstConfirm={() => handleFriendRequstConfirm(item)}
+                friendRequstDelete={() => handleFriendRequstDelete(item)}
+              />
+            ))}
+          </Flex>
+        )}
       </Box>
     </Box>
   );
