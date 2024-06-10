@@ -10,6 +10,7 @@ import { RxCross2 } from "react-icons/rx";
 const MessageForwardModal = ({ modalShow, modalClose}) => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
+  const activeChatData = useSelector((state) => state.activeChat.information)
   const [friendList, setFriendList] = useState([]);
   const [blockList, setBlockList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -18,10 +19,7 @@ const MessageForwardModal = ({ modalShow, modalClose}) => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (
-        modalRef.current.contains(e.target) &&
-        !boxRef.current.contains(e.target)
-      ) {
+      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
         modalClose(false);
       }
     });
@@ -32,10 +30,7 @@ const MessageForwardModal = ({ modalShow, modalClose}) => {
     onValue(friendRequstRef, (snapshot) => {
       let friendListArray = [];
       snapshot.forEach((item) => {
-        if (
-          activeUserData.uid == item.val().senderuid ||
-          activeUserData.uid == item.val().reciveruid
-        ) {
+        if (activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid) {
           friendListArray.push({ ...item.val(), friendId: item.key });
         }
       });
@@ -60,6 +55,7 @@ const MessageForwardModal = ({ modalShow, modalClose}) => {
     return (
       !blockList.includes(uid + activeUserData.uid)) &&
       (!blockList.includes(activeUserData.uid + uid)) &&
+      (!activeChatData.uid.includes(uid)) &&
       (searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase())
     )
   })
