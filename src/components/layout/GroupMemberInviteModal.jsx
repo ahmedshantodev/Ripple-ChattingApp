@@ -107,18 +107,6 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
           />
         </Box>
         <Box className={"overflow-y-auto h-[79%] text-start"}>
-          {/* {friendList.filter((item) => {
-            const uid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid
-            const name = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername
-            return (!groupMemberLlist.includes(uid)) && (searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase()))
-          }).map((item) => (
-            <GroupInviteListItem
-              profile={activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile}
-              name={activeUserData.uid == item.reciveruid ? item.sendername : item.recivername}
-              button={groupInvitePendingList.includes(activeGroupData.groupuid + (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid)) || groupInvitePendingList.includes((activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid) + activeGroupData.groupuid) ? "pending" : "add"}
-              addButton={() => handleInvite(item)}
-            />
-          ))} */}
           {filteredList.map((item) => (
             <GroupInviteListItem
               profile={activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile}

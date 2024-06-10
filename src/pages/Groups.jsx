@@ -354,29 +354,51 @@ const Group = () => {
 
               <ReciverMessege
                 messege={"hi"}
-                messegeSentTime={"2024-06-08-10-11"}
-              />
-              <SenderMessege
-                messege={"Hello"}
-                messegeSentTime={"2024-06-08-10-11"}
-              />
-              <ReciverMessege
-                messege={"hi"}
-                messegeSentTime={"2024-06-08-10-11"}
-              />
-              <SenderMessege
-                messege={"Hello"}
-                messegeSentTime={"2024-06-08-10-11"}
+                time={"2024/6/11/10:00"}
+                profile={
+                  "https://img.freepik.com/free-photo/medium-shot-smiley-man-sitting-desk_23-2149927603.jpg"
+                }
+                name={"ahmed shanto"}
               />
               <ReciverMessege
+                messege={"hello"}
+                profile={
+                  "https://media.istockphoto.com/id/1446934118/photo/happy-business-man-listening-to-a-discussion-in-an-office.jpg?s=612x612&w=0&k=20&c=jiGivtsXnV0rZex5PEawRYVyNNzhkntyZDNeLXg7H0A="
+                }
+                time={"2024/6/11/10:00"}
+                name={"somor"}
+              />
+              <SenderMessege messege={"Hello"} time={"2024-06-08-10-11"} />
+              <ReciverMessege
                 messege={"hi"}
-                messegeSentTime={"2024-06-08-10-11"}
+                profile={
+                  "https://t4.ftcdn.net/jpg/06/31/90/83/360_F_631908326_PHaCKTVF6dlBqwW0EEyodnNT9j7ZHtRr.jpg"
+                }
+                time={"2024-06-08-10-11"}
+                name={"somor"}
               />
               <SenderMessege
                 messege={
-                  "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut iste ullam earum accusamus repudiandae vero harum corporis labore distinctio at eum, reprehenderit facere delectus sint molestias consequatur voluptates. Suscipit quae aspernatur reiciendis doloribus, nisi molestiae ratione repellat dolor soluta debitis quas temporibus ex mollitia voluptates nemo, consectetur vitae animi. Doloremque, quaerat quod minima sint at, adipisci eius odio perferendis necessitatibus pariatur voluptatum facilis ipsum ducimus quae deleniti! Incidunt obcaecati itaque vitae necessitatibus dolorem culpa molestias. Libero esse dicta sapiente adipisci ut ducimus corporis maxime vitae, qui nemo fugit ipsa omnis tempore molestias id quisquam, cumque obcaecati eveniet quas commodi aliquam veritatis eos. Incidunt vero dignissimos, architecto nesciunt illo sequi"
+                  "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut iste ullam earum accusamus repudiandae vero harum corporis labore distinctio at eum,"
                 }
-                messegeSentTime={"2024-06-08-10-11"}
+                time={"2024-06-08-10-11"}
+              />
+              <ReciverMessege
+                messege={"hello"}
+                profile={
+                  "https://media.istockphoto.com/id/1446934118/photo/happy-business-man-listening-to-a-discussion-in-an-office.jpg?s=612x612&w=0&k=20&c=jiGivtsXnV0rZex5PEawRYVyNNzhkntyZDNeLXg7H0A="
+                }
+                time={"2024/6/11/10:00"}
+                name={"ahmed shanto"}
+              />
+              <SenderMessege messege={"Hello"} time={"2024-06-08-10-11"} />
+              <ReciverMessege
+                messege={"hi"}
+                profile={
+                  "https://t4.ftcdn.net/jpg/06/31/90/83/360_F_631908326_PHaCKTVF6dlBqwW0EEyodnNT9j7ZHtRr.jpg"
+                }
+                time={"2024-06-08-10-11"}
+                name={"somor"}
               />
             </Box>
             <Flex

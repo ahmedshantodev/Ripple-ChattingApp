@@ -33,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { activeChat } from "./../slices/activeChatSlice";
 // Images
 import noGroupPHoto from "/public/images/no chat image.jpg";
+import MessageForwardModal from "../components/layout/MessageForwardModal";
 
 const Chat = () => {
   const db = getDatabase();
@@ -50,6 +51,7 @@ const Chat = () => {
   const [blockList, setBlockList] = useState([]);
   const [blockModalShow, setBlockModalShow] = useState(false)
   const [unblockModalShow, setUnblockModalShow] = useState(false)
+  const [messageForwardModalShow, setMessageForwardModalShow] = useState(false)
 
   const time = new Date();
   const year = time.getFullYear();
@@ -269,6 +271,7 @@ const Chat = () => {
               {messegeList.map((item) =>
                 activeChatData.uid == item.messegesenderuid ? (
                   <ReciverMessege
+                    profile={activeChatData?.profile}
                     messege={item.messege}
                     time={item.messegesenttime}
                   />
@@ -276,9 +279,14 @@ const Chat = () => {
                   <SenderMessege
                     messege={item.messege}
                     time={item.messegesenttime}
+                    forwardButton={() => setMessageForwardModalShow(true)}
                   />
                 )
               )}
+              <MessageForwardModal
+                modalShow={messageForwardModalShow}  
+                modalClose={setMessageForwardModalShow}
+              />
             </Box>
             {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
                 <Box className={
@@ -653,7 +661,7 @@ const Chat = () => {
                       <Flex justifyContent={"between"}>
                         <Button
                           onClick={handleBlock}
-                          className={"bg-[#f87171]/80 w-[48%] rounded-lg text-lg py-3 text-white font-semibold"}
+                          className={"bg-[#f87171] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"}
                         >
                           Yes, Block
                         </Button>

@@ -63,8 +63,6 @@ const AllFriends = () => {
     )
   })
 
-  console.log(friendList)
-
   return (
     <Box className={"h-full"}>
       <Box className={"h-[14%]"}>
