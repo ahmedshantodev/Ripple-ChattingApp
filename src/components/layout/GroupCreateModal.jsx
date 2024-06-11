@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import Typography from "./Typography";
 import Box from "./Box";
@@ -9,13 +9,24 @@ import { useSelector } from "react-redux";
 import { ColorRing } from "react-loader-spinner";
 import { toast } from "react-toastify";
 
-const GroupCreateModal = ({ modalRef, modalClose }) => {
+const GroupCreateModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
   const [groupCreateLoadingButton, setGroupCreateLoadingButton] = useState(false);
   const [groupCreateInfo, setGroupCreateInfo] = useState("");
   const [groupCreateError, setGroupCreateError] = useState("");
   const defaultGroupPhoto = "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defualt%20group%20%20photo%2Fgroup%20defualt%20profile.png?alt=media&token=511df1b9-d171-4ab9-b201-a4ae882bab6f"
+
+  const modalRef = useRef();
+  const boxRef = useRef();
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+        modalClose(false)
+      }
+    });
+  }, []);
 
   const handleInputValue = (e) => {
     setGroupCreateInfo(e.target.value)
@@ -34,6 +45,25 @@ const GroupCreateModal = ({ modalRef, modalClose }) => {
         groupcreatorname: activeUserData.displayName,
         groupcreatoprofile: activeUserData.photoURL,
       }).then(() => {
+
+
+        // set(push(ref(db, "groupmembers/")), {
+
+        //   groupuid: item.groupuid,
+
+        //   groupname: groupCreateInfo,
+        //   groupphoto: defaultGroupPhoto,
+
+        //   memberuid: activeUserData.uid,
+        //   membername: activeUserData.displayName,
+        //   memberprofile: activeUserData.photoURL,
+
+        //   addedbyuid: activeUserData.uid,
+        //   addedbyname: activeUserData.displayName,
+        //   addedbyprofile: activeUserData.photoURL,
+        // })
+
+
         toast.success(
           `Your group ${groupCreateInfo.groupname} has been created. Join the conversation now!`,
           { position: "bottom-center", autoClose: 2500 }
@@ -47,12 +77,13 @@ const GroupCreateModal = ({ modalRef, modalClose }) => {
 
   return (
     <section
+      ref={modalRef}
       className={
-        "w-full h-dvh bg-white/70 absolute top-0 left-0 z-20 flex justify-center items-center"
+        `w-full h-dvh bg-white/70 fixed top-0 left-0 z-50 ${modalShow ? "flex" : "hidden"} justify-center items-center`
       }
     >
       <div
-        ref={modalRef}
+        ref={boxRef}
         className={
           "bg-white w-[600px] py-5 rounded-lg border border-primaryBorder shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] relative"
         }

@@ -5,7 +5,6 @@ import Image from "../layout/Image";
 import Box from "../layout/Box";
 import ListItem from "../layout/ListItem";
 import List from "../layout/List";
-import { TiHome } from "react-icons/ti";
 import { HiOutlineChatBubbleLeft } from "react-icons/hi2";
 import { HiOutlineUser, HiOutlineUsers } from "react-icons/hi2";
 import { IoNewspaperOutline } from "react-icons/io5";
@@ -52,14 +51,6 @@ const SidebarMenu = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   document.body.addEventListener("click", (e) => {
-  //     if (!profileSettingModalRef.current.contains(e.target)) {
-  //       setAccountSettingShow(false);
-  //     }
-  //   });
-  // }, []);
-
   const handleLogOut = () => {
     signOut(auth)
       .then(() => {
@@ -90,8 +81,8 @@ const SidebarMenu = () => {
 
   return (
     <>
-      <section className=" relative h-full pl-6">
-        <Typography className="font-open-sans font-bold text-[26px]">
+      <section className=" relative h-full">
+        <Typography className="font-open-sans font-bold text-[26px] ml-6">
           RIPPLE!
         </Typography>
         <nav className="mt-8">
@@ -101,8 +92,8 @@ const SidebarMenu = () => {
                 to={"/pages/chat"}
                 className={
                   pathname.includes("/pages/chat")
-                    ? "w-[138px] bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[138px] py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
+                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
+                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
                 }
               >
                 <HiOutlineChatBubbleLeft className="text-[24px]" /> Chat
@@ -114,8 +105,8 @@ const SidebarMenu = () => {
                 to={"/pages/friends/all-friends"}
                 className={
                   pathname.includes("/pages/friends")
-                    ? "w-[138px] bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[138px] py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
+                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
+                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
                 }
               >
                 <HiOutlineUser className="text-[24px]" /> Friends
@@ -126,8 +117,8 @@ const SidebarMenu = () => {
                 to={"/pages/groups"}
                 className={
                   pathname.includes("/pages/groups")
-                    ? "w-[138px] bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[138px] py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
+                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
+                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
                 }
               >
                 <HiOutlineUsers className="text-[24px]" /> Group
@@ -135,14 +126,14 @@ const SidebarMenu = () => {
             </ListItem>
             <ListItem className={"mb-4"}>
               <NavLink
-                to={"/pages/feeds"}
+                to={"/pages/community/my-groups"}
                 className={
-                  pathname.includes("/pages/feeds")
-                    ? "w-[138px] bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[138px] py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
+                  pathname.includes("/pages/community")
+                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
+                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
                 }
               >
-                <IoNewspaperOutline className="text-[24px]" /> Feeds
+                <IoNewspaperOutline className="text-[24px]" /> Community
               </NavLink>
             </ListItem>
           </List>

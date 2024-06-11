@@ -13,6 +13,7 @@ import SenderImage from "../components/layout/SenderImage";
 import ReciverImage from "../components/layout/ReciverImage";
 import Button from "../components/layout/Button";
 import Modal from "../components/layout/Modal"
+import MessageForwardListItem from "../components/layout/MessageForwardListItem";
 // React Icons
 import { IoCall , IoVideocam } from "react-icons/io5";
 import { HiDotsVertical } from "react-icons/hi";
@@ -26,6 +27,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { RiPhoneFill, RiMovieLine } from "react-icons/ri";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { AiTwotoneVideoCamera } from "react-icons/ai";
+import { RxCross2 } from "react-icons/rx";
 // Firebase
 import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 // Redux slices
@@ -33,7 +35,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { activeChat } from "./../slices/activeChatSlice";
 // Images
 import noGroupPHoto from "/public/images/no chat image.jpg";
-import MessageForwardModal from "../components/layout/MessageForwardModal";
 
 const Chat = () => {
   const db = getDatabase();
@@ -43,7 +44,9 @@ const Chat = () => {
   const [friendsProfileOpen, setFriendsProfileOpen] = useState(false);
   const [friendList, setFriendList] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [forwardSearchValue, setForwardSearchValue] = useState("");
   const [messege, setMessege] = useState("");
+  const [forwardMessege, setForwardMessege] = useState("")
   const [messegeList, setMessegeList] = useState([]);
   const [messegeNotification, setMessegeNotification] = useState(false);
   const [mediaShow, setMediaShow] = useState(true);
@@ -97,6 +100,7 @@ const Chat = () => {
   const handleMessegeSend = () => {
     set(push(ref(db, "messege/")), {
       messege: messege,
+      messegetype: "normal",
       messegereciveruid: activeChatData?.uid,
       messegesreciverame: activeChatData?.name,
       messegesreciverrofile: activeChatData?.profile,
@@ -115,8 +119,8 @@ const Chat = () => {
       let messegeArray = [];
       snapshot.forEach((item) => {
         if (
-          (activeUserData.uid == item.val().messegesenderuid && activeChatData.uid == item.val().messegereciveruid) ||
-          (activeUserData.uid == item.val().messegereciveruid && activeChatData.uid == item.val().messegesenderuid)
+          (activeUserData?.uid == item.val().messegesenderuid && activeChatData?.uid == item.val().messegereciveruid) ||
+          (activeUserData?.uid == item.val().messegereciveruid && activeChatData?.uid == item.val().messegesenderuid)
         ) {
           messegeArray.push({ ...item.val(), messegeid: item.key });
         }
@@ -137,21 +141,51 @@ const Chat = () => {
   }, []);
 
   const handleBlock = () => {
-    set(ref(db, "block/" + (activeUserData.uid + activeChatData.uid)), {
-      blockbyuid: activeUserData.uid,
-      blockbyname: activeUserData.displayName,
-      blockbyprofile: activeUserData.photoURL,
-      blockeduserid: activeChatData.uid,
-      blockedusername: activeChatData.name,
-      blockeduserprofile: activeChatData.profile,
+    set(ref(db, "block/" + (activeUserData?.uid + activeChatData?.uid)), {
+      blockbyuid: activeUserData?.uid,
+      blockbyname: activeUserData?.displayName,
+      blockbyprofile: activeUserData?.photoURL,
+      blockeduserid: activeChatData?.uid,
+      blockedusername: activeChatData?.name,
+      blockeduserprofile: activeChatData?.profile,
     }).then(() => {
       setBlockModalShow(false)
     })
   };
 
   const handleUnBlock = () => {
-    remove(ref(db, "block/" + (activeUserData.uid + activeChatData.uid)))
+    remove(ref(db, "block/" + (activeUserData?.uid + activeChatData?.uid)))
     setUnblockModalShow(false)
+  }
+
+  const filteredList = friendList.filter((item) => {
+    const uid = (activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid)
+    const name = (activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername)
+    return (
+      !blockList.includes(uid + activeUserData.uid)) &&
+      (!blockList.includes(activeUserData.uid + uid)) &&
+      (!activeChatData?.uid.includes(uid)) &&
+      (forwardSearchValue == "" ? item : name.toLowerCase().includes(forwardSearchValue.toLowerCase())
+    )
+  })
+
+  const handleMessegeForward = (item) => {
+    setMessageForwardModalShow(true)
+    setForwardMessege(item.messege)
+  }
+
+  const handleMessegeForwardSend = (item) => {
+    set(push(ref(db, "messege/")), {
+      messege: forwardMessege,
+      messegetype: "forwarded",
+      messegereciveruid: activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid,
+      messegesreciverame: activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername,
+      messegesreciverrofile: activeUserData?.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
+      messegesenderuid: activeUserData?.uid,
+      messegesendername: activeUserData?.displayName,
+      messegesenderprofile: activeUserData?.photoURL,
+      messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    })
   }
 
   return (
@@ -184,8 +218,8 @@ const Chat = () => {
               <ChatItem
                 activeItem={activeChatData?.name}
                 onClick={() => handleActiveChatOpen(item)}
-                profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-                userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+                profile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+                userName={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername}
                 lastMessege={"random messege...."}
                 lastMessegeSentTime={"30 min"}
               />
@@ -271,22 +305,50 @@ const Chat = () => {
               {messegeList.map((item) =>
                 activeChatData.uid == item.messegesenderuid ? (
                   <ReciverMessege
+                    name={activeChatData?.name}
                     profile={activeChatData?.profile}
                     messege={item.messege}
+                    messegeType={item.messegetype}
                     time={item.messegesenttime}
                   />
                 ) : (
                   <SenderMessege
+                    messegeType={item.messegetype}
                     messege={item.messege}
                     time={item.messegesenttime}
-                    forwardButton={() => setMessageForwardModalShow(true)}
+                    forwardButton={() => handleMessegeForward(item)}
                   />
                 )
               )}
-              <MessageForwardModal
+              <Modal
                 modalShow={messageForwardModalShow}  
                 modalClose={setMessageForwardModalShow}
-              />
+                className={"w-[600px] h-[550px] py-8 px-[40px]"}
+              >
+                <RxCross2
+                  onClick={() => setMessageForwardModalShow(false)}
+                  className="absolute top-3 right-3 bg-primaryBgColor box-content p-2 text-lg rounded-full cursor-pointer"
+                />
+                <Box className={"h-[21%]"}>
+                  <Typography className="text-lg font-bold mb-3">
+                    Forward messege
+                  </Typography>
+                  <SearchBox
+                    onChange={(e) => setForwardSearchValue(e.target.value)}
+                    placeholder={"Search friends"}
+                  />
+                </Box>
+                <Box className={"h-[79%] overflow-y-auto"}>
+                  {filteredList.map((item) => (
+                    <MessageForwardListItem
+                      profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+                      name={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+                      button={"send"}
+                      sendButton={() =>handleMessegeForwardSend(item)}
+                    />
+                  ))}
+                </Box>                
+              </Modal>
             </Box>
             {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
                 <Box className={

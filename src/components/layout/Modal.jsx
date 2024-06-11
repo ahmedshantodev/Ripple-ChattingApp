@@ -16,8 +16,8 @@ const Modal = ({ modalShow, modalClose, children, className }) => {
     <section
       ref={modalRef}
       className={`${
-        modalShow ? "block" : "hidden"
-      } w-full h-dvh bg-white/70 fixed top-0 left-0 flex justify-center items-center z-50`}
+        modalShow ? "flex" : "hidden"
+      } w-full h-dvh bg-white/70 fixed top-0 left-0 justify-center items-center z-50`}
     >
       <div
         ref={boxRef}

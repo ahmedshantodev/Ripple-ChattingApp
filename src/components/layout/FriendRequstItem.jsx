@@ -30,7 +30,7 @@ const FriendRequstItem = ({
         <Button
           onClick={friendRequstConfirm}
           className={
-            "bg-[#2176ff] w-full py-2 text-white font-semibold rounded-lg mt-1 active:scale-[0.97]"
+            "bg-[#0861f2] w-full py-2 text-white font-semibold rounded-lg mt-1 active:scale-[0.97]"
           }
         >
           Confirm

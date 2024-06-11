@@ -17,6 +17,7 @@ import { IoCall, IoVideocam } from "react-icons/io5";
 import { HiDotsVertical } from "react-icons/hi";
 import { FaPlus, FaRegImage, FaFile } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
+import { IoSend } from "react-icons/io5";
 import {
   MdOutlineNotificationsNone,
   MdOutlineNotificationsOff,
@@ -53,56 +54,48 @@ const Group = () => {
   const activeUserData = useSelector((state) => state.user.information);
   const activeGroupData = useSelector((state) => state.activeGroup.information);
   const [groupList, setGroupList] = useState([]);
-  const [dropDownShow, setDropDownShow] = useState(false);
   const [groupProfileOpen, setGroupProfileOpen] = useState(false);
   const [groupNotificationOn, setGroupNotificationOn] = useState(true);
   const [groupMemberShow, setGroupMemberShow] = useState(false);
   const [membarRequstShow, setMembarRequstShow] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [groupInvitationList, setGroupInvitationList] = useState([]);
   const [groupMemberLlist, setGroupMemberLlist] = useState([]);
   const [mediaShow, setMediaShow] = useState(false);
   const [chatInfoShow, setChatInfoShow] = useState(false);
   const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
-
-  const [memberInviteModal, setMemberInviteModal] = useState(false);
-  const memberInviteModalRef = useRef();
-  const memberInviteButtonRef = useRef();
-
+  const [messege, setMessege] = useState("");
+  const [groupMessegeList, setGroupMessegeList] = useState([])
+  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
   const [groupCreateModal, setGroupCreateModal] = useState(false);
-  const groupCreateModalRef = useRef();
-  const groupCreateButtonRef = useRef();
+  const [memberInviteModal, setMemberInviteModal] = useState(false);
 
-  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
-    useState(false);
+  const time = new Date();
+  const year = time.getFullYear();
+  const month = time.getMonth() + 1;
+  const date = time.getDate();
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
 
-  useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (groupCreateButtonRef.current.contains(e.target)) {
-        setGroupCreateModal(true);
-      } else if (!groupCreateModalRef.current.contains(e.target)) {
-        setGroupCreateModal(false);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (memberInviteButtonRef.current.contains(e.target)) {
-        setMemberInviteModal(true);
-      } else if (!memberInviteModalRef.current.contains(e.target)) {
-        setMemberInviteModal(false);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   let groupRef = ref(db, "groups");
+  //   onValue(groupRef, (snapshot) => {
+  //     let groupListArray = [];
+  //     snapshot.forEach((item) => {
+  //       if (activeUserData.uid == item.val().groupcreatoruid) {
+  //         groupListArray.push({ ...item.val(), groupuid: item.key });
+  //       }
+  //     });
+  //     setGroupList(groupListArray);
+  //   });
+  // }, []);
 
   useEffect(() => {
-    let groupRef = ref(db, "groups");
+    let groupRef = ref(db, "groupmembers");
     onValue(groupRef, (snapshot) => {
       let groupListArray = [];
       snapshot.forEach((item) => {
-        if (activeUserData.uid == item.val().groupcreatoruid) {
-          groupListArray.push({ ...item.val(), groupuid: item.key });
+        if (activeUserData.uid == item.val().memberuid) {
+          groupListArray.push(item.val());
         }
       });
       setGroupList(groupListArray);
@@ -112,39 +105,6 @@ const Group = () => {
   const handleActiveGroupOpen = (item) => {
     dispatch(activeGroup(item));
     localStorage.setItem("activeGroup", JSON.stringify(item));
-  };
-
-  useEffect(() => {
-    let invitationRef = ref(db, "groupinvitation");
-    onValue(invitationRef, (snapshot) => {
-      let invitationArray = [];
-      snapshot.forEach((item) => {
-        if (activeUserData.uid == item.val().invitationreciveruid) {
-          invitationArray.push({ ...item.val(), invitationId: item.key });
-        }
-      });
-      setGroupInvitationList(invitationArray);
-    });
-  }, []);
-
-  const handleInvitationAccept = (item) => {
-    set(push(ref(db, "groupmembers/")), {
-      groupuid: item.groupuid,
-      groupname: item.groupname,
-      groupphoto: item.groupphoto,
-      memberuid: item.invitationreciveruid,
-      membername: item.invitationrecivername,
-      memberprofile: item.invitationreciverprofile,
-      addedbyuid: item.invitationsenderuid,
-      addedbyname: item.invitationsendername,
-      addedbyprofile: item.invitationsenderprofile,
-    }).then(() => {
-      remove(ref(db, "groupinvitation/" + item.invitationId));
-    });
-  };
-
-  const handleInvitationReject = (item) => {
-    remove(ref(db, "groupinvitation/" + item.invitationId));
   };
 
   useEffect(() => {
@@ -164,6 +124,35 @@ const Group = () => {
     remove(ref(db, "groupmembers/" + item.groupmemberid));
   };
 
+  const handleMessegeSend = () => {
+    set(push(ref(db, "gorupmessege/")), {
+      messege: messege,
+      messegetype: "normal",
+      groupuid: activeGroupData.groupuid,
+      groupname: activeGroupData.groupname,
+      groupphoto: activeGroupData.groupphoto,
+      messegesenderuid: activeUserData?.uid,
+      messegesendername: activeUserData?.displayName,
+      messegesenderprofile: activeUserData?.photoURL,
+      messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    }).then(() => {
+      setMessege("");
+    });
+  };
+
+  useEffect(() => {
+    let messageREf = ref(db, "gorupmessege")
+    onValue(messageREf , (snapshot) => {
+      const messageArray = []
+      snapshot.forEach((item) => {
+        if (activeGroupData.groupuid == item.val().groupuid) {  
+          messageArray.push({...item.val() , messageId: item.key})
+        }
+      })
+      setGroupMessegeList(messageArray)
+    })
+  } , [activeGroupData])
+
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
       <Box
@@ -178,7 +167,7 @@ const Group = () => {
             <Typography variant="h4" className="font-bold text-[28px]">
               Groups
             </Typography>
-            <div ref={groupCreateButtonRef} className="relative group">
+            <Box className="relative group">
               <FaPlus
                 onClick={() => setGroupCreateModal(true)}
                 className=" box-content bg-[#dedede] text-lg p-2 rounded-full cursor-pointer"
@@ -192,78 +181,22 @@ const Group = () => {
                   Create New Group
                 </Typography>
               </Box>
-            </div>
-            {groupCreateModal && (
-              <GroupCreateModal
-                modalRef={groupCreateModalRef}
-                modalClose={setGroupCreateModal}
-              />
-            )}
+            </Box>
+            <GroupCreateModal
+              modalShow={groupCreateModal}
+              modalClose={setGroupCreateModal}
+            />
           </Flex>
           <SearchBox
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder={"Search messenger"}
+            placeholder={"Search group"}
             className={"mt-4"}
           />
         </Box>
         <Box className={"h-[84%] relative overflow-y-auto"}>
-          <Box
-            className={`mb-2 bg-[#ededf9] rounded-md ${
-              dropDownShow && "border-b-[5px] border-[#dddcea]"
-            }`}
-          >
-            <Box
-              onClick={() => setDropDownShow(!dropDownShow)}
-              className={`bg-primaryBgColor py-3 px-3 rounded-md flex items-center justify-between cursor-pointer`}
-            >
-              <Box className={"flex items-center gap-x-2.5"}>
-                <FcInvite
-                  className={`box-content text-[25px] p-2 rounded-full text-black bg-white`}
-                />
-                <Typography
-                  className={`font-inter font-semibold text-black text-lg`}
-                >
-                  Group Invitation
-                </Typography>
-              </Box>
-              <Box className={"flex"}>
-                {groupInvitationList.length > 0 && (
-                  <Typography className="w-[22px] h-[22px] text-[12px] bg-[#cb112d] text-white flex justify-center items-center rounded-full mr-2">
-                    {groupInvitationList.length}
-                  </Typography>
-                )}
-                <IoIosArrowDown
-                  className={`text-[22px] text-black mr-2 ${
-                    dropDownShow ? "rotate-180" : "rotate-0"
-                  }`}
-                />
-              </Box>
-            </Box>
-            {dropDownShow && (
-              <Box
-                className={`min-h-[100px] transition-all ease-in-out duration-300 py-2 px-2.5`}
-              >
-                {groupInvitationList.map((item) => (
-                  <GroupInvitationListItem
-                    groupPhoto={item.groupphoto}
-                    groupName={item.groupname}
-                    invitedBy={item.invitationsendername}
-                    acceptButton={() => handleInvitationAccept(item)}
-                    rejectButton={() => handleInvitationReject(item)}
-                  />
-                ))}
-              </Box>
-            )}
-          </Box>
-          {groupList
-            .filter((item) => {
-              return searchValue == ""
-                ? item
-                : item.groupname
-                    .toLowerCase()
-                    .includes(searchValue.toLowerCase());
-            })
-            .map((item) => (
+          {groupList.filter((item) => {
+              return searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase());
+            }).map((item) => (
               <GroupItem
                 activeItem={activeGroupData?.groupname}
                 onClick={() => handleActiveGroupOpen(item)}
@@ -351,55 +284,23 @@ const Group = () => {
                   You're a Member of {activeGroupData?.groupname}
                 </Typography>
               </Box>
-
-              <ReciverMessege
-                messege={"hi"}
-                time={"2024/6/11/10:00"}
-                profile={
-                  "https://img.freepik.com/free-photo/medium-shot-smiley-man-sitting-desk_23-2149927603.jpg"
-                }
-                name={"ahmed shanto"}
-              />
-              <ReciverMessege
-                messege={"hello"}
-                profile={
-                  "https://media.istockphoto.com/id/1446934118/photo/happy-business-man-listening-to-a-discussion-in-an-office.jpg?s=612x612&w=0&k=20&c=jiGivtsXnV0rZex5PEawRYVyNNzhkntyZDNeLXg7H0A="
-                }
-                time={"2024/6/11/10:00"}
-                name={"somor"}
-              />
-              <SenderMessege messege={"Hello"} time={"2024-06-08-10-11"} />
-              <ReciverMessege
-                messege={"hi"}
-                profile={
-                  "https://t4.ftcdn.net/jpg/06/31/90/83/360_F_631908326_PHaCKTVF6dlBqwW0EEyodnNT9j7ZHtRr.jpg"
-                }
-                time={"2024-06-08-10-11"}
-                name={"somor"}
-              />
-              <SenderMessege
-                messege={
-                  "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut iste ullam earum accusamus repudiandae vero harum corporis labore distinctio at eum,"
-                }
-                time={"2024-06-08-10-11"}
-              />
-              <ReciverMessege
-                messege={"hello"}
-                profile={
-                  "https://media.istockphoto.com/id/1446934118/photo/happy-business-man-listening-to-a-discussion-in-an-office.jpg?s=612x612&w=0&k=20&c=jiGivtsXnV0rZex5PEawRYVyNNzhkntyZDNeLXg7H0A="
-                }
-                time={"2024/6/11/10:00"}
-                name={"ahmed shanto"}
-              />
-              <SenderMessege messege={"Hello"} time={"2024-06-08-10-11"} />
-              <ReciverMessege
-                messege={"hi"}
-                profile={
-                  "https://t4.ftcdn.net/jpg/06/31/90/83/360_F_631908326_PHaCKTVF6dlBqwW0EEyodnNT9j7ZHtRr.jpg"
-                }
-                time={"2024-06-08-10-11"}
-                name={"somor"}
-              />
+              {groupMessegeList.map((item) => (
+                item.messegesenderuid == activeUserData.uid ? (
+                  <SenderMessege
+                    messege={item.messege}
+                    messegeType={item.messegetype}
+                    time={item.messegesenttime}
+                  />
+                ) : (
+                  <ReciverMessege
+                    messege={item.messege}
+                    messegeType={item.messegetype}
+                    time={item.messegesenttime}
+                    profile={item.messegesenderprofile}
+                    name={item.messegesendername}
+                  />
+                )
+              ))}
             </Box>
             <Flex
               justifyContent={"between"}
@@ -414,21 +315,81 @@ const Group = () => {
                 <FaFile className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
               </Flex>
               <Flex alignItems={"center"} className={"w-[80%]"}>
-                <Flex
+                {/* <Flex
                   alignItems={"center"}
                   className={
                     "w-full bg-[#f3f3f3] overflow-hidden rounded-[25px] border border-[#dedede]"
                   }
                 >
                   <Input
+                    onChange={(e) => setMessege(e.target.value)}
                     placeholder={"enter your messege"}
                     className={
                       "bg-[#f3f3f3] py-3 pr-0 pl-5 w-full outline-none"
                     }
                   />
                   <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                </Flex>
-                <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                </Flex> */}
+                {/* <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" /> */}
+                <Box className={"relative w-full"}>
+                  <Input
+                    value={messege}
+                    onChange={(e) => setMessege(e.target.value)}
+                    placeholder={"enter your messege"}
+                    className={
+                      "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
+                    }
+                  />
+                  <Box
+                    className={
+                      " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip mr-[5px]"
+                    }
+                  >
+                    <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <Typography
+                      variant="span"
+                      className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                    >
+                      Choose an emoji
+                      <Box
+                        className={
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                        }
+                      ></Box>
+                    </Typography>
+                  </Box>
+                </Box>
+                {messege == "" ? (
+                  <Box className={"relative group/tooltip mr-[5px]"}>
+                    <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <Typography
+                      variant="span"
+                      className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                    >
+                      send a like
+                      <Box
+                        className={
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                        }
+                      ></Box>
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box className={"relative group/tooltip mr-[5px]"}>
+                    <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <Typography
+                      variant="span"
+                      className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                    >
+                      Click to Send
+                      <Box
+                        className={
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                        }
+                      ></Box>
+                    </Typography>
+                  </Box>
+                )}
               </Flex>
             </Flex>
           </Box>
@@ -464,10 +425,9 @@ const Group = () => {
               justifyContent={"center"}
               className={"mt-5"}
             >
-              <div
+              <Box
                 className="relative mr-6 group"
-                ref={memberInviteButtonRef}
-                onclick={() => setMemberInviteModal(true)}
+                onClick={() => setMemberInviteModal(true)}
               >
                 <PiUserCirclePlus className="box-content text-[28px] p-2 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
                 <Box
@@ -479,7 +439,7 @@ const Group = () => {
                     Add People
                   </Typography>
                 </Box>
-              </div>
+              </Box>
               <GroupMemberInviteModal
                 modalShow={memberInviteModal}
                 modalClose={setMemberInviteModal}
