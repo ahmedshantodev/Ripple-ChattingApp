@@ -20,38 +20,35 @@ const Community = () => {
       <Box
         className={"w-1/4 h-full bg-white rounded-2xl pt-6 pr-2.5 pb-5 pl-2.5"}
       >
-        <Box className={"px-2.5  h-[16%]"}>
-          <Flex
-            justifyContent={"between"}
-            alignItems={"center"}
-            className={"px-2"}
-          >
-            <Typography variant="h4" className="font-bold text-[28px]">
-              Groups
-            </Typography>
-            <Box className="relative group">
-              <FaPlus
-                onClick={() => setGroupCreateModal(true)}
-                className=" box-content bg-[#dedede] text-lg p-2 rounded-full cursor-pointer"
-              />
-              <Box
-                className={
-                  "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block z-50"
-                }
-              >
-                <Typography className="w-[155px] text-center mt-1 py-1 rounded-md bg-[#dedede] border border-white">
-                  Create New Group
-                </Typography>
-              </Box>
-            </Box>
-            <GroupCreateModal
-              modalShow={groupCreateModal}
-              modalClose={setGroupCreateModal}
+        <Flex
+          justifyContent={"between"}
+          alignItems={"center"}
+          className={"px-2 mb-4"}
+        >
+          <Typography variant="h4" className="font-bold text-[28px]">
+            Community
+          </Typography>
+          <Box className="relative group">
+            <FaPlus
+              onClick={() => setGroupCreateModal(true)}
+              className=" box-content bg-[#dedede] text-lg p-2 rounded-full cursor-pointer"
             />
-          </Flex>
-          <SearchBox placeholder={"Search group"} className={"mt-4"} />
-        </Box>
-        <Box className={"h-[84%] relative overflow-y-auto"}>
+            <Box
+              className={
+                "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block z-50"
+              }
+            >
+              <Typography className="w-[155px] text-center mt-1 py-1 rounded-md bg-[#dedede] border border-white">
+                Create New Group
+              </Typography>
+            </Box>
+          </Box>
+          <GroupCreateModal
+            modalShow={groupCreateModal}
+            modalClose={setGroupCreateModal}
+          />
+        </Flex>
+        <Box className={"relative overflow-y-auto"}>
           <Box>
             <Link
               to={"/pages/community/my-groups"}

@@ -28,6 +28,7 @@ import { RiPhoneFill, RiMovieLine } from "react-icons/ri";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { AiTwotoneVideoCamera } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
+import { MdCancel } from "react-icons/md";
 // Firebase
 import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 // Redux slices
@@ -47,6 +48,7 @@ const Chat = () => {
   const [forwardSearchValue, setForwardSearchValue] = useState("");
   const [messege, setMessege] = useState("");
   const [forwardMessege, setForwardMessege] = useState("")
+  const [replyMessegeInfo, setreplyMessegeInfo] = useState("")
   const [messegeList, setMessegeList] = useState([]);
   const [messegeNotification, setMessegeNotification] = useState(false);
   const [mediaShow, setMediaShow] = useState(true);
@@ -98,19 +100,38 @@ const Chat = () => {
   }, [activeChatData]);
 
   const handleMessegeSend = () => {
-    set(push(ref(db, "messege/")), {
-      messege: messege,
-      messegetype: "normal",
-      messegereciveruid: activeChatData?.uid,
-      messegesreciverame: activeChatData?.name,
-      messegesreciverrofile: activeChatData?.profile,
-      messegesenderuid: activeUserData?.uid,
-      messegesendername: activeUserData?.displayName,
-      messegesenderprofile: activeUserData?.photoURL,
-      messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    }).then(() => {
-      setMessege("");
-    });
+    if (replyMessegeInfo) {
+      set(push(ref(db, "messege/")), {
+        messege: messege,
+        messegetype: "reply",
+        repliedtoname: replyMessegeInfo.messegesendername,
+        repliedtomessege: replyMessegeInfo.messege,
+        messegereciveruid: activeChatData?.uid,
+        messegesreciverame: activeChatData?.name,
+        messegesreciverrofile: activeChatData?.profile,
+        messegesenderuid: activeUserData?.uid,
+        messegesendername: activeUserData?.displayName,
+        messegesenderprofile: activeUserData?.photoURL,
+        messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      }).then(() => {
+        setMessege(""); 
+        setreplyMessegeInfo("")
+      }); 
+    } else {
+      set(push(ref(db, "messege/")), {
+        messege: messege,
+        messegetype: "normal",
+        messegereciveruid: activeChatData?.uid,
+        messegesreciverame: activeChatData?.name,
+        messegesreciverrofile: activeChatData?.profile,
+        messegesenderuid: activeUserData?.uid,
+        messegesendername: activeUserData?.displayName,
+        messegesenderprofile: activeUserData?.photoURL,
+        messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      }).then(() => {
+        setMessege("");
+      }); 
+    }
   };
 
   useEffect(() => {
@@ -158,23 +179,27 @@ const Chat = () => {
     setUnblockModalShow(false)
   }
 
-  const filteredList = friendList.filter((item) => {
+  const filteredChatItem = friendList.filter((item) => {
+    let name = activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
+    return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase());
+  })
+
+  const filteredForwardList = friendList.filter((item) => {
     const uid = (activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid)
     const name = (activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername)
     return (
       !blockList.includes(uid + activeUserData.uid)) &&
       (!blockList.includes(activeUserData.uid + uid)) &&
-      (!activeChatData?.uid.includes(uid)) &&
       (forwardSearchValue == "" ? item : name.toLowerCase().includes(forwardSearchValue.toLowerCase())
     )
   })
 
-  const handleMessegeForward = (item) => {
+  const handleMessegeForwardListShow = (item) => {
     setMessageForwardModalShow(true)
     setForwardMessege(item.messege)
   }
 
-  const handleMessegeForwardSend = (item) => {
+  const handleForwardMessegeSend = (item) => {
     set(push(ref(db, "messege/")), {
       messege: forwardMessege,
       messegetype: "forwarded",
@@ -186,6 +211,10 @@ const Chat = () => {
       messegesenderprofile: activeUserData?.photoURL,
       messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     })
+  }
+
+  const handleReply = (item) => {
+    setreplyMessegeInfo(item)
   }
 
   return (
@@ -211,19 +240,16 @@ const Chat = () => {
           />
         </Box>
         <Box className={"h-[85%] overflow-y-auto"}>
-          {friendList.filter((item) => {
-              let name = activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
-              return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase());
-            }).map((item) => (
-              <ChatItem
-                activeItem={activeChatData?.name}
-                onClick={() => handleActiveChatOpen(item)}
-                profile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-                userName={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername}
-                lastMessege={"random messege...."}
-                lastMessegeSentTime={"30 min"}
-              />
-            ))}
+          {filteredChatItem.map((item) => (
+            <ChatItem
+              activeItem={activeChatData?.name}
+              onClick={() => handleActiveChatOpen(item)}
+              profile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+              userName={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername}
+              lastMessege={"random messege...."}
+              lastMessegeSentTime={"30 min"}
+            />
+          ))}
         </Box>
       </Box>
       {activeChatData == null ? (
@@ -249,16 +275,21 @@ const Chat = () => {
       ) : (
         <Box className={"w-[75%] ml-4 flex"}>
           <Box
-            className={`${friendsProfileOpen ? "w-[70%]" : "w-full"} h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100`}
+            className={
+              friendsProfileOpen
+                ? "w-[70%] h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100"
+                : "w-full h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100"
+            }
           >
             <Flex
               justifyContent={"between"}
               alignItems={"center"}
-              className={" h-[10%] py-3 px-3 border-b border-b-[#dedede]"}
+              className={" h-[70px] py-3 px-3 border-b border-b-[#dedede]"}
             >
               <Box
+                onClick={() =>setFriendsProfileOpen(!friendsProfileOpen)}
                 className={
-                  "flex items-center px-2.5 py-[5px]  rounded-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dddcea]"
+                  "flex items-center px-2.5 py-[5px]  rounded-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#f5f5f5]"
                 }
               >
                 <Image
@@ -282,7 +313,13 @@ const Chat = () => {
               </Flex>
             </Flex>
             <Box
-              className={`${blockList.includes(activeChatData?.uid + activeUserData?.uid) ? "h-[74%]" : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? "h-[79%]" : "h-[81%]"} bg-white px-6 overflow-y-scroll pb-2`}
+              className={
+                blockList.includes(activeChatData?.uid + activeUserData?.uid)
+                  ?  "h-[calc(100%-(70px+133px))] bg-white px-6 overflow-y-scroll pb-2"
+                  : blockList.includes(activeUserData?.uid + activeChatData?.uid)
+                  ?  "h-[calc(100%-(70px+93px))] bg-white px-6 overflow-y-scroll pb-2"
+                  : `${replyMessegeInfo.messege ? "h-[calc(100%-(70px+127px))]" : "h-[calc(100%-(70px+73px))]"} bg-white px-6 overflow-y-scroll pb-2`
+              }
             >
               <Box className={"mt-10 mb-10 text-center"}>
                 <Image
@@ -302,22 +339,60 @@ const Chat = () => {
                   You're friends on Ripple
                 </Typography>
               </Box>
+              {console.log(messegeList)}
               {messegeList.map((item) =>
                 activeChatData.uid == item.messegesenderuid ? (
-                  <ReciverMessege
-                    name={activeChatData?.name}
-                    profile={activeChatData?.profile}
-                    messege={item.messege}
-                    messegeType={item.messegetype}
-                    time={item.messegesenttime}
-                  />
+                  item.messegetype == "reply" ? (
+                    <ReciverMessege
+                      name={activeChatData?.name}
+                      profile={activeChatData?.profile}
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+                      repliedtomessege={item.repliedtomessege}
+                      repliedbyname={item.messegesendername}
+                      repliedtoname={item.repliedtoname}
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                      reactButton={() => handleReact(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                    />
+                  ) : (
+                    <ReciverMessege
+                      name={activeChatData?.name}
+                      profile={activeChatData?.profile}
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                      reactButton={() => handleReact(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                    />
+                  )
                 ) : (
-                  <SenderMessege
-                    messegeType={item.messegetype}
-                    messege={item.messege}
-                    time={item.messegesenttime}
-                    forwardButton={() => handleMessegeForward(item)}
-                  />
+                  item.messegetype == "reply" ? (
+                    <SenderMessege
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+                      repliedbyname={item.messegesendername}
+                      repliedtoname={item.repliedtoname}
+                      repliedtomessege={item.repliedtomessege}
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                      reactButton={() => handleReact(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                      editButton={() => handleMessegeEdit(item)}
+                    />
+                  ) : (
+                    <SenderMessege
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                      reactButton={() => handleReact(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                      editButton={() => handleMessegeEdit(item)}
+                    />
+                  )
                 )
               )}
               <Modal
@@ -339,12 +414,12 @@ const Chat = () => {
                   />
                 </Box>
                 <Box className={"h-[79%] overflow-y-auto"}>
-                  {filteredList.map((item) => (
+                  {filteredForwardList.map((item) => (
                     <MessageForwardListItem
                       profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
                       name={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
                       button={"send"}
-                      sendButton={() =>handleMessegeForwardSend(item)}
+                      sendButton={() =>handleForwardMessegeSend(item)}
                     />
                   ))}
                 </Box>                
@@ -352,7 +427,7 @@ const Chat = () => {
             </Box>
             {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
                 <Box className={
-                  "text-center bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
+                  "text-center bg-white absolute bottom-0 left-0 w-full h-[133px] py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
                 }>
                   <Typography className="text-lg font-semibold mb-1">
                     You've blocked messages and calls from {activeChatData?.name}
@@ -395,7 +470,7 @@ const Chat = () => {
                 </Box>
             ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
               <Box className={
-                "text-center bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
+                "text-center bg-white absolute bottom-0 left-0 w-full h-[93px] py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
               }>
                 <Typography className="text-lg font-semibold mb-1">
                   {activeChatData?.name} has blocked you from messaging and calling
@@ -405,79 +480,47 @@ const Chat = () => {
                 </Typography>
               </Box>
           ) : (
-            <Flex
-              justifyContent={"between"}
-              alignItems={"center"}
+            <Box
               className={
-                "h-[9%] bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
-              }
-            >
-              <Flex>
-                <FaPlus className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                <Box className={"relative group/tooltip mr-[5px]"}>
-                  <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                  <Typography
-                    variant="span"
-                    className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                  >
-                    Attach a file
-                    <Box
-                      className={
-                        "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                      }
-                    ></Box>
-                  </Typography>
-                </Box>
-                <Box className={"relative group/tooltip mr-[5px]"}>
-                  <HiMiniGif className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                  <Typography
-                    variant="span"
-                    className="w-[115px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                  >
-                    Choose a gif
-                    <Box
-                      className={
-                        "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                      }
-                    ></Box>
-                  </Typography>
-                </Box>
-                <Box className={"relative group/tooltip mr-[5px]"}>
-                  <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                  <Typography
-                    variant="span"
-                    className="w-[170px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                  >
-                    Sent voice messege
-                    <Box
-                      className={
-                        "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                      }
-                    ></Box>
-                  </Typography>
-                </Box>
-              </Flex>
-              <Flex alignItems={"center"} className={"w-[80%]"}>
-                <Box className={"relative w-full"}>
-                  <Input
-                    value={messege}
-                    onChange={(e) => setMessege(e.target.value)}
-                    placeholder={"enter your messege"}
-                    className={
-                      "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
-                    }
+                "bg-white absolute bottom-0 left-0 w-full border-t border-[#dedede]"
+              } 
+            > 
+              {replyMessegeInfo.messege &&
+                <Box className={"pt-2 px-5 relative"}>
+                  <MdCancel
+                    onClick={() => setreplyMessegeInfo("")}
+                    className="absolute top-2.5 right-2.5 text-[22px] text-secoundaryText cursor-pointer"
                   />
-                  <Box
-                    className={
-                      " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip mr-[5px]"
-                    }
+                  <Typography
+                    className="font-inter font-semibold"
                   >
-                    <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    Replying to {activeUserData.uid == replyMessegeInfo.messegesenderuid ? "yourself" : replyMessegeInfo.messegesendername}
+                  </Typography>
+                  <Typography
+                    className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]"
+                  >
+                    {replyMessegeInfo.messege}
+                  </Typography>
+                </Box>
+              }
+              <Flex
+                justifyContent={"between"}
+                alignItems={"center"}
+                className={
+                  "py-3 pr-[5px] pl-5"
+                } 
+              >
+                <Flex>
+                  <FaPlus
+                    className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                  />
+                  <Box className={"relative group/tooltip mr-[5px]"}>
+                    <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
                       variant="span"
-                      className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
-                      Choose an emoji
+                      Attach a file
                       <Box
                         className={
                           "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
@@ -485,40 +528,98 @@ const Chat = () => {
                       ></Box>
                     </Typography>
                   </Box>
-                </Box>
-                {messege == "" ? (
                   <Box className={"relative group/tooltip mr-[5px]"}>
-                    <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <HiMiniGif className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
                       variant="span"
-                      className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[115px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
-                      send a like
+                      Choose a gif
                       <Box
                         className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
                         }
                       ></Box>
                     </Typography>
                   </Box>
-                ) : (
                   <Box className={"relative group/tooltip mr-[5px]"}>
-                    <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
                       variant="span"
-                      className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[170px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
-                      Click to Send
+                      Sent voice messege
                       <Box
                         className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
                         }
                       ></Box>
                     </Typography>
                   </Box>
-                )}
+                </Flex>
+                <Flex alignItems={"center"} className={"w-[80%]"}>
+                  <Box className={"relative w-full"}>
+                    <Input
+                      value={messege}
+                      onChange={(e) => setMessege(e.target.value)}
+                      placeholder={"enter your messege"}
+                      className={
+                        "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
+                      }
+                    />
+                    <Box
+                      className={
+                        " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip mr-[5px]"
+                      }
+                    >
+                      <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <Typography
+                        variant="span"
+                        className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        Choose an emoji
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  </Box>
+                  {messege == "" ? (
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <Typography
+                        variant="span"
+                        className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        send a like
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <Typography
+                        variant="span"
+                        className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        Click to Send
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  )}
+                </Flex>
               </Flex>
-            </Flex>
+            </Box>
             )}
           </Box>
           <Box

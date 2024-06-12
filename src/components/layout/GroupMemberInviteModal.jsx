@@ -3,7 +3,7 @@ import { RxCross2 } from "react-icons/rx";
 import Typography from "./Typography";
 import Box from "./Box";
 import GroupInviteListItem from "./GroupInviteListItem";
-import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { useSelector } from "react-redux";
 import SearchBox from './SearchBox';
 
@@ -15,6 +15,16 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
   const [groupInvitePendingList, setGroupInvitePendingList] = useState([])
   const [searchValue, setSearchValue] = useState("")
   const [groupMemberLlist, setGroupMemberLlist] = useState([]);
+  const modalRef = useRef();
+  const boxRef = useRef();
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+        modalClose(false)
+      }
+    });
+  }, []);
 
   useEffect(() => {
     let friendListRef = ref(db, "friends");
@@ -29,31 +39,6 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
     });
   }, []);
 
-  const handleInvite = (item) => {
-    set(push(ref(db , "groupinvitation/")) , {
-      groupuid: activeGroupData.groupuid,
-      groupname: activeGroupData.groupname,
-      groupphoto:activeGroupData.groupphoto,
-      invitationsenderuid: activeUserData.uid,
-      invitationsendername: activeUserData.displayName,
-      invitationsenderprofile: activeUserData.photoURL,
-      invitationreciveruid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
-      invitationrecivername: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
-      invitationreciverprofile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
-    })
-  }
-
-  useEffect(() => {
-    const pendingListRef = ref(db , "groupinvitation")
-    onValue(pendingListRef , (snapshot) => {
-      let pendingListArray = []
-      snapshot.forEach((item) => {
-        pendingListArray.push(item.val().groupuid + item.val().invitationreciveruid)
-      })
-      setGroupInvitePendingList(pendingListArray)
-    })
-  } , [])
-
   useEffect(() => {
     let groupMemberRef = ref(db, "groupmembers");
     onValue(groupMemberRef, (snapshot) => {
@@ -67,22 +52,57 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
     });
   }, [activeGroupData]);
 
-  const modalRef = useRef();
-  const boxRef = useRef();
-
   useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
-        modalClose(false)
-      }
-    });
-  }, []);
+    const pendingListRef = ref(db , "groupinvitation")
+    onValue(pendingListRef , (snapshot) => {
+      let pendingListArray = []
+      snapshot.forEach((item) => {
+        pendingListArray.push(item.val().groupuid + item.val().invitationreciveruid)
+      })
+      setGroupInvitePendingList(pendingListArray)
+    })
+  } , [])
 
   const filteredList = friendList.filter((item) => {
     const uid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid
     const name = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername
-    return (!groupMemberLlist.includes(uid)) && (searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase()))
+    return (
+      (!groupMemberLlist.includes(uid)) &&
+      (searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase()))
+    )
   })
+
+  const handleInvite = (item) => {
+    if (activeUserData.uid == item.senderuid) {
+      set(ref(db , "groupinvitation/" + (activeGroupData.groupuid + item.reciveruid)) , {
+        groupuid: activeGroupData.groupuid,
+        groupname: activeGroupData.groupname,
+        groupphoto:activeGroupData.groupphoto,
+        invitationsenderuid: activeUserData.uid,
+        invitationsendername: activeUserData.displayName,
+        invitationsenderprofile: activeUserData.photoURL,
+        invitationreciveruid: item.reciveruid,
+        invitationrecivername: item.recivername,
+        invitationreciverprofile: item.reciverprofile,
+      })
+    } else {
+      set(ref(db , "groupinvitation/" + (activeGroupData.groupuid +  item.senderuid)) , {
+        groupuid: activeGroupData.groupuid,
+        groupname: activeGroupData.groupname,
+        groupphoto:activeGroupData.groupphoto,
+        invitationsenderuid: activeUserData.uid,
+        invitationsendername: activeUserData.displayName,
+        invitationsenderprofile: activeUserData.photoURL,
+        invitationreciveruid: item.senderuid,
+        invitationrecivername: item.sendername,
+        invitationreciverprofile: item.senderprofile,
+      })
+    }
+  }
+
+  const handleInviteCancel = (item) => {
+    remove(ref(db , "groupinvitation/" + (activeGroupData.groupuid +  item.senderuid)))
+  }
 
   return (
     <section
@@ -111,8 +131,14 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
             <GroupInviteListItem
               profile={activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile}
               name={activeUserData.uid == item.reciveruid ? item.sendername : item.recivername}
-              button={groupInvitePendingList.includes(activeGroupData.groupuid + (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid)) || groupInvitePendingList.includes((activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid) + activeGroupData.groupuid) ? "pending" : "add"}
+              buttonType={
+                groupInvitePendingList.includes(activeGroupData.groupuid + (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid)) ||
+                groupInvitePendingList.includes((activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid) + activeGroupData.groupuid)
+                  ? "cancel"
+                  : "add"
+              }
               addButton={() => handleInvite(item)}
+              cancelButton={() => handleInviteCancel(item)}
             />
           ))}
         </Box>

@@ -29,7 +29,7 @@ const ProfileUploadModal = ({ modalShow, modalClose }) => {
   const [uploadLoadingButton, setUploadLoadingButton] = useState(false);
   const [image, setImage] = useState("");
   const cropperRef = createRef();
-
+   
   const onChange = (e) => {
     e.preventDefault();
     let files;

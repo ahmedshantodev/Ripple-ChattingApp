@@ -8,8 +8,9 @@ import Button from "./Button";
 const GroupInviteListItem = ({
   profile,
   name,
-  button,
+  buttonType,
   addButton,
+  cancelButton
 }) => {
   return (
     <Box
@@ -30,20 +31,21 @@ const GroupInviteListItem = ({
           {name}
         </Typography>
       </Flex>
-      {button == "add" ? (
+      {buttonType == "cancel" ? (
         <Button
-          onClick={addButton}
+          onClick={cancelButton}
           className={
             "bg-[#cacad8] w-[90px] py-2 rounded-md mr-2 transition-all ease-in-out duration-200 active:scale-[0.97] font-semibold"
           }
         >
-          Add
+          Cancel
         </Button>
       ) : (
         <Button
-          className={"bg-[#cacad8] w-[90px] py-2 rounded-md mr-2 font-semibold"}
+          onClick={addButton}
+          className={"text-[#005fcf] bg-[#ebf5ff] hover:bg-[#dfe9f2] w-[90px] py-2 rounded-md mr-2 font-semibold"}
         >
-          Pending
+          Add
         </Button>
       )}
     </Box>

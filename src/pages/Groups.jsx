@@ -11,35 +11,22 @@ import JoinRequstItem from "../components/layout/GroupJoinRequstListItem";
 import GroupMemberListItem from "../components/layout/GroupMemberListItem";
 import GroupMemberInviteModal from "../components/layout/GroupMemberInviteModal";
 import { useDispatch, useSelector } from "react-redux";
-import { FcInvite } from "react-icons/fc";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoCall, IoVideocam } from "react-icons/io5";
 import { HiDotsVertical } from "react-icons/hi";
 import { FaPlus, FaRegImage, FaFile } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
-import {
-  MdOutlineNotificationsNone,
-  MdOutlineNotificationsOff,
-  MdThumbUpAlt,
-} from "react-icons/md";
+import { MdOutlineNotificationsNone, MdOutlineNotificationsOff, MdThumbUpAlt } from "react-icons/md";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { RiMovieLine } from "react-icons/ri";
 import { TbPhotoPlus } from "react-icons/tb";
 import { FiEdit } from "react-icons/fi";
-import {
-  getDatabase,
-  onValue,
-  push,
-  ref,
-  remove,
-  set,
-} from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { CiLogout } from "react-icons/ci";
 import SearchBox from "../components/layout/SearchBox";
 import { activeGroup } from "../slices/activeGroupSlice";
 import GroupPhotoUploadModal from "../components/layout/GroupPhotoUploadModal";
-import GroupInvitationListItem from "../components/layout/GroupInvitationListItem";
 import noGroupPHoto from "/public/images/no chat image.jpg";
 import { PiUserCirclePlus } from "react-icons/pi";
 import Button from "../components/layout/Button";
@@ -47,6 +34,9 @@ import ReciverMessege from "../components/layout/ReciverMessege";
 import SenderMessege from "../components/layout/SenderMessege";
 import ModalImage from "react-modal-image";
 import GroupNameChangeModal from "../components/layout/GroupNameChangeModal";
+import { HiMiniGif } from "react-icons/hi2";
+import { FaMicrophone } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 
 const Group = () => {
   const db = getDatabase();
@@ -68,6 +58,8 @@ const Group = () => {
   const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
   const [groupCreateModal, setGroupCreateModal] = useState(false);
   const [memberInviteModal, setMemberInviteModal] = useState(false);
+  const [groupJoinRequstList, setGroupJoinRequstList] = useState([])
+  const [replyMessegeInfo, setreplyMessegeInfo] = useState("")
 
   const time = new Date();
   const year = time.getFullYear();
@@ -75,6 +67,10 @@ const Group = () => {
   const date = time.getDate();
   const hours = time.getHours();
   const minutes = time.getMinutes();
+
+  useEffect(() => {
+    setMessege("");
+  }, [activeGroupData]);
 
   // useEffect(() => {
   //   let groupRef = ref(db, "groups");
@@ -124,20 +120,57 @@ const Group = () => {
     remove(ref(db, "groupmembers/" + item.groupmemberid));
   };
 
+  // const handleMessegeSend = () => {
+  //   set(push(ref(db, "gorupmessege/")), {
+  //     messege: messege,
+  //     messegetype: "normal",
+  //     groupuid: activeGroupData.groupuid,
+  //     groupname: activeGroupData.groupname,
+  //     groupphoto: activeGroupData.groupphoto,
+  //     messegesenderuid: activeUserData?.uid,
+  //     messegesendername: activeUserData?.displayName,
+  //     messegesenderprofile: activeUserData?.photoURL,
+  //     messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+  //   }).then(() => {
+  //     setMessege("");
+  //   });
+  // };
+
   const handleMessegeSend = () => {
-    set(push(ref(db, "gorupmessege/")), {
-      messege: messege,
-      messegetype: "normal",
-      groupuid: activeGroupData.groupuid,
-      groupname: activeGroupData.groupname,
-      groupphoto: activeGroupData.groupphoto,
-      messegesenderuid: activeUserData?.uid,
-      messegesendername: activeUserData?.displayName,
-      messegesenderprofile: activeUserData?.photoURL,
-      messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    }).then(() => {
-      setMessege("");
-    });
+
+    if (replyMessegeInfo) {
+      set(push(ref(db, "gorupmessege/")), {
+        messege: messege,
+        messegetype: "reply",
+        repliedtoname: replyMessegeInfo.messegesendername,
+        repliedtomessege: replyMessegeInfo.messege,
+        groupuid: activeGroupData.groupuid,
+        groupname: activeGroupData.groupname,
+        groupphoto: activeGroupData.groupphoto,
+        messegesenderuid: activeUserData?.uid,
+        messegesendername: activeUserData?.displayName,
+        messegesenderprofile: activeUserData?.photoURL,
+        messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      }).then(() => {
+        setMessege("");
+        setreplyMessegeInfo("")
+      });
+      } else {
+        set(push(ref(db, "gorupmessege/")), {
+          messege: messege,
+          messegetype: "normal",
+          groupuid: activeGroupData.groupuid,
+          groupname: activeGroupData.groupname,
+          groupphoto: activeGroupData.groupphoto,
+          messegesenderuid: activeUserData?.uid,
+          messegesendername: activeUserData?.displayName,
+          messegesenderprofile: activeUserData?.photoURL,
+          messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        }).then(() => {
+          setMessege("");
+          setreplyMessegeInfo("")
+        });
+    }    
   };
 
   useEffect(() => {
@@ -152,6 +185,42 @@ const Group = () => {
       setGroupMessegeList(messageArray)
     })
   } , [activeGroupData])
+
+  useEffect(() => {
+    let groupJoinRequstRef = ref(db, "groupjoinrequst");
+    onValue(groupJoinRequstRef, (snapshot) => {
+      let array = [];
+      snapshot.forEach((item) => {
+        if (activeGroupData.groupuid == item.val().groupuid) {  
+          array.push({...item.val() , joinrequstid: item.key});
+        }
+      });
+      setGroupJoinRequstList(array);
+    });
+  }, [activeGroupData]);
+
+  const handleJoinRequstAccept = (item) => {
+    set(push(ref(db, "groupmembers/")), {
+      groupuid: item.groupuid,
+      groupname: item.groupname,
+      groupphoto: item.groupphoto,
+      memberuid: item.requstsenderuid,
+      membername: item.requstsendername,
+      memberprofile: item.requstsenderprofile,
+      addedbyuid: activeUserData.uid,
+      addedbyname: activeUserData.displayName,
+      addedbyprofile: activeUserData.photoURL,
+    }).then(() => {
+      remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
+    });
+  }
+  const handleJoinRequstDelete = (item) => {
+    remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
+  }
+
+  const handleReply = (item) => {
+    setreplyMessegeInfo(item)
+  }
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -238,7 +307,7 @@ const Group = () => {
             <Flex
               justifyContent={"between"}
               alignItems={"center"}
-              className={"h-[10%] py-3 px-3 border-b border-b-[#dedede]"}
+              className={"py-2 px-3 border-b border-b-[#dedede]"}
             >
               <Box
                 className={
@@ -248,7 +317,7 @@ const Group = () => {
                 <Image
                   src={activeGroupData?.groupphoto}
                   alt={"random image"}
-                  className={"w-12 h-12 rounded-full"}
+                  className={"w-11 aspect-square object-cover rounded-full"}
                 />
                 <Typography variant="h3" className="ml-3 text-lg font-semibold">
                   {activeGroupData?.groupname}
@@ -265,7 +334,14 @@ const Group = () => {
                 />
               </Flex>
             </Flex>
-            <Box className={"h-[81%] bg-white px-6 overflow-y-scroll pb-2"}>
+            <Box
+              className={
+                replyMessegeInfo
+                  ? "h-[calc(100%-(71px+127px))] bg-white px-6 overflow-y-scroll pb-2"
+                  : "h-[calc(100%-(71px+73px))] bg-white px-6 overflow-y-scroll pb-2"
+              }
+
+            >
               <Box className={"mt-10 mb-10 text-center"}>
                 <Image
                   src={activeGroupData?.groupphoto}
@@ -286,71 +362,93 @@ const Group = () => {
               </Box>
               {groupMessegeList.map((item) => (
                 item.messegesenderuid == activeUserData.uid ? (
-                  <SenderMessege
-                    messege={item.messege}
-                    messegeType={item.messegetype}
-                    time={item.messegesenttime}
-                  />
+                  item.messegetype == "reply" ? (
+                    <SenderMessege
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+
+                      repliedtomessege={item.repliedtomessege}
+                      repliedtoname={item.repliedtoname}
+                      repliedbyname={item.messegesendername}
+
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                    />
+                  ) : (
+                    <SenderMessege
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                    />
+                  )
                 ) : (
-                  <ReciverMessege
-                    messege={item.messege}
-                    messegeType={item.messegetype}
-                    time={item.messegesenttime}
-                    profile={item.messegesenderprofile}
-                    name={item.messegesendername}
-                  />
+                  item.messegetype == "reply" ? (
+                    <ReciverMessege
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+                      repliedtomessege={item.repliedtomessege}
+                      repliedtoname={item.repliedtoname}
+                      repliedbyname={item.messegesendername}
+                      name={item.messegesendername}
+                      profile={item.messegesenderprofile}
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                    />
+                  ) : (
+                    <ReciverMessege
+                      messege={item.messege}
+                      messegeType={item.messegetype}
+                      name={item.messegesendername}
+                      profile={item.messegesenderprofile}
+                      time={item.messegesenttime}
+                      replayButton={() => handleReply(item)}
+                    />
+                  )
                 )
               ))}
             </Box>
-            <Flex
-              justifyContent={"between"}
-              alignItems={"center"}
+            <Box
               className={
-                "h-[9%] bg-white absolute bottom-0 left-0 w-full py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
-              }
+                "bg-white absolute bottom-0 left-0 w-full border-t border-[#dedede]"
+              } 
             >
-              <Flex>
-                <FaPlus className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                <FaFile className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-              </Flex>
-              <Flex alignItems={"center"} className={"w-[80%]"}>
-                {/* <Flex
-                  alignItems={"center"}
-                  className={
-                    "w-full bg-[#f3f3f3] overflow-hidden rounded-[25px] border border-[#dedede]"
-                  }
-                >
-                  <Input
-                    onChange={(e) => setMessege(e.target.value)}
-                    placeholder={"enter your messege"}
-                    className={
-                      "bg-[#f3f3f3] py-3 pr-0 pl-5 w-full outline-none"
-                    }
+              {replyMessegeInfo && 
+                <Box className={"pt-2 px-5 relative"}>
+                  <MdCancel
+                    onClick={() => setreplyMessegeInfo("")}
+                    className="absolute top-2.5 right-2.5 text-[22px] text-secoundaryText cursor-pointer"
                   />
-                  <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                </Flex> */}
-                {/* <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" /> */}
-                <Box className={"relative w-full"}>
-                  <Input
-                    value={messege}
-                    onChange={(e) => setMessege(e.target.value)}
-                    placeholder={"enter your messege"}
-                    className={
-                      "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
-                    }
-                  />
-                  <Box
-                    className={
-                      " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip mr-[5px]"
-                    }
+                  <Typography
+                    className="font-inter font-semibold"
                   >
-                    <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    Replying to {activeUserData.uid == replyMessegeInfo.messegesenderuid ? "yourself" : replyMessegeInfo.messegesendername}
+                  </Typography>
+                  <Typography
+                    className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]"
+                  >
+                    {replyMessegeInfo.messege}
+                  </Typography>
+                </Box>
+              }
+              <Flex
+                justifyContent={"between"}
+                alignItems={"center"}
+                className={
+                  "py-3 pr-[5px] pl-5"
+                } 
+              >
+                <Flex>
+                  <FaPlus
+                    className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                  />
+                  <Box className={"relative group/tooltip mr-[5px]"}>
+                    <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
                       variant="span"
-                      className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
-                      Choose an emoji
+                      Attach a file
                       <Box
                         className={
                           "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
@@ -358,40 +456,98 @@ const Group = () => {
                       ></Box>
                     </Typography>
                   </Box>
-                </Box>
-                {messege == "" ? (
                   <Box className={"relative group/tooltip mr-[5px]"}>
-                    <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <HiMiniGif className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
                       variant="span"
-                      className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[115px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
-                      send a like
+                      Choose a gif
                       <Box
                         className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
                         }
                       ></Box>
                     </Typography>
                   </Box>
-                ) : (
                   <Box className={"relative group/tooltip mr-[5px]"}>
-                    <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
                       variant="span"
-                      className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[170px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
-                      Click to Send
+                      Sent voice messege
                       <Box
                         className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
                         }
                       ></Box>
                     </Typography>
                   </Box>
-                )}
+                </Flex>
+                <Flex alignItems={"center"} className={"w-[80%]"}>
+                  <Box className={"relative w-full"}>
+                    <Input
+                      value={messege}
+                      onChange={(e) => setMessege(e.target.value)}
+                      placeholder={"enter your messege"}
+                      className={
+                        "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
+                      }
+                    />
+                    <Box
+                      className={
+                        " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip mr-[5px]"
+                      }
+                    >
+                      <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <Typography
+                        variant="span"
+                        className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        Choose an emoji
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  </Box>
+                  {messege == "" ? (
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <Typography
+                        variant="span"
+                        className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        send a like
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <Typography
+                        variant="span"
+                        className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        Click to Send
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  )}
+                </Flex>
               </Flex>
-            </Flex>
+            </Box>
           </Box>
           <Box
             className={
@@ -627,9 +783,14 @@ const Group = () => {
                       "px-2.5 py-2 border border-primaryBorder rounded-md mb-1"
                     }
                   >
-                    <JoinRequstItem />
-                    <JoinRequstItem />
-                    <JoinRequstItem />
+                    {groupJoinRequstList.map((item) => (
+                      <JoinRequstItem
+                        profile={item.requstsenderprofile}
+                        name={item.requstsendername}
+                        deleteButton={() => handleJoinRequstDelete(item)}
+                        acceptButton={() => handleJoinRequstAccept(item)}
+                      />
+                    ))}
                   </Box>
                 )}
               </Box>

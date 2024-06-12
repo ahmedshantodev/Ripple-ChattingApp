@@ -11,7 +11,9 @@ const OthersGroupListItem = ({
   groupName,
   adminProfile,
   adminName,
+  buttonType,
   joinButton,
+  cancelButton
 }) => {
   return (
     <Box
@@ -34,14 +36,25 @@ const OthersGroupListItem = ({
             <span className=" font-semibold">{adminName}</span> is admin
           </Typography>
         </Flex>
-        <Button
-          onClick={joinButton}
-          className={
-            "w-full bg-[#d8dadf] py-2.5 rounded-[10px] font-semibold text-lg mt-2 font-poppins transition-all duration-200 active:scale-[0.98]"
-          }
-        >
-          Join group
-        </Button>
+        {buttonType == "send" ? (
+          <Button
+            onClick={joinButton}
+            className={
+              "w-full text-[#005fcf] bg-[#ebf5ff] hover:bg-[#dfe9f2] py-2.5 rounded-[10px] font-semibold text-lg mt-2 font-poppins transition-all duration-200 active:scale-[0.98]"
+            }
+          >
+            Join group
+          </Button>
+        ) : (
+          <Button
+            onClick={cancelButton}
+            className={
+              "w-full bg-[#d8dadf] py-2.5 rounded-[10px] font-semibold text-lg mt-2 font-poppins transition-all duration-200 active:scale-[0.98]"
+            }
+          >
+            Cancel
+          </Button>
+        )}
       </Box>
     </Box>
   );

@@ -4,15 +4,17 @@ import Typography from "../layout/Typography";
 import SearchBox from "../layout/SearchBox";
 import Flex from "../layout/Flex";
 import OthersGroupListItem from "../layout/OthersGroupListItem";
-import { getDatabase, onValue, ref } from "firebase/database";
-import { useDispatch, useSelector } from "react-redux";
+import { getDatabase, onValue, ref, remove, set } from "firebase/database";
+import { useSelector } from "react-redux";
 
 const OthersGroup = () => {
   const db = getDatabase();
-  const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
   const [searchValue, setSearchValue] = useState("");
   const [groupList, setGroupList] = useState([]);
+  const [groupJoinRequstList, setGroupJoinRequstList] = useState([]);
+  const [groupInvitationList, setGroupInvitationList] = useState([]);
+  const [groupMemberList, setGroupMemberList] = useState([]);
 
   useEffect(() => {
     let groupRef = ref(db, "groups");
@@ -27,13 +29,67 @@ const OthersGroup = () => {
     });
   }, []);
 
+  const handleJoinButton = (item) => {
+    set(ref(db, "groupjoinrequst/" + (item.groupuid + activeUserData.uid)), {
+      ...item,
+      requstsenderuid: activeUserData.uid,
+      requstsendername: activeUserData.displayName,
+      requstsenderprofile: activeUserData.photoURL,
+    });
+  };
+
+  useEffect(() => {
+    let groupJoinRequstRef = ref(db, "groupjoinrequst");
+    onValue(groupJoinRequstRef, (snapshot) => {
+      let array = [];
+      snapshot.forEach((item) => {
+        array.push(item.val().groupuid + item.val().requstsenderuid);
+      });
+      setGroupJoinRequstList(array);
+    });
+  }, []);
+
+  const handleCancelButton = (item) => {
+    remove(ref(db , "groupjoinrequst/" + (item.groupuid + activeUserData.uid)))
+  }
+
+  useEffect(() => {
+    let invitationRef = ref(db, "groupinvitation");
+    onValue(invitationRef, (snapshot) => {
+      let invitationArray = [];
+      snapshot.forEach((item) => {
+        if (activeUserData.uid == item.val().invitationreciveruid) {
+          invitationArray.push(item.val().groupuid);
+        }
+      });
+      setGroupInvitationList(invitationArray);
+    });
+  }, []);
+
+  useEffect(() => {
+    let groupRef = ref(db, "groupmembers");
+    onValue(groupRef, (snapshot) => {
+      let groupListArray = [];
+      snapshot.forEach((item) => {
+        if (activeUserData.uid == item.val().memberuid) {
+          groupListArray.push(item.val().groupuid + item.val().memberuid);
+        }
+      });
+      setGroupMemberList(groupListArray);
+    });
+  }, []);
+
   const filteredList = groupList.filter((item) => {
-    return searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase());
+    return (
+      (!groupInvitationList.includes(item.groupuid)) &&
+      (!groupMemberList.includes(item.groupuid + activeUserData.uid)) &&
+      (searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase()))
+    )
   });
 
   return (
     <Box className={"h-full"}>
-      <Box className={"h-[14%]"}>
+      <Box className={"h-[14%] bg-white"}>
         <Typography
           variant="h4"
           className="font-inter text-[25px] font-semibold ml-2"
@@ -60,11 +116,19 @@ const OthersGroup = () => {
           >
             {filteredList.map((item) => (
               <OthersGroupListItem
+                className={"w-[24.2%] mb-3"}
                 groupPhoto={item.groupphoto}
                 groupName={item.groupname}
                 adminName={item.groupcreatorname}
                 adminProfile={item.groupcreatoprofile}
-                className={"w-[24.2%] mb-3"}
+                buttonType={
+                  groupJoinRequstList.includes(activeUserData.uid + item.groupuid) ||
+                  groupJoinRequstList.includes(item.groupuid + activeUserData.uid)
+                    ? "cancel"
+                    : "send"
+                }
+                joinButton={() => handleJoinButton(item)}
+                cancelButton={() => handleCancelButton(item)}
               />
             ))}
           </Flex>

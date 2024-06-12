@@ -34,22 +34,10 @@ const SidebarMenu = () => {
   const { pathname } = useLocation();
   const activeUserData = useSelector((state) => state?.user?.information);
   const [accountSettingShow, setAccountSettingShow] = useState(false);
-  const profileUploadModalRef = useRef();
-  const profileUploadModalButtonRef = useRef();
-  const profileSettingModalRef = useRef();
   const [logoutModalShow, setLogoutModalShow] = useState(false);
-
   const [profileUploadModal, setProfileUploadModal] = useState(false);
-
-  useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (profileUploadModalButtonRef.current.contains(e.target)) {
-        setProfileUploadModal(true);
-      } else if (!profileUploadModalRef.current.contains(e.target)) {
-        setProfileUploadModal(false);
-      }
-    });
-  }, []);
+  const outerDivRef = useRef();
+  const menuRef = useRef();
 
   const handleLogOut = () => {
     signOut(auth)
@@ -65,15 +53,9 @@ const SidebarMenu = () => {
       .catch((error) => {});
   };
 
-  const outerDivRef = useRef();
-  const menuRef = useRef();
-
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (
-        outerDivRef.current.contains(e.target) &&
-        !menuRef.current.contains(e.target)
-      ) {
+      if (outerDivRef.current.contains(e.target) && !menuRef.current.contains(e.target)) {
         setAccountSettingShow(false);
       }
     });
@@ -138,7 +120,7 @@ const SidebarMenu = () => {
             </ListItem>
           </List>
         </nav>
-        <div ref={profileSettingModalRef}>
+        <Box>
           <Button
             onClick={() => setAccountSettingShow(!accountSettingShow)}
             className={
@@ -150,7 +132,7 @@ const SidebarMenu = () => {
             <Image
               src={activeUserData?.photoURL}
               alt={activeUserData?.displayName}
-              className={"w-10 h-10 object-cover mr-2 rounded-full"}
+              className={"w-10 aspect-square object-cover mr-2 rounded-full"}
             />
             <Box className={"text-start"}>
               <Typography
@@ -227,7 +209,6 @@ const SidebarMenu = () => {
                   <PiNewspaperClipping className="text-black" /> Edit BIo
                 </Button>
                 <button
-                  ref={profileUploadModalButtonRef}
                   onClick={() => setProfileUploadModal(!profileUploadModal)}
                   className={
                     "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
@@ -272,7 +253,7 @@ const SidebarMenu = () => {
               ></Box>
             </div>
           </div>
-        </div>
+        </Box>
       </section>
       <Modal
         modalShow={logoutModalShow}
@@ -301,10 +282,12 @@ const SidebarMenu = () => {
           </Button>
         </Flex>
       </Modal>
-      <ProfileUploadModal
-        modalShow={profileUploadModal}
-        modalClose={setProfileUploadModal}
-      />
+      {profileUploadModal &&
+        <ProfileUploadModal
+          modalShow={profileUploadModal}
+          modalClose={setProfileUploadModal}
+        />
+      }
     </>
   );
 };

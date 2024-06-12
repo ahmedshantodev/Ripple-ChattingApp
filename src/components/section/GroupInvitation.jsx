@@ -4,7 +4,7 @@ import Typography from "../layout/Typography";
 import SearchBox from "../layout/SearchBox";
 import Flex from "../layout/Flex";
 import GroupInvitationItem from "./../layout/GroupInvitationItem";
-import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { useSelector } from "react-redux";
 
 const GroupInvitation = () => {
@@ -57,7 +57,7 @@ const GroupInvitation = () => {
           variant="h4"
           className="font-inter text-[25px] font-semibold ml-2"
         >
-          Groups you've joined
+          Groups invitation
         </Typography>
         <SearchBox
           onChange={(e) => setSearchValue(e.target.value)}

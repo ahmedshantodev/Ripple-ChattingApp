@@ -143,7 +143,6 @@ const Registration = () => {
               // });
             })
             .catch((error) => {
-              console.log(error);
               setSignupLodingBtnShow(false);
             });
         })
