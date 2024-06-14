@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import Box from "./Box";
 import Typography from "./Typography";
-import ModalImage from "react-modal-image";
-import Flex from './Flex';
+import Flex from "./Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { FaReply } from "react-icons/fa";
 import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
 import moment from "moment";
+import { FaFileArchive } from "react-icons/fa";
 
-const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
+const SenderFile = ({ src, fileName, time, removeButton, forwardButton }) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
 
@@ -24,13 +24,17 @@ const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
 
   return (
     <Box className={"mt-4 text-end group"}>
-      <Box className={"max-w-[75%] inline-block mr-2.5 text-start relative"}>
-        <ModalImage
-          small={src}
-          large={src}
-          alt={alt}
-          className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
-        />
+      <Box className={"max-w-[35%] inline-block text-start relative mb-2"}>
+        <a
+          href={src}
+          target="_blank"
+          className="w-full h-full flex items-center justify-between gap-x-3 py-4 px-4 bg-[#f0f0f0] border border-primaryBorder rounded-[10px]"
+        >
+          <FaFileArchive className="text-5xl box-content text-secoundaryText"/>
+          <Typography className="text-lg font-semibold text-[#65676b]">
+           {fileName}
+          </Typography>
+        </a>
         <Flex
           alignItems={"center"}
           className={`absolute top-2/4 -translate-y-2/4 -left-[120px] ${
@@ -99,4 +103,4 @@ const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
   );
 };
 
-export default SenderImage;
+export default SenderFile;

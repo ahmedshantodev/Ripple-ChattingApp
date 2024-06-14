@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // Components
 import Box from "../components/layout/Box";
 import Typography from "../components/layout/Typography";
@@ -29,16 +29,26 @@ import { LuFileSpreadsheet } from "react-icons/lu";
 import { AiTwotoneVideoCamera } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
 import { MdCancel } from "react-icons/md";
+import { TbTriangleInvertedFilled } from "react-icons/tb";
 // Firebase
 import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
+import { getDownloadURL, getStorage, ref as storageRef, uploadBytes, } from "firebase/storage";
 // Redux slices
 import { useDispatch, useSelector } from "react-redux";
 import { activeChat } from "./../slices/activeChatSlice";
 // Images
 import noGroupPHoto from "/public/images/no chat image.jpg";
+// react emoji picker
+import EmojiPicker from 'emoji-picker-react';
+import GifPicker from 'gif-picker-react';
+import SenderVideo from "../components/layout/SenderVideo";
+import ReciverVideo from "../components/layout/ReciverVideo";
+import SenderFile from "../components/layout/SenderFile";
+import ReciverFile from "../components/layout/ReciverFile";
 
 const Chat = () => {
   const db = getDatabase();
+  const storage = getStorage();
   const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
   const activeChatData = useSelector((state) => state.activeChat.information);
@@ -57,6 +67,9 @@ const Chat = () => {
   const [blockModalShow, setBlockModalShow] = useState(false)
   const [unblockModalShow, setUnblockModalShow] = useState(false)
   const [messageForwardModalShow, setMessageForwardModalShow] = useState(false)
+  const [emojiPickerShow, setEmojiPickerShow] = useState(false)
+  const [gifPickerShow, setGifPickerShow] = useState(false)
+  const [image, setImage] = useState("");
 
   const time = new Date();
   const year = time.getFullYear();
@@ -64,6 +77,9 @@ const Chat = () => {
   const date = time.getDate();
   const hours = time.getHours();
   const minutes = time.getMinutes();
+  const inputRef = useRef()
+  const emojiBoxRef = useRef()
+  const gifBoxRef = useRef()
 
   useEffect(() => {
     const friendListRef = ref(db, "friends");
@@ -101,7 +117,7 @@ const Chat = () => {
 
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
-      set(push(ref(db, "messege/")), {
+      set(push(ref(db, "singlemessege/")), {
         messege: messege,
         messegetype: "reply",
         repliedtoname: replyMessegeInfo.messegesendername,
@@ -118,7 +134,7 @@ const Chat = () => {
         setreplyMessegeInfo("")
       }); 
     } else {
-      set(push(ref(db, "messege/")), {
+      set(push(ref(db, "singlemessege/")), {
         messege: messege,
         messegetype: "normal",
         messegereciveruid: activeChatData?.uid,
@@ -135,7 +151,7 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    let messegeRef = ref(db, "messege/");
+    let messegeRef = ref(db, "singlemessege/");
     onValue(messegeRef, (snapshot) => {
       let messegeArray = [];
       snapshot.forEach((item) => {
@@ -200,7 +216,7 @@ const Chat = () => {
   }
 
   const handleForwardMessegeSend = (item) => {
-    set(push(ref(db, "messege/")), {
+    set(push(ref(db, "singlemessege/")), {
       messege: forwardMessege,
       messegetype: "forwarded",
       messegereciveruid: activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid,
@@ -215,7 +231,102 @@ const Chat = () => {
 
   const handleReply = (item) => {
     setreplyMessegeInfo(item)
+    inputRef.current.focus();
   }
+
+  // useEffect(() => {
+  //   document.addEventListener("keydown" , detectKeyDown, true)
+  // } , [])
+
+  // const detectKeyDown = (e) => {
+  //   if ( e.key == "Enter") {
+  //     handleMessegeSend()
+  //   }
+  // }
+
+  useEffect(() => {
+    document.body.addEventListener("click" , (e) => {
+      if (!emojiBoxRef.current.contains(e.target)) {
+        setEmojiPickerShow(false)
+      }
+    })
+  } , [])
+
+  useEffect(() => {
+    document.body.addEventListener("click" , (e) => {
+      if (!gifBoxRef.current.contains(e.target)) {
+        setGifPickerShow(false)
+      }
+    })
+  } , [])
+
+  const handleEmojiClick = (e) => {
+    setMessege(messege + e.emoji)
+  }
+
+  const handleGifClick = (e) => {
+    console.log(e)
+  }
+  
+  const handleFileClick = (e) => {
+    let file = e.target.files[0]
+
+    if (file.type.includes("image")) {
+      const fileRef = storageRef(storage, "image as a messege/" + Date.now());
+
+      uploadBytes(fileRef, file).then((snapshot) => {
+        getDownloadURL(fileRef).then((downloadURL) => {
+          set(push(ref(db, "singlemessege/")), {
+            messegetype: "image",
+            messege: downloadURL,
+            messegereciveruid: activeChatData?.uid,
+            messegesreciverame: activeChatData?.name,
+            messegesreciverrofile: activeChatData?.profile,
+            messegesenderuid: activeUserData?.uid,
+            messegesendername: activeUserData?.displayName,
+            messegesenderprofile: activeUserData?.photoURL,
+            messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+          })
+        });
+      });
+    } else if (file.type.includes("video")) {
+      const fileRef = storageRef(storage, "video as a messege/" + Date.now());
+      
+      uploadBytes(fileRef, file).then((snapshot) => {
+        getDownloadURL(fileRef).then((downloadURL) => {
+          set(push(ref(db, "singlemessege/")), {
+            messegetype: "video",
+            messege: downloadURL,
+            messegereciveruid: activeChatData?.uid,
+            messegesreciverame: activeChatData?.name,
+            messegesreciverrofile: activeChatData?.profile,
+            messegesenderuid: activeUserData?.uid,
+            messegesendername: activeUserData?.displayName,
+            messegesenderprofile: activeUserData?.photoURL,
+            messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+          })
+        });
+      });
+    } else if (file.type.includes("application/pdf")) {
+      const fileRef = storageRef(storage, "file as a messege/" + Date.now());
+      uploadBytes(fileRef, file).then((snapshot) => {
+        getDownloadURL(fileRef).then((downloadURL) => {
+          set(push(ref(db, "singlemessege/")), {
+            messegetype: "file",
+            messege: downloadURL,
+            filename: file.name,
+            messegereciveruid: activeChatData?.uid,
+            messegesreciverame: activeChatData?.name,
+            messegesreciverrofile: activeChatData?.profile,
+            messegesenderuid: activeUserData?.uid,
+            messegesendername: activeUserData?.displayName,
+            messegesenderprofile: activeUserData?.photoURL,
+            messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+          })
+        });
+      });
+    }
+  };
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -246,6 +357,7 @@ const Chat = () => {
               onClick={() => handleActiveChatOpen(item)}
               profile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
               userName={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername}
+              userid={activeUserData?.uid == item.senderuid ? item.reciveruid : item.senderuid}
               lastMessege={"random messege...."}
               lastMessegeSentTime={"30 min"}
             />
@@ -287,7 +399,7 @@ const Chat = () => {
               className={" h-[70px] py-3 px-3 border-b border-b-[#dedede]"}
             >
               <Box
-                onClick={() =>setFriendsProfileOpen(!friendsProfileOpen)}
+                onClick={() => setFriendsProfileOpen(!friendsProfileOpen)}
                 className={
                   "flex items-center px-2.5 py-[5px]  rounded-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#f5f5f5]"
                 }
@@ -315,10 +427,16 @@ const Chat = () => {
             <Box
               className={
                 blockList.includes(activeChatData?.uid + activeUserData?.uid)
-                  ?  "h-[calc(100%-(70px+133px))] bg-white px-6 overflow-y-scroll pb-2"
-                  : blockList.includes(activeUserData?.uid + activeChatData?.uid)
-                  ?  "h-[calc(100%-(70px+93px))] bg-white px-6 overflow-y-scroll pb-2"
-                  : `${replyMessegeInfo.messege ? "h-[calc(100%-(70px+127px))]" : "h-[calc(100%-(70px+73px))]"} bg-white px-6 overflow-y-scroll pb-2`
+                  ? "h-[calc(100%-(70px+133px))] bg-white px-6 overflow-y-scroll pb-2"
+                  : blockList.includes(
+                      activeUserData?.uid + activeChatData?.uid
+                    )
+                  ? "h-[calc(100%-(70px+93px))] bg-white px-6 overflow-y-scroll pb-2"
+                  : `${
+                      replyMessegeInfo.messege
+                        ? "h-[calc(100%-(70px+127px))]"
+                        : "h-[calc(100%-(70px+73px))]"
+                    } bg-white px-6 overflow-y-scroll pb-2`
               }
             >
               <Box className={"mt-10 mb-10 text-center"}>
@@ -339,10 +457,32 @@ const Chat = () => {
                   You're friends on Ripple
                 </Typography>
               </Box>
-              {console.log(messegeList)}
               {messegeList.map((item) =>
                 activeChatData.uid == item.messegesenderuid ? (
-                  item.messegetype == "reply" ? (
+                  item.messegetype == "image" ? (
+                    <ReciverImage
+                      name={activeChatData?.name}
+                      profile={activeChatData?.profile}
+                      src={item.messege}
+                      alt={"open image"}
+                      time={item.messegesenttime}
+                    />
+                  ) : item.messegetype == "video" ? (
+                    <ReciverVideo
+                      name={activeChatData?.name}
+                      profile={activeChatData?.profile}
+                      src={item.messege}
+                      time={item.messegesenttime}
+                    />
+                  ) : item.messegetype == "file" ? (
+                    <ReciverFile
+                      name={activeChatData?.name}
+                      profile={activeChatData?.profile}
+                      src={item.messege}
+                      fileName={item.filename}
+                      time={item.messegesenttime}
+                    />
+                  ) : item.messegetype == "reply" ? (
                     <ReciverMessege
                       name={activeChatData?.name}
                       profile={activeChatData?.profile}
@@ -368,35 +508,47 @@ const Chat = () => {
                       forwardButton={() => handleMessegeForwardListShow(item)}
                     />
                   )
+                ) : item.messegetype == "image" ? (
+                  <SenderImage
+                    src={item.messege}
+                    alt={"open image"}
+                    time={item.messegesenttime}
+                  />
+                ) : item.messegetype == "video" ? (
+                  <SenderVideo src={item.messege} time={item.messegesenttime} />
+                ) : item.messegetype == "file" ? (
+                  <SenderFile
+                    src={item.messege}
+                    fileName={item.filename}
+                    time={item.messegesenttime}
+                  />
+                ) : item.messegetype == "reply" ? (
+                  <SenderMessege
+                    messege={item.messege}
+                    messegeType={item.messegetype}
+                    repliedbyname={item.messegesendername}
+                    repliedtoname={item.repliedtoname}
+                    repliedtomessege={item.repliedtomessege}
+                    time={item.messegesenttime}
+                    replayButton={() => handleReply(item)}
+                    reactButton={() => handleReact(item)}
+                    forwardButton={() => handleMessegeForwardListShow(item)}
+                    editButton={() => handleMessegeEdit(item)}
+                  />
                 ) : (
-                  item.messegetype == "reply" ? (
-                    <SenderMessege
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      repliedbyname={item.messegesendername}
-                      repliedtoname={item.repliedtoname}
-                      repliedtomessege={item.repliedtomessege}
-                      time={item.messegesenttime}
-                      replayButton={() => handleReply(item)}
-                      reactButton={() => handleReact(item)}
-                      forwardButton={() => handleMessegeForwardListShow(item)}
-                      editButton={() => handleMessegeEdit(item)}
-                    />
-                  ) : (
-                    <SenderMessege
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      time={item.messegesenttime}
-                      replayButton={() => handleReply(item)}
-                      reactButton={() => handleReact(item)}
-                      forwardButton={() => handleMessegeForwardListShow(item)}
-                      editButton={() => handleMessegeEdit(item)}
-                    />
-                  )
+                  <SenderMessege
+                    messege={item.messege}
+                    messegeType={item.messegetype}
+                    time={item.messegesenttime}
+                    replayButton={() => handleReply(item)}
+                    reactButton={() => handleReact(item)}
+                    forwardButton={() => handleMessegeForwardListShow(item)}
+                    editButton={() => handleMessegeEdit(item)}
+                  />
                 )
               )}
               <Modal
-                modalShow={messageForwardModalShow}  
+                modalShow={messageForwardModalShow}
                 modalClose={setMessageForwardModalShow}
                 className={"w-[600px] h-[550px] py-8 px-[40px]"}
               >
@@ -416,168 +568,138 @@ const Chat = () => {
                 <Box className={"h-[79%] overflow-y-auto"}>
                   {filteredForwardList.map((item) => (
                     <MessageForwardListItem
-                      profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-                      name={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+                      profile={
+                        activeUserData.uid == item.senderuid
+                          ? item.reciverprofile
+                          : item.senderprofile
+                      }
+                      name={
+                        activeUserData.uid == item.senderuid
+                          ? item.recivername
+                          : item.sendername
+                      }
                       button={"send"}
-                      sendButton={() =>handleForwardMessegeSend(item)}
+                      sendButton={() => handleForwardMessegeSend(item)}
                     />
                   ))}
-                </Box>                
+                </Box>
               </Modal>
             </Box>
             {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
-                <Box className={
+              <Box
+                className={
                   "text-center bg-white absolute bottom-0 left-0 w-full h-[133px] py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
-                }>
-                  <Typography className="text-lg font-semibold mb-1">
-                    You've blocked messages and calls from {activeChatData?.name}
-                  </Typography>
-                  <Typography className="text-secoundaryText mb-3">
-                    You can't message or call {activeChatData?.name} in this chat, and you won't receive their messages or calls.
-                  </Typography>
-                  <Button
-                    onClick={() => setUnblockModalShow(true)}
-                    className={"w-full bg-[#e9e9e9] py-2 font-bold text-lg rounded-md transition-all duration-200 active:scale-[0.99]"}
-                  >
-                    Unblock
-                  </Button>
-                  <Modal
-                    modalShow={unblockModalShow}
-                    modalClose={setUnblockModalShow}
-                    className={"text-center py-7 px-10 w-[550px]"}
-                  >
-                    <Typography className=" font-open-sans text-3xl font-semibold mb-5">
-                      Unblock {activeChatData?.name}?
-                    </Typography>
-                    <Typography className="text-lg font-semibold text-secoundaryText w-[360px] mx-auto mb-4 ">
-                      Your will start receiving messages or calls from {activeChatData?.name}'s account.
-                    </Typography>
-                    <Flex justifyContent={"between"}>
-                      <Button
-                        onClick={handleUnBlock}
-                        className={"bg-[#4e4f50] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"}
-                      >
-                        Yes, Unblock
-                      </Button>
-                      <Button
-                        onClick={() => setUnblockModalShow(false)}
-                        className={"bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"}
-                      >
-                        Cancel
-                      </Button>
-                    </Flex>
-                  </Modal>
-                </Box>
-            ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
-              <Box className={
-                "text-center bg-white absolute bottom-0 left-0 w-full h-[93px] py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
-              }>
+                }
+              >
                 <Typography className="text-lg font-semibold mb-1">
-                  {activeChatData?.name} has blocked you from messaging and calling
+                  You've blocked messages and calls from {activeChatData?.name}
+                </Typography>
+                <Typography className="text-secoundaryText mb-3">
+                  You can't message or call {activeChatData?.name} in this chat,
+                  and you won't receive their messages or calls.
+                </Typography>
+                <Button
+                  onClick={() => setUnblockModalShow(true)}
+                  className={
+                    "w-full bg-[#e9e9e9] py-2 font-bold text-lg rounded-md transition-all duration-200 active:scale-[0.99]"
+                  }
+                >
+                  Unblock
+                </Button>
+                <Modal
+                  modalShow={unblockModalShow}
+                  modalClose={setUnblockModalShow}
+                  className={"text-center py-7 px-10 w-[550px]"}
+                >
+                  <Typography className=" font-open-sans text-3xl font-semibold mb-5">
+                    Unblock {activeChatData?.name}?
+                  </Typography>
+                  <Typography className="text-lg font-semibold text-secoundaryText w-[360px] mx-auto mb-4 ">
+                    Your will start receiving messages or calls from{" "}
+                    {activeChatData?.name}'s account.
+                  </Typography>
+                  <Flex justifyContent={"between"}>
+                    <Button
+                      onClick={handleUnBlock}
+                      className={
+                        "bg-[#4e4f50] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"
+                      }
+                    >
+                      Yes, Unblock
+                    </Button>
+                    <Button
+                      onClick={() => setUnblockModalShow(false)}
+                      className={
+                        "bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"
+                      }
+                    >
+                      Cancel
+                    </Button>
+                  </Flex>
+                </Modal>
+              </Box>
+            ) : blockList.includes(
+                activeUserData?.uid + activeChatData?.uid
+              ) ? (
+              <Box
+                className={
+                  "text-center bg-white absolute bottom-0 left-0 w-full h-[93px] py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
+                }
+              >
+                <Typography className="text-lg font-semibold mb-1">
+                  {activeChatData?.name} has blocked you from messaging and
+                  calling
                 </Typography>
                 <Typography className="text-secoundaryText mb-4">
-                  You can't message or call {activeChatData?.name} in this chat, and you won't receive their messages or calls.
+                  You can't message or call {activeChatData?.name} in this chat,
+                  and you won't receive their messages or calls.
                 </Typography>
               </Box>
-          ) : (
-            <Box
-              className={
-                "bg-white absolute bottom-0 left-0 w-full border-t border-[#dedede]"
-              } 
-            > 
-              {replyMessegeInfo.messege &&
-                <Box className={"pt-2 px-5 relative"}>
-                  <MdCancel
-                    onClick={() => setreplyMessegeInfo("")}
-                    className="absolute top-2.5 right-2.5 text-[22px] text-secoundaryText cursor-pointer"
-                  />
-                  <Typography
-                    className="font-inter font-semibold"
-                  >
-                    Replying to {activeUserData.uid == replyMessegeInfo.messegesenderuid ? "yourself" : replyMessegeInfo.messegesendername}
-                  </Typography>
-                  <Typography
-                    className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]"
-                  >
-                    {replyMessegeInfo.messege}
-                  </Typography>
-                </Box>
-              }
-              <Flex
-                justifyContent={"between"}
-                alignItems={"center"}
+            ) : (
+              <Box
                 className={
-                  "py-3 pr-[5px] pl-5"
-                } 
+                  "bg-white absolute bottom-0 left-0 w-full border-t border-[#dedede]"
+                }
               >
-                <Flex>
-                  <FaPlus
-                    className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
-                  />
-                  <Box className={"relative group/tooltip mr-[5px]"}>
-                    <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                    <Typography
-                      variant="span"
-                      className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                    >
-                      Attach a file
-                      <Box
-                        className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                        }
-                      ></Box>
-                    </Typography>
-                  </Box>
-                  <Box className={"relative group/tooltip mr-[5px]"}>
-                    <HiMiniGif className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                    <Typography
-                      variant="span"
-                      className="w-[115px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                    >
-                      Choose a gif
-                      <Box
-                        className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                        }
-                      ></Box>
-                    </Typography>
-                  </Box>
-                  <Box className={"relative group/tooltip mr-[5px]"}>
-                    <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                    <Typography
-                      variant="span"
-                      className="w-[170px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                    >
-                      Sent voice messege
-                      <Box
-                        className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                        }
-                      ></Box>
-                    </Typography>
-                  </Box>
-                </Flex>
-                <Flex alignItems={"center"} className={"w-[80%]"}>
-                  <Box className={"relative w-full"}>
-                    <Input
-                      value={messege}
-                      onChange={(e) => setMessege(e.target.value)}
-                      placeholder={"enter your messege"}
-                      className={
-                        "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
-                      }
+                {replyMessegeInfo.messege && (
+                  <Box className={"pt-2 px-5 relative"}>
+                    <MdCancel
+                      onClick={() => setreplyMessegeInfo("")}
+                      className="absolute top-2.5 right-2.5 text-[22px] text-secoundaryText cursor-pointer"
                     />
-                    <Box
-                      className={
-                        " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip mr-[5px]"
-                      }
-                    >
-                      <BsEmojiSmileFill className="box-content text-[#007bf5] text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <Typography className="font-inter font-semibold">
+                      Replying to{" "}
+                      {activeUserData.uid == replyMessegeInfo.messegesenderuid
+                        ? "yourself"
+                        : replyMessegeInfo.messegesendername}
+                    </Typography>
+                    <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
+                      {replyMessegeInfo.messege}
+                    </Typography>
+                  </Box>
+                )}
+                <Flex
+                  justifyContent={"between"}
+                  alignItems={"center"}
+                  className={"py-3 pr-[5px] pl-5"}
+                >
+                  <Flex>
+                    <FaPlus className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <Input
+                        onChange={handleFileClick}
+                        id={"file"}
+                        type={"file"}
+                        className={"hidden"}
+                      />
+                      <label for="file">
+                        <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      </label>
                       <Typography
                         variant="span"
-                        className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                        className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-30 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                       >
-                        Choose an emoji
+                        Attach a file
                         <Box
                           className={
                             "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
@@ -585,48 +707,163 @@ const Chat = () => {
                         ></Box>
                       </Typography>
                     </Box>
-                  </Box>
-                  {messege == "" ? (
-                    <Box className={"relative group/tooltip mr-[5px]"}>
-                      <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                      <Typography
-                        variant="span"
-                        className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
-                      >
-                        send a like
+                    <div ref={gifBoxRef} className="relative">
+                      <Box className={"relative group/tooltip mr-[5px]"}>
+                        <HiMiniGif
+                          onClick={() => setGifPickerShow(!gifPickerShow)}
+                          className={`box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 ${
+                            gifPickerShow && "bg-[#dedede]"
+                          } hover:bg-[#dedede]`}
+                        />
+                        {!gifPickerShow && (
+                          <Typography
+                            variant="span"
+                            className="w-[115px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-10 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                          >
+                            Choose a gif
+                            <Box
+                              className={
+                                "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                              }
+                            ></Box>
+                          </Typography>
+                        )}
+                      </Box>
+                      {gifPickerShow && (
                         <Box
                           className={
-                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                            "absolute z-20 bottom-[133%] right-0 translate-x-[55%] bg-white pb-5 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-[10px]"
+                          }
+                        >
+                          <GifPicker
+                            tenorApiKey={
+                              "AIzaSyAW7la2woNuMnvq7z-KCOavIuaKyeQX_jg"
+                            }
+                            onGifClick={handleGifClick}
+                          />
+                          <Box
+                            className={
+                              "w-[20px] h-[20px] bg-white absolute left-[120px] -translate-y-2/4 top-full rotate-45"
+                            }
+                          ></Box>
+                        </Box>
+                      )}
+                    </div>
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <Typography
+                        variant="span"
+                        className="w-[170px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-30 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        Sent voice messege
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
                           }
                         ></Box>
                       </Typography>
                     </Box>
-                  ) : (
-                    <Box className={"relative group/tooltip mr-[5px]"}>
-                      <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                      <Typography
-                        variant="span"
-                        className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
-                      >
-                        Click to Send
+                  </Flex>
+                  <Flex alignItems={"center"} className={"w-[80%]"}>
+                    <Box className={"relative w-full"}>
+                      <input
+                        value={messege}
+                        ref={inputRef}
+                        onChange={(e) => setMessege(e.target.value)}
+                        placeholder={"Enter your messege"}
+                        className={
+                          "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
+                        }
+                      />
+                      <div ref={emojiBoxRef}>
                         <Box
                           className={
-                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                            " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip"
                           }
-                        ></Box>
-                      </Typography>
+                        >
+                          <BsEmojiSmileFill
+                            onClick={() => setEmojiPickerShow(!emojiPickerShow)}
+                            className={`box-content text-[#007bf5] ${
+                              emojiPickerShow && "bg-[#dedede]"
+                            } text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]`}
+                          />
+                          {!emojiPickerShow && (
+                            <Typography
+                              variant="span"
+                              className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-10 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                            >
+                              Choose an emoji
+                              <Box
+                                className={
+                                  "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                                }
+                              ></Box>
+                            </Typography>
+                          )}
+                        </Box>
+                        {emojiPickerShow && (
+                          <Box
+                            className={
+                              "absolute bottom-[130%] -right-[8px] rounded-[10px] shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
+                            }
+                          >
+                            <EmojiPicker
+                              onEmojiClick={handleEmojiClick}
+                              emojiStyle="facebook"
+                            />
+                            <Box
+                              className={
+                                "w-[20px] h-[20px] bg-white absolute right-5 -translate-y-2/4 top-full rotate-45"
+                              }
+                            ></Box>
+                          </Box>
+                        )}
+                      </div>
                     </Box>
-                  )}
+                    {messege == "" ? (
+                      <Box className={"relative group/tooltip mr-[5px]"}>
+                        <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                        <Typography
+                          variant="span"
+                          className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                        >
+                          send a like
+                          <Box
+                            className={
+                              "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                            }
+                          ></Box>
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Box className={"relative group/tooltip mr-[5px]"}>
+                        <IoSend
+                          onClick={handleMessegeSend}
+                          className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                        />
+                        <Typography
+                          variant="span"
+                          className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                        >
+                          Click to Send
+                          <Box
+                            className={
+                              "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                            }
+                          ></Box>
+                        </Typography>
+                      </Box>
+                    )}
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Box>
+              </Box>
             )}
           </Box>
           <Box
             className={
-              friendsProfileOpen 
-              ? "w-[30%] ml-4 h-full bg-white rounded-2xl overflow-hidden text-center"
-              : "w-0 ml-0 h-full bg-white rounded-2xl overflow-hidden text-center"
+              friendsProfileOpen
+                ? "w-[30%] ml-4 h-full bg-white rounded-2xl overflow-hidden text-center"
+                : "w-0 ml-0 h-full bg-white rounded-2xl overflow-hidden text-center"
             }
           >
             <Image
@@ -783,54 +1020,59 @@ const Chat = () => {
                       <MdOutlineNotificationsOff className="text-xl" />
                       <Typography>Mute notifications</Typography>
                     </Button>
-                    {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
+                    {blockList.includes(
+                      activeChatData?.uid + activeUserData?.uid
+                    ) ? (
                       <Button
-                      onClick={() => setUnblockModalShow(true)}
-                      className={
-                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
-                      }
-                    >
-                      <MdBlock className="text-xl" />
-                      <Typography>Unblock</Typography>
-                    </Button>
-                    ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
+                        onClick={() => setUnblockModalShow(true)}
+                        className={
+                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        }
+                      >
+                        <MdBlock className="text-xl" />
+                        <Typography>Unblock</Typography>
+                      </Button>
+                    ) : blockList.includes(
+                        activeUserData?.uid + activeChatData?.uid
+                      ) ? (
                       <></>
                     ) : (
                       <Button
-                      onClick={() => setBlockModalShow(true)}
-                      className={
-                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
-                      }
-                    >
-                      <MdBlock className="text-xl" />
-                      <Typography>Block</Typography>
-                    </Button>
+                        onClick={() => setBlockModalShow(true)}
+                        className={
+                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        }
+                      >
+                        <MdBlock className="text-xl" />
+                        <Typography>Block</Typography>
+                      </Button>
                     )}
                     <Modal
                       modalShow={blockModalShow}
                       modalClose={setBlockModalShow}
                       className={"text-center py-7 px-10 w-[550px]"}
                     >
-                      <Typography
-                        className=" font-open-sans text-3xl font-semibold mb-5"
-                      >
+                      <Typography className=" font-open-sans text-3xl font-semibold mb-5">
                         Block {activeChatData?.name}?
                       </Typography>
-                      <Typography
-                        className="text-lg font-semibold text-secoundaryText mx-auto mb-4 px-[10px]"
-                      >
-                        You can't message or call {activeChatData?.name} in this chat, and you won't receive their messages or calls.
+                      <Typography className="text-lg font-semibold text-secoundaryText mx-auto mb-4 px-[10px]">
+                        You can't message or call {activeChatData?.name} in this
+                        chat, and you won't receive their messages or calls.
                       </Typography>
                       <Flex justifyContent={"between"}>
                         <Button
                           onClick={handleBlock}
-                          className={"bg-[#f87171] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"}
+                          className={
+                            "bg-[#f87171] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"
+                          }
                         >
                           Yes, Block
                         </Button>
                         <Button
                           onClick={() => setBlockModalShow(false)}
-                          className={"bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"}
+                          className={
+                            "bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"
+                          }
                         >
                           Cancel
                         </Button>

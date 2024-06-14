@@ -46,10 +46,10 @@ const ReciverMessege = ({
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
-      <Box className={"w-[calc(100%-58px)] w-[95%]s bg-red-300s"}>
+      <Box className={"w-[calc(100%-58px)]"}>
         <Box className={"relative max-w-[70%] inline-block mb-2 "}>
           <TbTriangleFilled className="text-[22px] text-[#f0f0f0] absolute -bottom-[3px] left-[2px] -translate-x-2/4" />
-          <Typography className="font-poppins py-3 px-6 rounded-[10px] bg-[#f0f0f0] break-words">
+          <Typography className="py-3 px-6 rounded-[10px] bg-[#f0f0f0] break-words">
             {messege}
           </Typography>
           <Flex
@@ -151,7 +151,7 @@ const ReciverMessege = ({
         </Box>
         <Box className={"relative max-w-[70%] inline-block mb-2 "}>
           <TbTriangleFilled className="text-[22px] text-[#f0f0f0] absolute -bottom-[3px] left-[2px] -translate-x-2/4" />
-          <Typography className="font-poppins py-3 px-6 rounded-[10px] bg-[#f0f0f0] break-words">
+          <Typography className="py-3 px-6 rounded-[10px] bg-[#f0f0f0] break-words">
             {messege}
           </Typography>
           <Flex
@@ -236,7 +236,7 @@ const ReciverMessege = ({
         </Box>
         <Box className={"relative max-w-[70%] inline-block mb-2 "}>
           <TbTriangleFilled className="text-[22px] text-[#f0f0f0] absolute -bottom-[3px] left-[2px] -translate-x-2/4" />
-          <Typography className="font-poppins py-3 pr-6 pl-8 rounded-[10px] bg-[#f0f0f0] relative after:content-[''] after:w-[3px] after:h-[calc(100%-24px)] after:bg-[#4a40dd] after:absolute after:left-4 after:top-2/4 after:-translate-y-2/4 after:rounded-[30px]">
+          <Typography className="py-3 pr-6 pl-8 rounded-[10px] bg-[#f0f0f0] relative after:content-[''] after:w-[3px] after:h-[calc(100%-24px)] after:bg-[#4a40dd] after:absolute after:left-4 after:top-2/4 after:-translate-y-2/4 after:rounded-[30px]">
             {messege}
           </Typography>
           <Flex

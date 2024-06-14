@@ -40,7 +40,7 @@ const SenderMessege = ({
     <Box className={"mt-4 group text-end"}>
       <Box className={"max-w-[67%] inline-block relative mb-2 ml-2.5"}>
         <TbTriangleFilled className="text-[22px] text-[#5a3bff] absolute -bottom-[3px] right-[2px] translate-x-2/4" />
-        <Typography className="text-start font-poppins py-3 px-6 rounded-[10px] bg-[#5a3bff] text-white break-words">
+        <Typography className="text-start py-3 px-6 rounded-[10px] bg-[#5a3bff] text-white break-words">
           {messege}
         </Typography>
         <Flex
@@ -103,19 +103,20 @@ const SenderMessege = ({
               <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip z-10"}>
-            <BsEmojiSmile
-              onClick={reactButton}
-              className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2] z-20 relative"
-            />
-            <Typography
-              variant="span"
-              className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
-            >
-              React
-              <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
-            </Typography>
-          </Box>
+          <div className={"relative"}>
+            <Box className={"relative group/tooltip z-10"}>
+              <BsEmojiSmile
+                className={"box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2] z-20 relative"}
+              />
+              <Typography
+                variant="span"
+                className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
+              >
+                React
+                <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
+              </Typography>
+            </Box>
+          </div>
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText">
@@ -140,7 +141,7 @@ const SenderMessege = ({
       <Box className={"max-w-[67%] inline-block relative mb-2 ml-2.5"}>
         <TbTriangleFilled className="text-[22px] text-[#5a3bff] absolute -bottom-[3px] right-[2px] translate-x-2/4" />
         <Typography
-          className="text-start font-poppins py-3 px-6 rounded-[10px] bg-[#5a3bff] text-white break-words border-l border-red-400"
+          className="text-start py-3 px-6 rounded-[10px] bg-[#5a3bff] text-white break-words border-l border-red-400"
         >
           {messege}
         </Typography>
@@ -233,7 +234,7 @@ const SenderMessege = ({
       </Box>
       <Box className={"max-w-[67%] inline-block relative mb-2 ml-2.5"}>
         <TbTriangleFilled className="text-[22px] text-[#5a3bff] absolute -bottom-[3px] right-[2px] translate-x-2/4" />
-        <Typography className="text-start font-poppins py-3 pr-6 pl-8 rounded-[10px] bg-[#5a3bff] text-white break-words border-l border-red-400 relative after:content-[''] after:w-[3px] after:h-[calc(100%-24px)] after:bg-[#d0c3ff] after:absolute after:left-4 after:top-2/4 after:-translate-y-2/4 after:rounded-[30px]">
+        <Typography className="text-start py-3 pr-6 pl-8 rounded-[10px] bg-[#5a3bff] text-white break-words border-l border-red-400 relative after:content-[''] after:w-[3px] after:h-[calc(100%-24px)] after:bg-[#d0c3ff] after:absolute after:left-4 after:top-2/4 after:-translate-y-2/4 after:rounded-[30px]">
           {messege}
         </Typography>
         <Flex

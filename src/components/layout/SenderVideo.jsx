@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Box from "./Box";
 import Typography from "./Typography";
-import ModalImage from "react-modal-image";
 import Flex from './Flex';
 import { BsFillTriangleFill } from "react-icons/bs";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
@@ -10,7 +9,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
 import moment from "moment";
 
-const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
+const SenderVideo = ({ src, time, removeButton, forwardButton }) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
 
@@ -24,11 +23,9 @@ const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
 
   return (
     <Box className={"mt-4 text-end group"}>
-      <Box className={"max-w-[75%] inline-block mr-2.5 text-start relative"}>
-        <ModalImage
-          small={src}
-          large={src}
-          alt={alt}
+      <Box className={"max-w-[75%] inline-block text-start relative"}>
+        <video
+          src={src} controls
           className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
         />
         <Flex
@@ -96,7 +93,7 @@ const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
         {moment(time, "YYYYMMDDh:mm").fromNow()}
       </Typography>
     </Box>
-  );
-};
+  )
+}
 
-export default SenderImage;
+export default SenderVideo

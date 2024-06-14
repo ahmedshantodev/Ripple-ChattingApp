@@ -1,19 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "./Box";
 import Image from "./Image";
 import Typography from "./Typography";
 import Button from "./Button";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { getDatabase, onValue, ref } from "firebase/database";
+import { useSelector } from "react-redux";
 
 const ChatItem = ({
   activeItem,
   onClick,
   profile,
   userName,
-  lastMessege,
+  userid,
   lastMessegeSentTime,
 }) => {
+  const db = getDatabase();
+  const activeUserData = useSelector((state) => state.user.information)
   const [dropdownShow, setDropdownShow] = useState(false);
+  const [messegeList, setMessegeList] = useState([]);
+
+  useEffect(() => {
+    let messegeRef = ref(db, "singlemessege/");
+    onValue(messegeRef, (snapshot) => {
+      let messegeArray = [];
+      snapshot.forEach((item) => {
+        if (activeUserData?.uid == item.val().messegereciveruid && userid == item.val().messegesenderuid) {
+          messegeArray.push({ ...item.val(), messegeid: item.key }); 
+        }
+      });
+      setMessegeList(messegeArray);
+    });
+  }, [userid]);
 
   return (
     <Box
@@ -37,7 +55,7 @@ const ChatItem = ({
           variant="p"
           className="text-sm text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[220px]"
         >
-          {lastMessege}
+         {messegeList.length}
         </Typography>
       </Box>
       <Typography className="text-sm text-secoundaryText absolute right-2.5 top-2.5">
