@@ -10,7 +10,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
 import moment from "moment";
 
-const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
+const SenderImage = ({ src, alt, time,replyButton, removeButton, forwardButton }) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
 
