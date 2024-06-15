@@ -56,7 +56,7 @@ const MyGroups = () => {
         />
       </Box>
       <Box className={"h-[86%] overflow-y-auto"}>
-        {false ? (
+        {filteredList.length == 0 ? (
           <Box className={"flex h-full justify-center items-center"}>
             <Typography className="font-mono text-3xl text-secoundaryText">
               You are not connected to any groups

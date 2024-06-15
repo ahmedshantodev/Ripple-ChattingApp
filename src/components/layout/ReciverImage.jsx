@@ -17,6 +17,7 @@ const ReciverImage = ({
   src,
   alt,
   time,
+  replyButton,
   removeButton,
   forwardButton,
 }) => {
@@ -65,7 +66,10 @@ const ReciverImage = ({
               </Typography>
             </Box>
             <Box className={"relative group/tooltip"}>
-              <FaReply className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
+              <FaReply
+                onClick={replyButton}
+                className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
+              />
               <Typography
                 variant="span"
                 className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"

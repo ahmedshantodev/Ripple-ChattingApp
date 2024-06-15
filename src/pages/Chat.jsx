@@ -45,6 +45,7 @@ import SenderVideo from "../components/layout/SenderVideo";
 import ReciverVideo from "../components/layout/ReciverVideo";
 import SenderFile from "../components/layout/SenderFile";
 import ReciverFile from "../components/layout/ReciverFile";
+import SenderGif from "../components/layout/SenderGif";
 
 const Chat = () => {
   const db = getDatabase();
@@ -94,6 +95,27 @@ const Chat = () => {
     });
   }, []);
 
+  const filteredChatItem = friendList.filter((item) => {
+    let name = activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
+    return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase());
+  })
+
+  useEffect(() => {
+    let messegeRef = ref(db, "singlemessege/");
+    onValue(messegeRef, (snapshot) => {
+      let messegeArray = [];
+      snapshot.forEach((item) => {
+        if (
+          (activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid)
+        ) {
+          messegeArray.push({ ...item.val(), messegeid: item.key });
+        }
+      });
+      setMessegeList(messegeArray);
+    });
+  }, [activeChatData]);
+
   const handleActiveChatOpen = (item) => {
     dispatch(activeChat({
         uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
@@ -101,9 +123,7 @@ const Chat = () => {
         profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
       })
     );
-    localStorage.setItem(
-      "activeChat",
-      JSON.stringify({
+    localStorage.setItem("activeChat" , JSON.stringify({
         uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
         name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
         profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
@@ -118,53 +138,37 @@ const Chat = () => {
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
       set(push(ref(db, "singlemessege/")), {
-        messege: messege,
-        messegetype: "reply",
-        repliedtoname: replyMessegeInfo.messegesendername,
-        repliedtomessege: replyMessegeInfo.messege,
-        messegereciveruid: activeChatData?.uid,
-        messegesreciverame: activeChatData?.name,
-        messegesreciverrofile: activeChatData?.profile,
-        messegesenderuid: activeUserData?.uid,
-        messegesendername: activeUserData?.displayName,
-        messegesenderprofile: activeUserData?.photoURL,
-        messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        type: "text/reply",
+        text: messege,
+        repliedto: replyMessegeInfo.sendername,
+        repliedmessege: replyMessegeInfo.text,
+        reciveruid: activeChatData?.uid,
+        reciverame: activeChatData?.name,
+        reciverrofile: activeChatData?.profile,
+        senderuid: activeUserData?.uid,
+        sendername: activeUserData?.displayName,
+        senderprofile: activeUserData?.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       }).then(() => {
         setMessege(""); 
         setreplyMessegeInfo("")
       }); 
     } else {
       set(push(ref(db, "singlemessege/")), {
-        messege: messege,
-        messegetype: "normal",
-        messegereciveruid: activeChatData?.uid,
-        messegesreciverame: activeChatData?.name,
-        messegesreciverrofile: activeChatData?.profile,
-        messegesenderuid: activeUserData?.uid,
-        messegesendername: activeUserData?.displayName,
-        messegesenderprofile: activeUserData?.photoURL,
-        messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        type: "text/normal",
+        text: messege,
+        reciveruid: activeChatData?.uid,
+        reciverame: activeChatData?.name,
+        reciverrofile: activeChatData?.profile,
+        senderuid: activeUserData?.uid,
+        sendername: activeUserData?.displayName,
+        senderprofile: activeUserData?.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       }).then(() => {
         setMessege("");
       }); 
     }
   };
-
-  useEffect(() => {
-    let messegeRef = ref(db, "singlemessege/");
-    onValue(messegeRef, (snapshot) => {
-      let messegeArray = [];
-      snapshot.forEach((item) => {
-        if (
-          (activeUserData?.uid == item.val().messegesenderuid && activeChatData?.uid == item.val().messegereciveruid) ||
-          (activeUserData?.uid == item.val().messegereciveruid && activeChatData?.uid == item.val().messegesenderuid)
-        ) {
-          messegeArray.push({ ...item.val(), messegeid: item.key });
-        }
-      });
-      setMessegeList(messegeArray);
-    });
-  }, [activeChatData]);
 
   useEffect(() => {
     const blockListRef = ref(db, "block/");
@@ -195,11 +199,6 @@ const Chat = () => {
     setUnblockModalShow(false)
   }
 
-  const filteredChatItem = friendList.filter((item) => {
-    let name = activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
-    return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase());
-  })
-
   const filteredForwardList = friendList.filter((item) => {
     const uid = (activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid)
     const name = (activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername)
@@ -212,20 +211,20 @@ const Chat = () => {
 
   const handleMessegeForwardListShow = (item) => {
     setMessageForwardModalShow(true)
-    setForwardMessege(item.messege)
+    setForwardMessege(item.text)
   }
 
   const handleForwardMessegeSend = (item) => {
     set(push(ref(db, "singlemessege/")), {
-      messege: forwardMessege,
-      messegetype: "forwarded",
-      messegereciveruid: activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid,
-      messegesreciverame: activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername,
-      messegesreciverrofile: activeUserData?.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
-      messegesenderuid: activeUserData?.uid,
-      messegesendername: activeUserData?.displayName,
-      messegesenderprofile: activeUserData?.photoURL,
-      messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      type: "text/forwarded",
+      text: forwardMessege,
+      reciveruid: activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid,
+      reciverame: activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername,
+      reciverrofile: activeUserData?.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
+      senderuid: activeUserData?.uid,
+      sendername: activeUserData?.displayName,
+      senderprofile: activeUserData?.photoURL,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     })
   }
 
@@ -233,16 +232,6 @@ const Chat = () => {
     setreplyMessegeInfo(item)
     inputRef.current.focus();
   }
-
-  // useEffect(() => {
-  //   document.addEventListener("keydown" , detectKeyDown, true)
-  // } , [])
-
-  // const detectKeyDown = (e) => {
-  //   if ( e.key == "Enter") {
-  //     handleMessegeSend()
-  //   }
-  // }
 
   useEffect(() => {
     document.body.addEventListener("click" , (e) => {
@@ -265,45 +254,54 @@ const Chat = () => {
   }
 
   const handleGifClick = (e) => {
-    console.log(e)
+    set(push(ref(db, "singlemessege/")), {
+      type: "gif/normal",
+      gif: e.url,
+      gifname: e.description,
+      reciveruid: activeChatData.uid,
+      reciverame: activeChatData.name,
+      reciverrofile: activeChatData.profile,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    })
   }
-  
+
   const handleFileClick = (e) => {
     let file = e.target.files[0]
 
     if (file.type.includes("image")) {
       const fileRef = storageRef(storage, "image as a messege/" + Date.now());
-
       uploadBytes(fileRef, file).then((snapshot) => {
         getDownloadURL(fileRef).then((downloadURL) => {
           set(push(ref(db, "singlemessege/")), {
-            messegetype: "image",
-            messege: downloadURL,
-            messegereciveruid: activeChatData?.uid,
-            messegesreciverame: activeChatData?.name,
-            messegesreciverrofile: activeChatData?.profile,
-            messegesenderuid: activeUserData?.uid,
-            messegesendername: activeUserData?.displayName,
-            messegesenderprofile: activeUserData?.photoURL,
-            messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+            type: "image/normal",
+            image: downloadURL,
+            reciveruid: activeChatData?.uid,
+            reciverame: activeChatData?.name,
+            reciverrofile: activeChatData?.profile,
+            senderuid: activeUserData?.uid,
+            sendername: activeUserData?.displayName,
+            senderprofile: activeUserData?.photoURL,
+            senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
           })
         });
       });
     } else if (file.type.includes("video")) {
       const fileRef = storageRef(storage, "video as a messege/" + Date.now());
-      
       uploadBytes(fileRef, file).then((snapshot) => {
         getDownloadURL(fileRef).then((downloadURL) => {
           set(push(ref(db, "singlemessege/")), {
-            messegetype: "video",
-            messege: downloadURL,
-            messegereciveruid: activeChatData?.uid,
-            messegesreciverame: activeChatData?.name,
-            messegesreciverrofile: activeChatData?.profile,
-            messegesenderuid: activeUserData?.uid,
-            messegesendername: activeUserData?.displayName,
-            messegesenderprofile: activeUserData?.photoURL,
-            messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+            type: "video/normal",
+            video: downloadURL,
+            reciveruid: activeChatData?.uid,
+            reciverame: activeChatData?.name,
+            reciverrofile: activeChatData?.profile,
+            senderuid: activeUserData?.uid,
+            sendername: activeUserData?.displayName,
+            senderprofile: activeUserData?.photoURL,
+            senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
           })
         });
       });
@@ -312,21 +310,21 @@ const Chat = () => {
       uploadBytes(fileRef, file).then((snapshot) => {
         getDownloadURL(fileRef).then((downloadURL) => {
           set(push(ref(db, "singlemessege/")), {
-            messegetype: "file",
-            messege: downloadURL,
+            type: "file/normal",
+            file: downloadURL,
             filename: file.name,
-            messegereciveruid: activeChatData?.uid,
-            messegesreciverame: activeChatData?.name,
-            messegesreciverrofile: activeChatData?.profile,
-            messegesenderuid: activeUserData?.uid,
-            messegesendername: activeUserData?.displayName,
-            messegesenderprofile: activeUserData?.photoURL,
-            messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+            reciveruid: activeChatData?.uid,
+            reciverame: activeChatData?.name,
+            reciverrofile: activeChatData?.profile,
+            senderuid: activeUserData?.uid,
+            sendername: activeUserData?.displayName,
+            senderprofile: activeUserData?.photoURL,
+            senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
           })
         });
       });
     }
-  };
+  }; 
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -428,15 +426,11 @@ const Chat = () => {
               className={
                 blockList.includes(activeChatData?.uid + activeUserData?.uid)
                   ? "h-[calc(100%-(70px+133px))] bg-white px-6 overflow-y-scroll pb-2"
-                  : blockList.includes(
-                      activeUserData?.uid + activeChatData?.uid
-                    )
+                  : blockList.includes(activeUserData?.uid + activeChatData?.uid)
                   ? "h-[calc(100%-(70px+93px))] bg-white px-6 overflow-y-scroll pb-2"
-                  : `${
-                      replyMessegeInfo.messege
-                        ? "h-[calc(100%-(70px+127px))]"
-                        : "h-[calc(100%-(70px+73px))]"
-                    } bg-white px-6 overflow-y-scroll pb-2`
+                  : replyMessegeInfo
+                      ? "h-[calc(100%-(70px+127px))] bg-white px-6 overflow-y-scroll pb-2"
+                      : "h-[calc(100%-(70px+73px))] bg-white px-6 overflow-y-scroll pb-2"
               }
             >
               <Box className={"mt-10 mb-10 text-center"}>
@@ -458,95 +452,108 @@ const Chat = () => {
                 </Typography>
               </Box>
               {messegeList.map((item) =>
-                activeChatData.uid == item.messegesenderuid ? (
-                  item.messegetype == "image" ? (
+                activeChatData.uid == item.senderuid ? (
+                  item.type == "image/normal" ? (
                     <ReciverImage
                       name={activeChatData?.name}
                       profile={activeChatData?.profile}
-                      src={item.messege}
+                      src={item.image}
                       alt={"open image"}
-                      time={item.messegesenttime}
+                      time={item.senttime}
                     />
-                  ) : item.messegetype == "video" ? (
+                  ) : item.type == "video/normal" ? (
                     <ReciverVideo
                       name={activeChatData?.name}
                       profile={activeChatData?.profile}
-                      src={item.messege}
-                      time={item.messegesenttime}
+                      src={item.video}
+                      time={item.senttime}
                     />
-                  ) : item.messegetype == "file" ? (
+                  ) : item.type == "file/normal" ? (
                     <ReciverFile
                       name={activeChatData?.name}
                       profile={activeChatData?.profile}
-                      src={item.messege}
+                      src={item.file}
                       fileName={item.filename}
-                      time={item.messegesenttime}
+                      time={item.senttime}
                     />
-                  ) : item.messegetype == "reply" ? (
+                  ) : item.type == "gif/normal" ? (
+                    <ReciverImage
+                      name={activeChatData?.name}
+                      profile={activeChatData?.profile}
+                      src={item.gif}
+                      gifName={item.gifname}
+                      time={item.senttime}
+                    />
+                  ) : item.type == "text/reply" ? (
                     <ReciverMessege
                       name={activeChatData?.name}
                       profile={activeChatData?.profile}
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      repliedtomessege={item.repliedtomessege}
-                      repliedbyname={item.messegesendername}
-                      repliedtoname={item.repliedtoname}
-                      time={item.messegesenttime}
+                      messege={item.text}
+                      messegeType={item.type}
+                      repliedtomessege={item.repliedmessege}
+                      repliedbyname={item.sendername}
+                      repliedtoname={item.repliedto}
+                      time={item.senttime}
                       replayButton={() => handleReply(item)}
-                      reactButton={() => handleReact(item)}
                       forwardButton={() => handleMessegeForwardListShow(item)}
                     />
                   ) : (
                     <ReciverMessege
                       name={activeChatData?.name}
                       profile={activeChatData?.profile}
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      time={item.messegesenttime}
+                      messege={item.text}
+                      messegeType={item.type}
+                      time={item.senttime}
                       replayButton={() => handleReply(item)}
-                      reactButton={() => handleReact(item)}
                       forwardButton={() => handleMessegeForwardListShow(item)}
                     />
                   )
-                ) : item.messegetype == "image" ? (
-                  <SenderImage
-                    src={item.messege}
-                    alt={"open image"}
-                    time={item.messegesenttime}
-                  />
-                ) : item.messegetype == "video" ? (
-                  <SenderVideo src={item.messege} time={item.messegesenttime} />
-                ) : item.messegetype == "file" ? (
-                  <SenderFile
-                    src={item.messege}
-                    fileName={item.filename}
-                    time={item.messegesenttime}
-                  />
-                ) : item.messegetype == "reply" ? (
-                  <SenderMessege
-                    messege={item.messege}
-                    messegeType={item.messegetype}
-                    repliedbyname={item.messegesendername}
-                    repliedtoname={item.repliedtoname}
-                    repliedtomessege={item.repliedtomessege}
-                    time={item.messegesenttime}
-                    replayButton={() => handleReply(item)}
-                    reactButton={() => handleReact(item)}
-                    forwardButton={() => handleMessegeForwardListShow(item)}
-                    editButton={() => handleMessegeEdit(item)}
-                  />
                 ) : (
-                  <SenderMessege
-                    messege={item.messege}
-                    messegeType={item.messegetype}
-                    time={item.messegesenttime}
-                    replayButton={() => handleReply(item)}
-                    reactButton={() => handleReact(item)}
-                    forwardButton={() => handleMessegeForwardListShow(item)}
-                    editButton={() => handleMessegeEdit(item)}
-                  />
+                  item.type == "image/normal" ? (
+                    <SenderImage
+                      src={item.image}
+                      alt={"open image"}
+                      time={item.senttime}
+                    />
+                  ) : item.type == "video/normal" ? (
+                    <SenderVideo
+                      src={item.video}
+                      time={item.senttime}
+                    />
+                  ) : item.type == "file/normal" ? (
+                    <SenderFile
+                      src={item.file}
+                      fileName={item.filename}
+                      time={item.senttime}
+                    />
+                  ) : item.type == "gif/normal" ? (
+                    <SenderGif
+                      src={item.gif}
+                      gifName={item.gifname}
+                      time={item.senttime}
+                    />
+                  ) : item.type == "text/reply" ? (
+                    <SenderMessege
+                      messege={item.text}
+                      messegeType={item.type}
+                      repliedbyname={item.sendername}
+                      repliedtoname={item.repliedto}
+                      repliedtomessege={item.repliedmessege}
+                      time={item.senttime}
+                      replayButton={() => handleReply(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                    />
+                  ) : (
+                    <SenderMessege
+                      messege={item.text}
+                      messegeType={item.type}
+                      time={item.senttime}
+                      replayButton={() => handleReply(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                    />
+                  )
                 )
-              )}
+                )}
               <Modal
                 modalShow={messageForwardModalShow}
                 modalClose={setMessageForwardModalShow}
@@ -638,9 +645,7 @@ const Chat = () => {
                   </Flex>
                 </Modal>
               </Box>
-            ) : blockList.includes(
-                activeUserData?.uid + activeChatData?.uid
-              ) ? (
+            ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
               <Box
                 className={
                   "text-center bg-white absolute bottom-0 left-0 w-full h-[93px] py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
@@ -661,7 +666,7 @@ const Chat = () => {
                   "bg-white absolute bottom-0 left-0 w-full border-t border-[#dedede]"
                 }
               >
-                {replyMessegeInfo.messege && (
+                {replyMessegeInfo && (
                   <Box className={"pt-2 px-5 relative"}>
                     <MdCancel
                       onClick={() => setreplyMessegeInfo("")}
@@ -669,12 +674,20 @@ const Chat = () => {
                     />
                     <Typography className="font-inter font-semibold">
                       Replying to{" "}
-                      {activeUserData.uid == replyMessegeInfo.messegesenderuid
+                      {activeUserData.uid == replyMessegeInfo.senderuid
                         ? "yourself"
-                        : replyMessegeInfo.messegesendername}
+                        : replyMessegeInfo.sendername}
                     </Typography>
                     <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
-                      {replyMessegeInfo.messege}
+                      {replyMessegeInfo.type.includes("text") ? (
+                        replyMessegeInfo.text
+                      ) : replyMessegeInfo.type.includes("image") ? (
+                        "image"
+                      ) : replyMessegeInfo.type.includes("video") ? (
+                        "video"
+                      ) : (
+                        "file"
+                      )}
                     </Typography>
                   </Box>
                 )}
@@ -736,9 +749,7 @@ const Chat = () => {
                           }
                         >
                           <GifPicker
-                            tenorApiKey={
-                              "AIzaSyAW7la2woNuMnvq7z-KCOavIuaKyeQX_jg"
-                            }
+                            tenorApiKey={"AIzaSyAW7la2woNuMnvq7z-KCOavIuaKyeQX_jg"}
                             onGifClick={handleGifClick}
                           />
                           <Box

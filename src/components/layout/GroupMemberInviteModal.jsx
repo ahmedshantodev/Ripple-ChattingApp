@@ -101,7 +101,8 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
   }
 
   const handleInviteCancel = (item) => {
-    remove(ref(db , "groupinvitation/" + (activeGroupData.groupuid +  item.senderuid)))
+    const userid = (activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid)
+    remove(ref(db , "groupinvitation/" + (activeGroupData.groupuid +  userid)))
   }
 
   return (

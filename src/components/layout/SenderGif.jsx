@@ -10,7 +10,14 @@ import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
 import moment from "moment";
 
-const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
+const SenderGif = ({
+  src,
+  gifName,
+  time,
+  replyButton,
+  removeButton,
+  forwardButton,
+}) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
 
@@ -28,7 +35,7 @@ const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
         <ModalImage
           small={src}
           large={src}
-          alt={alt}
+          alt={gifName}
           className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
         />
         <Flex
@@ -102,4 +109,4 @@ const SenderImage = ({ src, alt, time, removeButton, forwardButton }) => {
   );
 };
 
-export default SenderImage;
+export default SenderGif;

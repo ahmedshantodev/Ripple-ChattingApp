@@ -36,7 +36,7 @@ const SenderMessege = ({
     });
   }, []);
 
-  return messegeType == "normal" ? (
+  return messegeType == "text/normal" ? (
     <Box className={"mt-4 group text-end"}>
       <Box className={"max-w-[67%] inline-block relative mb-2 ml-2.5"}>
         <TbTriangleFilled className="text-[22px] text-[#5a3bff] absolute -bottom-[3px] right-[2px] translate-x-2/4" />
@@ -123,7 +123,7 @@ const SenderMessege = ({
         {moment(time, "YYYYMMDDh:mm").fromNow()}
       </Typography>
     </Box>
-  ) : messegeType == "reply" ? (
+  ) : messegeType == "text/reply" ? (
     <Box className={"mt-4 group text-end"}>
       <Box className={"flex justify-end items-center gap-x-2 mr-2 mb-1"}>
         <FaReply className="box-content scale-x-[-1] text-secoundaryText" />

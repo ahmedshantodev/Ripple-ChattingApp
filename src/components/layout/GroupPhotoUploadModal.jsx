@@ -15,19 +15,26 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
-import { getDatabase, set, ref as databaseRef } from "firebase/database";
+import {
+  getDatabase,
+  set,
+  ref as databaseRef,
+  ref,
+  onValue,
+} from "firebase/database";
 import { toast } from "react-toastify";
 import { activeGroup } from "../../slices/activeGroupSlice";
 
 const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
   const storage = getStorage();
-  const activeUserData = useSelector((state) => state.user.information);
   const activeGroupData = useSelector((state) => state.activeGroup.information);
   const dispatch = useDispatch();
   const [uploadLoadingButton, setUploadLoadingButton] = useState(false);
   const [image, setImage] = useState("");
   const cropperRef = createRef();
+  const modalRef = useRef();
+  const boxRef = useRef();
 
   const onChange = (e) => {
     e.preventDefault();
@@ -48,45 +55,43 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
       setUploadLoadingButton(true);
       const groupPhoto = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
-      const groupPhotoRef = storageRef(storage,"group photo/" + `groupphoto-${activeGroupData.groupuid}`);
+      const groupPhotoRef = storageRef(storage, "group photo/" + `groupphoto-${activeGroupData.groupuid}`);
       uploadString(groupPhotoRef, groupPhoto, "data_url").then((snapshot) => {
         getDownloadURL(groupPhotoRef).then((downloadURL) => {
           set(databaseRef(db, "groups/" + activeGroupData.groupuid), {
             groupname: activeGroupData.groupname,
             groupphoto: downloadURL,
-            groupcreatoruid: activeUserData.uid,
-            groupcreatorname: activeUserData.displayName,
-            groupcreatoprofile: activeUserData.photoURL,
+            groupcreatoruid: activeGroupData.groupcreatoruid,
+            groupcreatorname: activeGroupData.groupcreatorname,
+            groupcreatoprofile: activeGroupData.groupcreatoprofile,
+          }).then(() => {
+            localStorage.setItem(
+              "activeGroup",
+              JSON.stringify({ ...activeGroupData, groupphoto: downloadURL })
+            );
+            dispatch(
+              activeGroup({ ...activeGroupData, groupphoto: downloadURL })
+            );
+            toast.success(
+              "Group profile picture has been uploaded successfully",
+              {
+                position: "bottom-center",
+                autoClose: 2500,
+              }
+            );
+            setUploadLoadingButton(false);
+            setImage("");
+            modalClose(false);
           });
-          localStorage.setItem(
-            "activeGroup",
-            JSON.stringify({ ...activeGroupData, groupphoto: downloadURL })
-          );
-          dispatch(
-            activeGroup({ ...activeGroupData, groupphoto: downloadURL })
-          );
-          toast.success(
-            "Group profile picture has been uploaded successfully",
-            {
-              position: "bottom-center",
-              autoClose: 2500,
-            }
-          );
-          setUploadLoadingButton(false);
-          setImage("");
-          modalClose(false);
         });
       });
     }
   };
 
-  const modalRef = useRef();
-  const boxRef = useRef();
-
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
       if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
-        modalClose(false)
+        modalClose(false);
       }
     });
   }, []);
@@ -94,9 +99,9 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   return (
     <section
       ref={modalRef}
-      className={
-        `w-full h-dvh bg-white/70 fixed z-50 top-0 left-0 ${modalShow ? "flex" : "hidden"} justify-center items-center`
-      }
+      className={`w-full h-dvh bg-white/70 fixed z-50 top-0 left-0 ${
+        modalShow ? "flex" : "hidden"
+      } justify-center items-center`}
     >
       <div
         ref={boxRef}

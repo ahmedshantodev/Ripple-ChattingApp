@@ -37,7 +37,7 @@ const ReciverMessege = ({
     });
   }, []);
 
-  return messegeType == "normal" ? (
+  return messegeType == "text/normal" ? (
     <Box className={"mt-4 flex justify-between items-end w-full group"}>
       <Box className={"w-[40px]"}>
         <Image
@@ -116,7 +116,7 @@ const ReciverMessege = ({
         </Typography>
       </Box>
     </Box>
-  ) : messegeType == "reply" ? (
+  ) : messegeType == "text/reply" ? (
     <Box className={"mt-4 flex justify-between items-end w-full group"}>
       <Box className={"w-[40px]"}>
         <Image
@@ -135,7 +135,7 @@ const ReciverMessege = ({
           ) : (
             <Typography className="text-secoundaryText text-[15px]">
               {activeUserData.displayName == repliedbyname ? "you" : repliedbyname}
-              replied to {" "}
+              {" "} replied to {" "}
               {activeUserData.displayName == repliedtoname ? "you" : repliedtoname}
             </Typography>
           )}

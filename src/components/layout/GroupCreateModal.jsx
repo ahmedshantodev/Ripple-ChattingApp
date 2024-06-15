@@ -13,74 +13,91 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
   const [groupCreateLoadingButton, setGroupCreateLoadingButton] = useState(false);
-  const [groupCreateInfo, setGroupCreateInfo] = useState("");
+  const [groupName, setGroupName] = useState("");
   const [groupCreateError, setGroupCreateError] = useState("");
-  const defaultGroupPhoto = "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defualt%20group%20%20photo%2Fgroup%20defualt%20profile.png?alt=media&token=511df1b9-d171-4ab9-b201-a4ae882bab6f"
-
+  const defaultGroupPhoto = "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defualt%20group%20%20photo%2Fgroup%20defualt%20profile.png?alt=media&token=511df1b9-d171-4ab9-b201-a4ae882bab6f";
   const modalRef = useRef();
   const boxRef = useRef();
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
       if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
-        modalClose(false)
+        modalClose(false);
       }
     });
   }, []);
 
   const handleInputValue = (e) => {
-    setGroupCreateInfo(e.target.value)
+    setGroupName(e.target.value);
     setGroupCreateError("");
   };
 
   const handleCreateGroup = () => {
-    if (!groupCreateInfo) {
+    if (!groupName) {
       setGroupCreateError("Please enter group name");
     } else {
       setGroupCreateLoadingButton(true);
-      set(push(ref(db, "groups")), {
-        groupname: groupCreateInfo,
+      set(push(ref(db, "groups/")), {
+        groupname: groupName,
         groupphoto: defaultGroupPhoto,
         groupcreatoruid: activeUserData.uid,
         groupcreatorname: activeUserData.displayName,
         groupcreatoprofile: activeUserData.photoURL,
       }).then(() => {
-
-
-        // set(push(ref(db, "groupmembers/")), {
-
-        //   groupuid: item.groupuid,
-
-        //   groupname: groupCreateInfo,
-        //   groupphoto: defaultGroupPhoto,
-
-        //   memberuid: activeUserData.uid,
-        //   membername: activeUserData.displayName,
-        //   memberprofile: activeUserData.photoURL,
-
-        //   addedbyuid: activeUserData.uid,
-        //   addedbyname: activeUserData.displayName,
-        //   addedbyprofile: activeUserData.photoURL,
-        // })
-
-
         toast.success(
-          `Your group ${groupCreateInfo.groupname} has been created. Join the conversation now!`,
+          `Your group ${groupName} has been created. Join the conversation now!`,
           { position: "bottom-center", autoClose: 2500 }
         );
-        setGroupCreateInfo("");
+        setGroupName("");
         setGroupCreateLoadingButton(false);
         modalClose(false);
       });
     }
   };
 
+  // const handleCreateGroup = () => {
+  //   if (!groupCreateInfo) {
+  //     setGroupCreateError("Please enter group name");
+  //   } else {
+  //     let groupId = Date.now();
+  //     setGroupCreateLoadingButton(true);
+  //     set(push(ref(db, "groups/")), {
+  //       groupuid: groupId,
+  //       groupname: groupCreateInfo,
+  //       groupphoto: defaultGroupPhoto,
+  //       groupcreatoruid: activeUserData.uid,
+  //       groupcreatorname: activeUserData.displayName,
+  //       groupcreatoprofile: activeUserData.photoURL,
+  //     }).then(() => {
+  //       set(push(ref(db, "groupmembers/")), {
+  //         groupuid: groupId,
+  //         groupname: groupCreateInfo,
+  //         groupphoto: defaultGroupPhoto,
+  //         memberuid: activeUserData.uid,
+  //         membername: activeUserData.displayName,
+  //         memberprofile: activeUserData.photoURL,
+  //         addedbyuid: activeUserData.uid,
+  //         addedbyname: activeUserData.displayName,
+  //         addedbyprofile: activeUserData.photoURL,
+  //       }).then(() => {
+  //       });
+  //         toast.success(
+  //           `Your group ${groupCreateInfo} has been created. Join the conversation now!`,
+  //           { position: "bottom-center", autoClose: 2500 }
+  //         );
+  //         setGroupCreateInfo("");
+  //         setGroupCreateLoadingButton(false);
+  //         modalClose(false);
+  //     });
+  //   }
+  // };
+
   return (
     <section
       ref={modalRef}
-      className={
-        `w-full h-dvh bg-white/70 fixed top-0 left-0 z-50 ${modalShow ? "flex" : "hidden"} justify-center items-center`
-      }
+      className={`w-full h-dvh bg-white/70 fixed top-0 left-0 z-50 ${
+        modalShow ? "flex" : "hidden"
+      } justify-center items-center`}
     >
       <div
         ref={boxRef}
@@ -99,7 +116,7 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
           <Box className={"mb-6 relative"}>
             <Input
               autoFocus={true}
-              value={groupCreateInfo}
+              value={groupName}
               type={"text"}
               name={"groupname"}
               onChange={handleInputValue}
