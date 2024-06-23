@@ -1,8 +1,8 @@
 import React from "react";
 
-const Box = ({ onClick, className, children }) => {
+const Box = ({ index, onClick, className, children }) => {
   return (
-    <div onClick={onClick} className={className}>
+    <div key={index} onClick={onClick} className={className}>
       {children}
     </div>
   );

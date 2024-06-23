@@ -16,8 +16,8 @@ const GroupItem = ({
       onClick={onClick}
       className={
         activeItem == groupName
-          ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#dddcea]  cursor-pointer"
-          : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative cursor-pointer transition-all ease-linear duration-200 hover:bg-[#f0f0f0]"
+          ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#e0e3ea]  cursor-pointer"
+          : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative cursor-pointer transition-all ease-linear duration-200 hover:bg-[#e0e3ea]"
       }
     >
       <Image

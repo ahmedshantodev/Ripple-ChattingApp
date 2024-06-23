@@ -17,12 +17,23 @@ import { HiDotsVertical } from "react-icons/hi";
 import { FaPlus, FaRegImage, FaFile } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
-import { MdOutlineNotificationsNone, MdOutlineNotificationsOff, MdThumbUpAlt } from "react-icons/md";
+import {
+  MdOutlineNotificationsNone,
+  MdOutlineNotificationsOff,
+  MdThumbUpAlt,
+} from "react-icons/md";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { RiMovieLine } from "react-icons/ri";
 import { TbPhotoPlus } from "react-icons/tb";
 import { FiEdit } from "react-icons/fi";
-import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
+import {
+  getDatabase,
+  onValue,
+  push,
+  ref,
+  remove,
+  set,
+} from "firebase/database";
 import { CiLogout } from "react-icons/ci";
 import SearchBox from "../components/layout/SearchBox";
 import { activeGroup } from "../slices/activeGroupSlice";
@@ -37,6 +48,14 @@ import GroupNameChangeModal from "../components/layout/GroupNameChangeModal";
 import { HiMiniGif } from "react-icons/hi2";
 import { FaMicrophone } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
+import ReciverNormalMessege from "../components/layout/ReciverNormalMessege";
+import ReciverForwardMessege from "../components/layout/ReciverForwardMessege";
+import ReciverRepliedMessege from "../components/layout/ReciverRepliedMessege";
+import SenderNormalMessage from "../components/layout/SenderNormalMessage";
+import SenderForwardMessage from "../components/layout/SenderForwardMessage";
+import SenderRepliedMessage from "../components/layout/SenderRepliedMessage";
+import ReciverGif from "../components/layout/ReciverGif";
+import ReciverImage from "./../components/layout/ReciverImage";
 
 const Group = () => {
   const db = getDatabase();
@@ -54,12 +73,13 @@ const Group = () => {
   const [chatInfoShow, setChatInfoShow] = useState(false);
   const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
   const [messege, setMessege] = useState("");
-  const [groupMessegeList, setGroupMessegeList] = useState([])
-  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
+  const [groupMessegeList, setGroupMessegeList] = useState([]);
+  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
+    useState(false);
   const [groupCreateModal, setGroupCreateModal] = useState(false);
   const [memberInviteModal, setMemberInviteModal] = useState(false);
-  const [groupJoinRequstList, setGroupJoinRequstList] = useState([])
-  const [replyMessegeInfo, setreplyMessegeInfo] = useState("")
+  const [groupJoinRequstList, setGroupJoinRequstList] = useState([]);
+  const [replyMessegeInfo, setreplyMessegeInfo] = useState("");
 
   const time = new Date();
   const year = time.getFullYear();
@@ -72,31 +92,31 @@ const Group = () => {
     setMessege("");
   }, [activeGroupData]);
 
-  // useEffect(() => {
-  //   let groupRef = ref(db, "groups");
-  //   onValue(groupRef, (snapshot) => {
-  //     let groupListArray = [];
-  //     snapshot.forEach((item) => {
-  //       if (activeUserData.uid == item.val().groupcreatoruid) {
-  //         groupListArray.push({ ...item.val(), groupuid: item.key });
-  //       }
-  //     });
-  //     setGroupList(groupListArray);
-  //   });
-  // }, []);
-
   useEffect(() => {
-    let groupRef = ref(db, "groupmembers");
+    let groupRef = ref(db, "groups");
     onValue(groupRef, (snapshot) => {
       let groupListArray = [];
       snapshot.forEach((item) => {
-        if (activeUserData.uid == item.val().memberuid) {
-          groupListArray.push(item.val());
+        if (activeUserData.uid == item.val().groupcreatoruid) {
+          groupListArray.push({ ...item.val(), groupuid: item.key });
         }
       });
       setGroupList(groupListArray);
     });
   }, []);
+
+  // useEffect(() => {
+  //   let groupRef = ref(db, "groupmembers");
+  //   onValue(groupRef, (snapshot) => {
+  //     let groupListArray = [];
+  //     snapshot.forEach((item) => {
+  //       if (activeUserData.uid == item.val().memberuid) {
+  //         groupListArray.push(item.val());
+  //       }
+  //     });
+  //     setGroupList(groupListArray);
+  //   });
+  // }, []);
 
   const handleActiveGroupOpen = (item) => {
     dispatch(activeGroup(item));
@@ -152,46 +172,46 @@ const Group = () => {
         messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       }).then(() => {
         setMessege("");
-        setreplyMessegeInfo("")
+        setreplyMessegeInfo("");
       });
-      } else {
-        set(push(ref(db, "gorupmessege/")), {
-          messege: messege,
-          messegetype: "normal",
-          groupuid: activeGroupData.groupuid,
-          groupname: activeGroupData.groupname,
-          groupphoto: activeGroupData.groupphoto,
-          messegesenderuid: activeUserData?.uid,
-          messegesendername: activeUserData?.displayName,
-          messegesenderprofile: activeUserData?.photoURL,
-          messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        }).then(() => {
-          setMessege("");
-          setreplyMessegeInfo("")
-        });
-    }    
+    } else {
+      set(push(ref(db, "gorupmessege/")), {
+        messege: messege,
+        messegetype: "normal",
+        groupuid: activeGroupData.groupuid,
+        groupname: activeGroupData.groupname,
+        groupphoto: activeGroupData.groupphoto,
+        messegesenderuid: activeUserData?.uid,
+        messegesendername: activeUserData?.displayName,
+        messegesenderprofile: activeUserData?.photoURL,
+        messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      }).then(() => {
+        setMessege("");
+        setreplyMessegeInfo("");
+      });
+    }
   };
 
   useEffect(() => {
-    let messageREf = ref(db, "gorupmessege")
-    onValue(messageREf , (snapshot) => {
-      const messageArray = []
+    let messageREf = ref(db, "gorupmessege");
+    onValue(messageREf, (snapshot) => {
+      const messageArray = [];
       snapshot.forEach((item) => {
-        if (activeGroupData.groupuid == item.val().groupuid) {  
-          messageArray.push({...item.val() , messageId: item.key})
+        if (activeGroupData.groupuid == item.val().groupuid) {
+          messageArray.push({ ...item.val(), messageId: item.key });
         }
-      })
-      setGroupMessegeList(messageArray)
-    })
-  } , [activeGroupData])
+      });
+      setGroupMessegeList(messageArray);
+    });
+  }, [activeGroupData]);
 
   useEffect(() => {
     let groupJoinRequstRef = ref(db, "groupjoinrequst");
     onValue(groupJoinRequstRef, (snapshot) => {
       let array = [];
       snapshot.forEach((item) => {
-        if (activeGroupData.groupuid == item.val().groupuid) {  
-          array.push({...item.val() , joinrequstid: item.key});
+        if (activeGroupData.groupuid == item.val().groupuid) {
+          array.push({ ...item.val(), joinrequstid: item.key });
         }
       });
       setGroupJoinRequstList(array);
@@ -212,14 +232,14 @@ const Group = () => {
     }).then(() => {
       remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
     });
-  }
+  };
   const handleJoinRequstDelete = (item) => {
     remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
-  }
+  };
 
   const handleReply = (item) => {
-    setreplyMessegeInfo(item)
-  }
+    setreplyMessegeInfo(item);
+  };
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -339,7 +359,6 @@ const Group = () => {
                   ? "h-[calc(100%-(71px+127px))] bg-white px-6 overflow-y-scroll pb-2"
                   : "h-[calc(100%-(71px+73px))] bg-white px-6 overflow-y-scroll pb-2"
               }
-
             >
               <Box className={"mt-10 mb-10 text-center"}>
                 <Image
@@ -407,40 +426,36 @@ const Group = () => {
                 )
               ))}
             </Box>
+
             <Box
               className={
                 "bg-white absolute bottom-0 left-0 w-full border-t border-[#dedede]"
-              } 
+              }
             >
-              {replyMessegeInfo && 
+              {replyMessegeInfo && (
                 <Box className={"pt-2 px-5 relative"}>
                   <MdCancel
                     onClick={() => setreplyMessegeInfo("")}
                     className="absolute top-2.5 right-2.5 text-[22px] text-secoundaryText cursor-pointer"
                   />
-                  <Typography
-                    className="font-inter font-semibold"
-                  >
-                    Replying to {activeUserData.uid == replyMessegeInfo.messegesenderuid ? "yourself" : replyMessegeInfo.messegesendername}
+                  <Typography className="font-inter font-semibold">
+                    Replying to{" "}
+                    {activeUserData.uid == replyMessegeInfo.messegesenderuid
+                      ? "yourself"
+                      : replyMessegeInfo.messegesendername}
                   </Typography>
-                  <Typography
-                    className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]"
-                  >
+                  <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
                     {replyMessegeInfo.messege}
                   </Typography>
                 </Box>
-              }
+              )}
               <Flex
                 justifyContent={"between"}
                 alignItems={"center"}
-                className={
-                  "py-3 pr-[5px] pl-5"
-                } 
+                className={"py-3 pr-[5px] pl-5"}
               >
                 <Flex>
-                  <FaPlus
-                    className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
-                  />
+                  <FaPlus className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                   <Box className={"relative group/tooltip mr-[5px]"}>
                     <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                     <Typography
@@ -530,7 +545,10 @@ const Group = () => {
                     </Box>
                   ) : (
                     <Box className={"relative group/tooltip mr-[5px]"}>
-                      <IoSend onClick={handleMessegeSend} className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                      <IoSend
+                        onClick={handleMessegeSend}
+                        className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                      />
                       <Typography
                         variant="span"
                         className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"

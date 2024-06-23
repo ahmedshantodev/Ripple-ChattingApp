@@ -19,7 +19,7 @@ const SenderMessege = ({
   repliedbyname,
   time,
   reactButton,
-  replayButton,
+  replyButton,
   removeButton,
   forwardButton,
   editButton,
@@ -40,7 +40,7 @@ const SenderMessege = ({
     <Box className={"mt-4 group text-end"}>
       <Box className={"max-w-[67%] inline-block relative mb-2 ml-2.5"}>
         <TbTriangleFilled className="text-[22px] text-[#5a3bff] absolute -bottom-[3px] right-[2px] translate-x-2/4" />
-        <Typography className="text-start py-3 px-6 rounded-[10px] bg-[#5a3bff] text-white break-words">
+        <Typography className="text-start py-2.5 px-5 rounded-[10px] bg-[#5a3bff] text-white break-words">
           {messege}
         </Typography>
         <Flex
@@ -92,7 +92,7 @@ const SenderMessege = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 scale-x-[-1] text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -194,7 +194,7 @@ const SenderMessege = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 scale-x-[-1] text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -278,7 +278,7 @@ const SenderMessege = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 scale-x-[-1] text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography

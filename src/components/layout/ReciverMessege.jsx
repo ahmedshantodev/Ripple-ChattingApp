@@ -20,7 +20,7 @@ const ReciverMessege = ({
   repliedtomessege,
   time,
   reactButton,
-  replayButton,
+  replyButton,
   forwardButton,
   repliedtoname,
   repliedbyname,
@@ -73,7 +73,7 @@ const ReciverMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography
@@ -175,7 +175,7 @@ const ReciverMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 bg-white text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography
@@ -227,7 +227,7 @@ const ReciverMessege = ({
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
-      <Box className={"w-[calc(100%-58px)] w-[95%]s bg-red-300s"}>
+      <Box className={"w-[calc(100%-58px)]"}>
         <Box className={"flex items-center gap-x-2 mr-2 mb-1"}>
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           <Typography className="text-secoundaryText text-[15px]">
@@ -260,7 +260,7 @@ const ReciverMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography

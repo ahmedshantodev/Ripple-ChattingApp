@@ -12,14 +12,28 @@ import SenderMessege from "../components/layout/SenderMessege";
 import SenderImage from "../components/layout/SenderImage";
 import ReciverImage from "../components/layout/ReciverImage";
 import Button from "../components/layout/Button";
-import Modal from "../components/layout/Modal"
+import Modal from "../components/layout/Modal";
 import MessageForwardListItem from "../components/layout/MessageForwardListItem";
+import SenderVideo from "../components/layout/SenderVideo";
+import ReciverVideo from "../components/layout/ReciverVideo";
+import SenderFile from "../components/layout/SenderFile";
+import ReciverFile from "../components/layout/ReciverFile";
+import SenderGif from "../components/layout/SenderGif";
+import SenderNormalMessage from "../components/layout/SenderNormalMessage";
+import ReciverNormalMessege from "../components/layout/ReciverNormalMessege";
 // React Icons
-import { IoCall , IoVideocam } from "react-icons/io5";
+import { IoCall, IoVideocam } from "react-icons/io5";
 import { HiDotsVertical } from "react-icons/hi";
 import { FaPlus, FaRegImage } from "react-icons/fa6";
-import { BsEmojiSmileFill , BsThreeDotsVertical } from "react-icons/bs";
-import { MdBlock, MdThumbUpAlt , MdVideoLibrary, MdOutlineNotificationsNone, MdOutlineNotificationsOff, MdOutlinePrivacyTip } from "react-icons/md";
+import { BsEmojiSmileFill, BsThreeDotsVertical } from "react-icons/bs";
+import {
+  MdBlock,
+  MdThumbUpAlt,
+  MdVideoLibrary,
+  MdOutlineNotificationsNone,
+  MdOutlineNotificationsOff,
+  MdOutlinePrivacyTip,
+} from "react-icons/md";
 import { FaMicrophone } from "react-icons/fa";
 import { HiMiniGif } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
@@ -31,21 +45,31 @@ import { RxCross2 } from "react-icons/rx";
 import { MdCancel } from "react-icons/md";
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 // Firebase
-import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
-import { getDownloadURL, getStorage, ref as storageRef, uploadBytes, } from "firebase/storage";
+import {
+  getDatabase,
+  onValue,
+  push,
+  ref,
+  remove,
+  set,
+} from "firebase/database";
+import {
+  getDownloadURL,
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
 // Redux slices
 import { useDispatch, useSelector } from "react-redux";
 import { activeChat } from "./../slices/activeChatSlice";
 // Images
 import noGroupPHoto from "/public/images/no chat image.jpg";
 // react emoji picker
-import EmojiPicker from 'emoji-picker-react';
-import GifPicker from 'gif-picker-react';
-import SenderVideo from "../components/layout/SenderVideo";
-import ReciverVideo from "../components/layout/ReciverVideo";
-import SenderFile from "../components/layout/SenderFile";
-import ReciverFile from "../components/layout/ReciverFile";
-import SenderGif from "../components/layout/SenderGif";
+import EmojiPicker from "emoji-picker-react";
+import GifPicker from "gif-picker-react";
+import SenderForwardMessage from "./../components/layout/SenderForwardMessage";
+import ReciverGif from "./../components/layout/ReciverGif";
+import ReciverForwardMessege from "./../components/layout/ReciverForwardMessege";
 
 const Chat = () => {
   const db = getDatabase();
@@ -58,18 +82,18 @@ const Chat = () => {
   const [searchValue, setSearchValue] = useState("");
   const [forwardSearchValue, setForwardSearchValue] = useState("");
   const [messege, setMessege] = useState("");
-  const [forwardMessege, setForwardMessege] = useState("")
-  const [replyMessegeInfo, setreplyMessegeInfo] = useState("")
+  const [forwardMessegeInfo, setForwardMessegeInfo] = useState("");
+  const [replyMessegeInfo, setreplyMessegeInfo] = useState("");
   const [messegeList, setMessegeList] = useState([]);
   const [messegeNotification, setMessegeNotification] = useState(false);
   const [mediaShow, setMediaShow] = useState(true);
   const [privacyShow, setPrivacyShow] = useState(true);
   const [blockList, setBlockList] = useState([]);
-  const [blockModalShow, setBlockModalShow] = useState(false)
-  const [unblockModalShow, setUnblockModalShow] = useState(false)
-  const [messageForwardModalShow, setMessageForwardModalShow] = useState(false)
-  const [emojiPickerShow, setEmojiPickerShow] = useState(false)
-  const [gifPickerShow, setGifPickerShow] = useState(false)
+  const [blockModalShow, setBlockModalShow] = useState(false);
+  const [unblockModalShow, setUnblockModalShow] = useState(false);
+  const [messageForwardModalShow, setMessageForwardModalShow] = useState(false);
+  const [emojiPickerShow, setEmojiPickerShow] = useState(false);
+  const [gifPickerShow, setGifPickerShow] = useState(false);
   const [image, setImage] = useState("");
 
   const time = new Date();
@@ -78,16 +102,19 @@ const Chat = () => {
   const date = time.getDate();
   const hours = time.getHours();
   const minutes = time.getMinutes();
-  const inputRef = useRef()
-  const emojiBoxRef = useRef()
-  const gifBoxRef = useRef()
+  const inputRef = useRef();
+  const emojiBoxRef = useRef();
+  const gifBoxRef = useRef();
 
   useEffect(() => {
     const friendListRef = ref(db, "friends");
     onValue(friendListRef, (snapshot) => {
       const FriendListArray = [];
       snapshot.forEach((item) => {
-        if ( activeUserData.uid == item.val().reciveruid || activeUserData.uid == item.val().senderuid) {
+        if (
+          activeUserData.uid == item.val().reciveruid ||
+          activeUserData.uid == item.val().senderuid
+        ) {
           FriendListArray.push(item.val());
         }
       });
@@ -96,9 +123,12 @@ const Chat = () => {
   }, []);
 
   const filteredChatItem = friendList.filter((item) => {
-    let name = activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
-    return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase());
-  })
+    let name =
+      activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
+    return searchValue == ""
+      ? item
+      : name.toLowerCase().includes(searchValue.toLowerCase());
+  });
 
   useEffect(() => {
     let messegeRef = ref(db, "singlemessege/");
@@ -118,17 +148,15 @@ const Chat = () => {
 
   const handleActiveChatOpen = (item) => {
     dispatch(activeChat({
-        uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
-        name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
-        profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
-      })
-    );
-    localStorage.setItem("activeChat" , JSON.stringify({
-        uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
-        name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
-        profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
-      })
-    );
+      uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
+      name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
+      profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
+    }));
+    localStorage.setItem("activeChat", JSON.stringify({
+      uid: activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid,
+      name: activeUserData.uid == item.senderuid ? item.recivername : item.sendername,
+      profile: activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile,
+    }));
   };
 
   useEffect(() => {
@@ -143,22 +171,7 @@ const Chat = () => {
         repliedto: replyMessegeInfo.sendername,
         repliedmessege: replyMessegeInfo.text,
         reciveruid: activeChatData?.uid,
-        reciverame: activeChatData?.name,
-        reciverrofile: activeChatData?.profile,
-        senderuid: activeUserData?.uid,
-        sendername: activeUserData?.displayName,
-        senderprofile: activeUserData?.photoURL,
-        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-      }).then(() => {
-        setMessege(""); 
-        setreplyMessegeInfo("")
-      }); 
-    } else {
-      set(push(ref(db, "singlemessege/")), {
-        type: "text/normal",
-        text: messege,
-        reciveruid: activeChatData?.uid,
-        reciverame: activeChatData?.name,
+        recivername: activeChatData?.name,
         reciverrofile: activeChatData?.profile,
         senderuid: activeUserData?.uid,
         sendername: activeUserData?.displayName,
@@ -166,7 +179,22 @@ const Chat = () => {
         senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       }).then(() => {
         setMessege("");
-      }); 
+        setreplyMessegeInfo("");
+      });
+    } else {
+      set(push(ref(db, "singlemessege/")), {
+        type: "text/normal",
+        text: messege,
+        reciveruid: activeChatData?.uid,
+        recivername: activeChatData?.name,
+        reciverprofile: activeChatData?.profile,
+        senderuid: activeUserData?.uid,
+        sendername: activeUserData?.displayName,
+        senderprofile: activeUserData?.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      }).then(() => {
+        setMessege("");
+      });
     }
   };
 
@@ -190,68 +218,124 @@ const Chat = () => {
       blockedusername: activeChatData?.name,
       blockeduserprofile: activeChatData?.profile,
     }).then(() => {
-      setBlockModalShow(false)
-    })
+      setBlockModalShow(false);
+    });
   };
 
   const handleUnBlock = () => {
-    remove(ref(db, "block/" + (activeUserData?.uid + activeChatData?.uid)))
-    setUnblockModalShow(false)
-  }
+    remove(ref(db, "block/" + (activeUserData?.uid + activeChatData?.uid)));
+    setUnblockModalShow(false);
+  };
 
   const filteredForwardList = friendList.filter((item) => {
-    const uid = (activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid)
-    const name = (activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername)
+    const uid = activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid;
+    const name = activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername;
     return (
-      !blockList.includes(uid + activeUserData.uid)) &&
-      (!blockList.includes(activeUserData.uid + uid)) &&
-      (forwardSearchValue == "" ? item : name.toLowerCase().includes(forwardSearchValue.toLowerCase())
-    )
-  })
+      !blockList.includes(uid + activeUserData.uid) &&
+      !blockList.includes(activeUserData.uid + uid) &&
+      (forwardSearchValue == "" ? item : name.toLowerCase().includes(forwardSearchValue.toLowerCase()))
+    );
+  });
 
   const handleMessegeForwardListShow = (item) => {
-    setMessageForwardModalShow(true)
-    setForwardMessege(item.text)
-  }
+    setMessageForwardModalShow(true);
+    setForwardMessegeInfo(item);
+  };
 
   const handleForwardMessegeSend = (item) => {
-    set(push(ref(db, "singlemessege/")), {
-      type: "text/forwarded",
-      text: forwardMessege,
-      reciveruid: activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid,
-      reciverame: activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername,
-      reciverrofile: activeUserData?.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
-      senderuid: activeUserData?.uid,
-      sendername: activeUserData?.displayName,
-      senderprofile: activeUserData?.photoURL,
-      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    })
-  }
+    const reciveruid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid;
+    const recivername = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername;
+    const reciverprofile = activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile;
+
+    if (forwardMessegeInfo.type.includes("text")) {
+      set(push(ref(db, "singlemessege/")), {
+        type: "text/forwarded",
+        text: forwardMessegeInfo.text,
+        reciveruid: reciveruid,
+        recivername: recivername,
+        reciverprofile: reciverprofile,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      });
+    } else if (forwardMessegeInfo.type.includes("image")) {
+      set(push(ref(db, "singlemessege/")), {
+        type: "image/forwarded",
+        image: forwardMessegeInfo.image,
+        reciveruid: reciveruid,
+        recivername: recivername,
+        reciverprofile: reciverprofile,
+        senderuid: activeUserData?.uid,
+        sendername: activeUserData?.displayName,
+        senderprofile: activeUserData?.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      });
+    } else if (forwardMessegeInfo.type.includes("video")) {
+      set(push(ref(db, "singlemessege/")), {
+        type: "video/forwarded",
+        video: forwardMessegeInfo.video,
+        reciveruid: reciveruid,
+        recivername: recivername,
+        reciverprofile: reciverprofile,
+        senderuid: activeUserData?.uid,
+        sendername: activeUserData?.displayName,
+        senderprofile: activeUserData?.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      });
+    } else if (forwardMessegeInfo.type.includes("file")) {
+      set(push(ref(db, "singlemessege/")), {
+        type: "file/forwarded",
+        file: forwardMessegeInfo.file,
+        filename: forwardMessegeInfo.filename,
+        reciveruid: reciveruid,
+        recivername: recivername,
+        reciverprofile: reciverprofile,
+        senderuid: activeUserData?.uid,
+        sendername: activeUserData?.displayName,
+        senderprofile: activeUserData?.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      });
+    } else if (forwardMessegeInfo.type.includes("gif")) {
+      set(push(ref(db, "singlemessege/")), {
+        type: "gif/forwarded",
+        gif: forwardMessegeInfo.gif,
+        gifname: forwardMessegeInfo.gifname,
+        reciveruid: reciveruid,
+        recivername: recivername,
+        reciverprofile: reciverprofile,
+        senderuid: activeUserData?.uid,
+        sendername: activeUserData?.displayName,
+        senderprofile: activeUserData?.photoURL,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+      });
+    }
+  };
 
   const handleReply = (item) => {
-    setreplyMessegeInfo(item)
+    setreplyMessegeInfo(item);
     inputRef.current.focus();
-  }
+  };
 
   useEffect(() => {
-    document.body.addEventListener("click" , (e) => {
+    document.body.addEventListener("click", (e) => {
       if (!emojiBoxRef.current.contains(e.target)) {
-        setEmojiPickerShow(false)
+        setEmojiPickerShow(false);
       }
-    })
-  } , [])
+    });
+  }, []);
 
   useEffect(() => {
-    document.body.addEventListener("click" , (e) => {
+    document.body.addEventListener("click", (e) => {
       if (!gifBoxRef.current.contains(e.target)) {
-        setGifPickerShow(false)
+        setGifPickerShow(false);
       }
-    })
-  } , [])
+    });
+  }, []);
 
   const handleEmojiClick = (e) => {
-    setMessege(messege + e.emoji)
-  }
+    setMessege(messege + e.emoji);
+  };
 
   const handleGifClick = (e) => {
     set(push(ref(db, "singlemessege/")), {
@@ -259,17 +343,17 @@ const Chat = () => {
       gif: e.url,
       gifname: e.description,
       reciveruid: activeChatData.uid,
-      reciverame: activeChatData.name,
+      recivername: activeChatData.name,
       reciverrofile: activeChatData.profile,
       senderuid: activeUserData.uid,
       sendername: activeUserData.displayName,
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    })
-  }
+    });
+  };
 
   const handleFileClick = (e) => {
-    let file = e.target.files[0]
+    let file = e.target.files[0];
 
     if (file.type.includes("image")) {
       const fileRef = storageRef(storage, "image as a messege/" + Date.now());
@@ -279,13 +363,13 @@ const Chat = () => {
             type: "image/normal",
             image: downloadURL,
             reciveruid: activeChatData?.uid,
-            reciverame: activeChatData?.name,
-            reciverrofile: activeChatData?.profile,
+            recivername: activeChatData?.name,
+            reciverprofile: activeChatData?.profile,
             senderuid: activeUserData?.uid,
             sendername: activeUserData?.displayName,
             senderprofile: activeUserData?.photoURL,
             senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-          })
+          });
         });
       });
     } else if (file.type.includes("video")) {
@@ -296,13 +380,13 @@ const Chat = () => {
             type: "video/normal",
             video: downloadURL,
             reciveruid: activeChatData?.uid,
-            reciverame: activeChatData?.name,
-            reciverrofile: activeChatData?.profile,
+            recivername: activeChatData?.name,
+            reciverprofile: activeChatData?.profile,
             senderuid: activeUserData?.uid,
             sendername: activeUserData?.displayName,
             senderprofile: activeUserData?.photoURL,
             senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-          })
+          });
         });
       });
     } else if (file.type.includes("application/pdf")) {
@@ -314,17 +398,17 @@ const Chat = () => {
             file: downloadURL,
             filename: file.name,
             reciveruid: activeChatData?.uid,
-            reciverame: activeChatData?.name,
-            reciverrofile: activeChatData?.profile,
+            recivername: activeChatData?.name,
+            reciverprofile: activeChatData?.profile,
             senderuid: activeUserData?.uid,
             sendername: activeUserData?.displayName,
             senderprofile: activeUserData?.photoURL,
             senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-          })
+          });
         });
       });
     }
-  }; 
+  };
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -416,9 +500,11 @@ const Chat = () => {
                 <IoVideocam className="box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                 <HiDotsVertical
                   onClick={() => setFriendsProfileOpen(!friendsProfileOpen)}
-                  className={`box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300 ${
-                    friendsProfileOpen ? "bg-[#dedede]" : "hover:bg-[#dedede]"
-                  }`}
+                  className={
+                    friendsProfileOpen 
+                    ? "bg-[#dedede] box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300"
+                    : "hover:bg-[#dedede] box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300"
+                  }
                 />
               </Flex>
             </Flex>
@@ -429,8 +515,8 @@ const Chat = () => {
                   : blockList.includes(activeUserData?.uid + activeChatData?.uid)
                   ? "h-[calc(100%-(70px+93px))] bg-white px-6 overflow-y-scroll pb-2"
                   : replyMessegeInfo
-                      ? "h-[calc(100%-(70px+127px))] bg-white px-6 overflow-y-scroll pb-2"
-                      : "h-[calc(100%-(70px+73px))] bg-white px-6 overflow-y-scroll pb-2"
+                  ? "h-[calc(100%-(70px+127px))] bg-white px-6 overflow-y-scroll pb-2"
+                  : "h-[calc(100%-(70px+73px))] bg-white px-6 overflow-y-scroll pb-2"
               }
             >
               <Box className={"mt-10 mb-10 text-center"}>
@@ -452,6 +538,220 @@ const Chat = () => {
                 </Typography>
               </Box>
               {messegeList.map((item) =>
+                activeUserData.uid == item.senderuid ? (
+                  item.type.includes("text") ? (
+                    item.type == "text/normal" ? (
+                      <SenderNormalMessage
+                        message={item.text}
+                        sentTime={item.senttime}
+                        replyButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <SenderForwardMessage
+                        message={item.text}
+                        sentTime={item.senttime}
+                        replyButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : item.type.includes("image") ? (
+                    item.type == "image/normal" ? (
+                      <SenderImage
+                        image={item.image}
+                        imageType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <SenderImage
+                        image={item.image}
+                        imageType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : item.type.includes("video") ? (
+                    item.type == "video/normal" ? (
+                      <SenderVideo
+                        video={item.video}
+                        videoType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <SenderVideo
+                        video={item.video}
+                        videoType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : item.type.includes("file") ? (
+                    item.type == "file/normal" ? (
+                      <SenderFile
+                        file={item.file}
+                        fileName={item.filename}
+                        fileType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <SenderFile
+                        file={item.file}
+                        fileName={item.filename}
+                        fileType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : (
+                    item.type.includes("gif") &&
+                    (item.type == "image/normal" ? (
+                      <SenderGif
+                        gif={item.gif}
+                        gifName={item.gifname}
+                        gifType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <SenderGif
+                        gif={item.gif}
+                        gifName={item.gifname}
+                        gifType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ))
+                  )
+                ) : (
+                  activeChatData.uid == item.senderuid &&
+                  (item.type.includes("text") ? (
+                    item.type == "text/normal" ? (
+                      <ReciverNormalMessege
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        message={item.text}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <ReciverForwardMessege
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        message={item.text}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : item.type.includes("image") ? (
+                    item.type == "image/normal" ? (
+                      <ReciverImage
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        image={item.image}
+                        imageType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <ReciverImage
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        image={item.image}
+                        imageType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : item.type.includes("video") ? (
+                    item.type == "video/normal" ? (
+                      <ReciverVideo
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        video={item.video}
+                        videoType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <ReciverVideo
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        video={item.video}
+                        videoType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : item.type.includes("file") ? (
+                    item.type == "file/forwarded" ? (
+                      <ReciverFile
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        file={item.file}
+                        fileName={item.filename}
+                        fileType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <ReciverFile
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        file={item.file}
+                        fileName={item.filename}
+                        fileType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    )
+                  ) : (
+                    item.type.includes("gif") &&
+                    (item.type == "gif/normal" ? (
+                      <ReciverGif
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        gif={item.gif}
+                        gifName={item.gifname}
+                        gifType={"normal"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ) : (
+                      <ReciverGif
+                        name={item.sendername}
+                        profile={item.senderprofile}
+                        gif={item.gif}
+                        gifName={item.gifname}
+                        gifType={"forward"}
+                        sentTime={item.senttime}
+                        replayButton={() => handleReply(item)}
+                        forwardButton={() => handleMessegeForwardListShow(item)}
+                      />
+                    ))
+                  ))
+                )
+              )}
+              {/* {messegeList.map((item) =>
                 activeChatData.uid == item.senderuid ? (
                   item.type == "image/normal" ? (
                     <ReciverImage
@@ -467,6 +767,7 @@ const Chat = () => {
                       profile={activeChatData?.profile}
                       src={item.video}
                       time={item.senttime}
+                      replayButton={() => handleReply(item)}
                     />
                   ) : item.type == "file/normal" ? (
                     <ReciverFile
@@ -475,6 +776,7 @@ const Chat = () => {
                       src={item.file}
                       fileName={item.filename}
                       time={item.senttime}
+                      replayButton={() => handleReply(item)}
                     />
                   ) : item.type == "gif/normal" ? (
                     <ReciverImage
@@ -483,6 +785,7 @@ const Chat = () => {
                       src={item.gif}
                       gifName={item.gifname}
                       time={item.senttime}
+                      replyButton={() => handleReply(item)}
                     />
                   ) : item.type == "text/reply" ? (
                     <ReciverMessege
@@ -494,7 +797,7 @@ const Chat = () => {
                       repliedbyname={item.sendername}
                       repliedtoname={item.repliedto}
                       time={item.senttime}
-                      replayButton={() => handleReply(item)}
+                      replyButton={() => handleReply(item)}
                       forwardButton={() => handleMessegeForwardListShow(item)}
                     />
                   ) : (
@@ -508,52 +811,54 @@ const Chat = () => {
                       forwardButton={() => handleMessegeForwardListShow(item)}
                     />
                   )
+                ) : item.type == "image/normal" ? (
+                  <SenderImage
+                    src={item.image}
+                    alt={"open image"}
+                    time={item.senttime}
+                    replyButton={() => handleReply(item)}
+                  />
+                ) : item.type == "video/normal" ? (
+                  <SenderVideo
+                    src={item.video}
+                    time={item.senttime}
+                    replayButton={() => handleReply(item)}
+                  />
+                ) : item.type == "file/normal" ? (
+                  <SenderFile
+                    src={item.file}
+                    fileName={item.filename}
+                    time={item.senttime}
+                    replayButton={() => handleReply(item)}
+                  />
+                ) : item.type == "gif/normal" ? (
+                  <SenderGif
+                    src={item.gif}
+                    gifName={item.gifname}
+                    time={item.senttime}
+                    replayButton={() => handleReply(item)}
+                  />
+                ) : item.type == "text/reply" ? (
+                  <SenderMessege
+                    messege={item.text}
+                    messegeType={item.type}
+                    repliedbyname={item.sendername}
+                    repliedtoname={item.repliedto}
+                    repliedtomessege={item.repliedmessege}
+                    time={item.senttime}
+                    replyButton={() => handleReply(item)}
+                    forwardButton={() => handleMessegeForwardListShow(item)}
+                  />
                 ) : (
-                  item.type == "image/normal" ? (
-                    <SenderImage
-                      src={item.image}
-                      alt={"open image"}
-                      time={item.senttime}
-                    />
-                  ) : item.type == "video/normal" ? (
-                    <SenderVideo
-                      src={item.video}
-                      time={item.senttime}
-                    />
-                  ) : item.type == "file/normal" ? (
-                    <SenderFile
-                      src={item.file}
-                      fileName={item.filename}
-                      time={item.senttime}
-                    />
-                  ) : item.type == "gif/normal" ? (
-                    <SenderGif
-                      src={item.gif}
-                      gifName={item.gifname}
-                      time={item.senttime}
-                    />
-                  ) : item.type == "text/reply" ? (
-                    <SenderMessege
-                      messege={item.text}
-                      messegeType={item.type}
-                      repliedbyname={item.sendername}
-                      repliedtoname={item.repliedto}
-                      repliedtomessege={item.repliedmessege}
-                      time={item.senttime}
-                      replayButton={() => handleReply(item)}
-                      forwardButton={() => handleMessegeForwardListShow(item)}
-                    />
-                  ) : (
-                    <SenderMessege
-                      messege={item.text}
-                      messegeType={item.type}
-                      time={item.senttime}
-                      replayButton={() => handleReply(item)}
-                      forwardButton={() => handleMessegeForwardListShow(item)}
-                    />
-                  )
+                  <SenderMessege
+                    messege={item.text}
+                    messegeType={item.type}
+                    time={item.senttime}
+                    replayButton={() => handleReply(item)}
+                    forwardButton={() => handleMessegeForwardListShow(item)}
+                  />
                 )
-                )}
+              )} */}
               <Modal
                 modalShow={messageForwardModalShow}
                 modalClose={setMessageForwardModalShow}
@@ -575,16 +880,8 @@ const Chat = () => {
                 <Box className={"h-[79%] overflow-y-auto"}>
                   {filteredForwardList.map((item) => (
                     <MessageForwardListItem
-                      profile={
-                        activeUserData.uid == item.senderuid
-                          ? item.reciverprofile
-                          : item.senderprofile
-                      }
-                      name={
-                        activeUserData.uid == item.senderuid
-                          ? item.recivername
-                          : item.sendername
-                      }
+                      profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+                      name={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
                       button={"send"}
                       sendButton={() => handleForwardMessegeSend(item)}
                     />
@@ -645,7 +942,9 @@ const Chat = () => {
                   </Flex>
                 </Modal>
               </Box>
-            ) : blockList.includes(activeUserData?.uid + activeChatData?.uid) ? (
+            ) : blockList.includes(
+                activeUserData?.uid + activeChatData?.uid
+              ) ? (
               <Box
                 className={
                   "text-center bg-white absolute bottom-0 left-0 w-full h-[93px] py-2.5 pr-[5px] pl-5 border-t border-[#dedede]"
@@ -679,15 +978,13 @@ const Chat = () => {
                         : replyMessegeInfo.sendername}
                     </Typography>
                     <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
-                      {replyMessegeInfo.type.includes("text") ? (
-                        replyMessegeInfo.text
-                      ) : replyMessegeInfo.type.includes("image") ? (
-                        "image"
-                      ) : replyMessegeInfo.type.includes("video") ? (
-                        "video"
-                      ) : (
-                        "file"
-                      )}
+                      {replyMessegeInfo.type.includes("text")
+                        ? replyMessegeInfo.text
+                        : replyMessegeInfo.type.includes("image")
+                        ? "image"
+                        : replyMessegeInfo.type.includes("video")
+                        ? "video"
+                        : "file"}
                     </Typography>
                   </Box>
                 )}
@@ -749,7 +1046,9 @@ const Chat = () => {
                           }
                         >
                           <GifPicker
-                            tenorApiKey={"AIzaSyAW7la2woNuMnvq7z-KCOavIuaKyeQX_jg"}
+                            tenorApiKey={
+                              "AIzaSyAW7la2woNuMnvq7z-KCOavIuaKyeQX_jg"
+                            }
                             onGifClick={handleGifClick}
                           />
                           <Box

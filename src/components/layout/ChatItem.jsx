@@ -14,7 +14,6 @@ const ChatItem = ({
   profile,
   userName,
   userid,
-  lastMessegeSentTime,
 }) => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
@@ -27,10 +26,8 @@ const ChatItem = ({
       let messegeArray = [];
       snapshot.forEach((item) => {
         if (
-          (activeUserData?.uid == item.val().messegesenderuid &&
-            userid == item.val().messegereciveruid) ||
-          (activeUserData?.uid == item.val().messegereciveruid &&
-            userid == item.val().messegesenderuid)
+          (activeUserData?.uid == item.val().senderuid && userid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid && userid == item.val().senderuid)
         ) {
           messegeArray.push({ ...item.val(), messegeid: item.key });
         }
@@ -60,24 +57,24 @@ const ChatItem = ({
           {userName}
         </Typography>
         {last.map((item) =>
-          activeUserData.displayName == item.messegesendername ? (
-            item.messegetype == "normal" ? (
+          activeUserData.displayName == item.sendername ? (
+            item.type == "text/normal" ? (
               <Typography className="text-sm text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
-                <span className="font-bold">You:</span> {item.messege}
+                <span className="font-bold">You:</span> {item.text}
               </Typography>
             ) : (
               <Typography className="text-sm text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
-                You sent a {item.messegetype}
+                You sent a {item.type}
               </Typography>
             )
           ) : (
-            item.messegetype == "normal" ? (
+            item.type == "text/normal" ? (
               <Typography className="text-sm text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
-                {item.messege}
+                {item.text}
               </Typography>
             ) : (
               <Typography className="text-sm text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
-                {item.messegesendername} sent a {item.messegetype}
+                {item.sendername} sent a {item.type}
               </Typography>
             )
           )
@@ -85,7 +82,7 @@ const ChatItem = ({
       </Box>
       {last.map((item) => (
         <Typography className="text-sm text-secoundaryText absolute right-2.5 top-2.5">
-          {moment(item.messegesenttime, "YYYYMMDDh:mm").fromNow()}
+          {moment(item.senttime, "YYYYMMDDh:mm").fromNow()}
         </Typography>
       ))}
 
