@@ -21,8 +21,8 @@ const OthersGroup = () => {
     onValue(groupRef, (snapshot) => {
       let groupListArray = [];
       snapshot.forEach((item) => {
-        if (activeUserData.uid != item.val().groupcreatoruid) {
-          groupListArray.push({ ...item.val(), groupuid: item.key });
+        if (activeUserData.uid != item.val().groupadminuid) {
+          groupListArray.push(item.val());
         }
       });
       setGroupList(groupListArray);
@@ -38,6 +38,10 @@ const OthersGroup = () => {
     });
   };
 
+  const handleCancelButton = (item) => {
+    remove(ref(db , "groupjoinrequst/" + (item.groupuid + activeUserData.uid)))
+  }
+
   useEffect(() => {
     let groupJoinRequstRef = ref(db, "groupjoinrequst");
     onValue(groupJoinRequstRef, (snapshot) => {
@@ -48,10 +52,6 @@ const OthersGroup = () => {
       setGroupJoinRequstList(array);
     });
   }, []);
-
-  const handleCancelButton = (item) => {
-    remove(ref(db , "groupjoinrequst/" + (item.groupuid + activeUserData.uid)))
-  }
 
   useEffect(() => {
     let invitationRef = ref(db, "groupinvitation");
@@ -119,8 +119,8 @@ const OthersGroup = () => {
                 className={"w-[24.2%] mb-3"}
                 groupPhoto={item.groupphoto}
                 groupName={item.groupname}
-                adminName={item.groupcreatorname}
-                adminProfile={item.groupcreatoprofile}
+                adminName={item.groupadminname}
+                adminProfile={item.groupadminprofile}
                 buttonType={
                   groupJoinRequstList.includes(activeUserData.uid + item.groupuid) ||
                   groupJoinRequstList.includes(item.groupuid + activeUserData.uid)

@@ -1,38 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 // Reusble Components
 import Box from "../components/layout/Box";
 import Flex from "../components/layout/Flex";
-import Typography from "../components/layout/Typography";
 import Image from "../components/layout/Image";
 import Input from "../components/layout/Input";
 import GroupItem from "../components/layout/GroupItem";
+import Typography from "../components/layout/Typography";
 import GroupCreateModal from "../components/layout/GroupCreateModal";
 import JoinRequstItem from "../components/layout/GroupJoinRequstListItem";
 import GroupMemberListItem from "../components/layout/GroupMemberListItem";
 import GroupMemberInviteModal from "../components/layout/GroupMemberInviteModal";
-import { useDispatch, useSelector } from "react-redux";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoCall, IoVideocam } from "react-icons/io5";
-import { HiDotsVertical } from "react-icons/hi";
-import { FaPlus, FaRegImage, FaFile } from "react-icons/fa6";
-import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
+import { IoIosArrowDown } from "react-icons/io";
+import { HiDotsVertical } from "react-icons/hi";
+import { BsEmojiSmileFill } from "react-icons/bs";
+import { IoCall, IoVideocam } from "react-icons/io5";
+import { FaPlus, FaRegImage } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux"
 import {
-  MdOutlineNotificationsNone,
-  MdOutlineNotificationsOff,
   MdThumbUpAlt,
+  MdOutlineNotificationsOff,
+  MdOutlineNotificationsNone,
 } from "react-icons/md";
-import { LuFileSpreadsheet } from "react-icons/lu";
+import { FiEdit } from "react-icons/fi";
 import { RiMovieLine } from "react-icons/ri";
 import { TbPhotoPlus } from "react-icons/tb";
-import { FiEdit } from "react-icons/fi";
+import { LuFileSpreadsheet } from "react-icons/lu";
 import {
-  getDatabase,
-  onValue,
-  push,
-  ref,
-  remove,
   set,
+  ref,
+  push,
+  remove,
+  onValue,
+  getDatabase,
 } from "firebase/database";
 import { CiLogout } from "react-icons/ci";
 import SearchBox from "../components/layout/SearchBox";
@@ -48,21 +48,13 @@ import GroupNameChangeModal from "../components/layout/GroupNameChangeModal";
 import { HiMiniGif } from "react-icons/hi2";
 import { FaMicrophone } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import ReciverNormalMessege from "../components/layout/ReciverNormalMessege";
-import ReciverForwardMessege from "../components/layout/ReciverForwardMessege";
-import ReciverRepliedMessege from "../components/layout/ReciverRepliedMessege";
-import SenderNormalMessage from "../components/layout/SenderNormalMessage";
-import SenderForwardMessage from "../components/layout/SenderForwardMessage";
-import SenderRepliedMessage from "../components/layout/SenderRepliedMessage";
-import ReciverGif from "../components/layout/ReciverGif";
-import ReciverImage from "./../components/layout/ReciverImage";
 
 const Group = () => {
   const db = getDatabase();
   const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
   const activeGroupData = useSelector((state) => state.activeGroup.information);
-  const [groupList, setGroupList] = useState([]);
+  const [groupList, setGroupList] = useState([])
   const [groupProfileOpen, setGroupProfileOpen] = useState(false);
   const [groupNotificationOn, setGroupNotificationOn] = useState(true);
   const [groupMemberShow, setGroupMemberShow] = useState(false);
@@ -74,8 +66,7 @@ const Group = () => {
   const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
   const [messege, setMessege] = useState("");
   const [groupMessegeList, setGroupMessegeList] = useState([]);
-  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
-    useState(false);
+  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
   const [groupCreateModal, setGroupCreateModal] = useState(false);
   const [memberInviteModal, setMemberInviteModal] = useState(false);
   const [groupJoinRequstList, setGroupJoinRequstList] = useState([]);
@@ -93,30 +84,17 @@ const Group = () => {
   }, [activeGroupData]);
 
   useEffect(() => {
-    let groupRef = ref(db, "groups");
+    let groupRef = ref(db, "groupmembers");
     onValue(groupRef, (snapshot) => {
       let groupListArray = [];
       snapshot.forEach((item) => {
-        if (activeUserData.uid == item.val().groupcreatoruid) {
-          groupListArray.push({ ...item.val(), groupuid: item.key });
+        if (activeUserData.uid == item.val().memberuid) {
+          groupListArray.push(item.val());
         }
       });
       setGroupList(groupListArray);
     });
   }, []);
-
-  // useEffect(() => {
-  //   let groupRef = ref(db, "groupmembers");
-  //   onValue(groupRef, (snapshot) => {
-  //     let groupListArray = [];
-  //     snapshot.forEach((item) => {
-  //       if (activeUserData.uid == item.val().memberuid) {
-  //         groupListArray.push(item.val());
-  //       }
-  //     });
-  //     setGroupList(groupListArray);
-  //   });
-  // }, []);
 
   const handleActiveGroupOpen = (item) => {
     dispatch(activeGroup(item));
@@ -139,22 +117,6 @@ const Group = () => {
   const handleMemberRemove = (item) => {
     remove(ref(db, "groupmembers/" + item.groupmemberid));
   };
-
-  // const handleMessegeSend = () => {
-  //   set(push(ref(db, "gorupmessege/")), {
-  //     messege: messege,
-  //     messegetype: "normal",
-  //     groupuid: activeGroupData.groupuid,
-  //     groupname: activeGroupData.groupname,
-  //     groupphoto: activeGroupData.groupphoto,
-  //     messegesenderuid: activeUserData?.uid,
-  //     messegesendername: activeUserData?.displayName,
-  //     messegesenderprofile: activeUserData?.photoURL,
-  //     messegesenttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-  //   }).then(() => {
-  //     setMessege("");
-  //   });
-  // };
 
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
@@ -223,6 +185,9 @@ const Group = () => {
       groupuid: item.groupuid,
       groupname: item.groupname,
       groupphoto: item.groupphoto,
+      groupadminuid: item.groupadminuid,
+      groupadminname: item.groupadminname,
+      groupadminprofile: item.groupadminprofile,
       memberuid: item.requstsenderuid,
       membername: item.requstsendername,
       memberprofile: item.requstsenderprofile,
@@ -286,12 +251,11 @@ const Group = () => {
               return searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase());
             }).map((item) => (
               <GroupItem
-                activeItem={activeGroupData?.groupname}
-                onClick={() => handleActiveGroupOpen(item)}
+                uid={item.groupuid}
+                name={item?.groupname}
                 profile={item?.groupphoto}
-                groupName={item?.groupname}
-                lastMessege={"random messege...."}
-                lastMessegeSentTime={"30 min"}
+                activeItem={activeGroupData?.groupuid}
+                onClick={() => handleActiveGroupOpen(item)}
               />
             ))}
         </Box>
@@ -319,9 +283,11 @@ const Group = () => {
       ) : (
         <Box className={"w-[75%] ml-4 flex"}>
           <Box
-            className={`${
-              groupProfileOpen ? "w-[70%]" : "w-full"
-            } h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100`}
+            className={
+              groupProfileOpen
+               ? "w-[70%] h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100"
+               : "w-full h-full bg-white rounded-2xl relative overflow-hidden transition-all ease-in-out duration-100"
+            }
           >
             <Flex
               justifyContent={"between"}
@@ -334,12 +300,12 @@ const Group = () => {
                 }
               >
                 <Image
-                  src={activeGroupData?.groupphoto}
+                  src={activeGroupData.groupphoto}
                   alt={"random image"}
                   className={"w-11 aspect-square object-cover rounded-full"}
                 />
                 <Typography variant="h3" className="ml-3 text-lg font-semibold">
-                  {activeGroupData?.groupname}
+                  {activeGroupData.groupname}
                 </Typography>
               </Box>
               <Flex alignItems={"center"}>
@@ -362,8 +328,8 @@ const Group = () => {
             >
               <Box className={"mt-10 mb-10 text-center"}>
                 <Image
-                  src={activeGroupData?.groupphoto}
-                  alt={activeGroupData?.groupname}
+                  src={activeGroupData.groupphoto}
+                  alt={activeGroupData.groupname}
                   className={
                     "w-[120px] aspect-square object-cover rounded-full mx-auto"
                   }
@@ -372,23 +338,21 @@ const Group = () => {
                   variant="h3"
                   className=" font-poppins text-lg font-semibold mt-2"
                 >
-                  {activeGroupData?.groupname}
+                  {activeGroupData.groupname}
                 </Typography>
                 <Typography className="text-sm text-secoundaryText">
-                  You're a Member of {activeGroupData?.groupname}
+                  You're a Member of {activeGroupData.groupname}
                 </Typography>
               </Box>
-              {groupMessegeList.map((item) => (
+              {groupMessegeList.map((item) =>
                 item.messegesenderuid == activeUserData.uid ? (
                   item.messegetype == "reply" ? (
                     <SenderMessege
                       messege={item.messege}
                       messegeType={item.messegetype}
-
                       repliedtomessege={item.repliedtomessege}
                       repliedtoname={item.repliedtoname}
                       repliedbyname={item.messegesendername}
-
                       time={item.messegesenttime}
                       replayButton={() => handleReply(item)}
                     />
@@ -400,33 +364,30 @@ const Group = () => {
                       replayButton={() => handleReply(item)}
                     />
                   )
+                ) : item.messegetype == "reply" ? (
+                  <ReciverMessege
+                    messege={item.messege}
+                    messegeType={item.messegetype}
+                    repliedtomessege={item.repliedtomessege}
+                    repliedtoname={item.repliedtoname}
+                    repliedbyname={item.messegesendername}
+                    name={item.messegesendername}
+                    profile={item.messegesenderprofile}
+                    time={item.messegesenttime}
+                    replayButton={() => handleReply(item)}
+                  />
                 ) : (
-                  item.messegetype == "reply" ? (
-                    <ReciverMessege
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      repliedtomessege={item.repliedtomessege}
-                      repliedtoname={item.repliedtoname}
-                      repliedbyname={item.messegesendername}
-                      name={item.messegesendername}
-                      profile={item.messegesenderprofile}
-                      time={item.messegesenttime}
-                      replayButton={() => handleReply(item)}
-                    />
-                  ) : (
-                    <ReciverMessege
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      name={item.messegesendername}
-                      profile={item.messegesenderprofile}
-                      time={item.messegesenttime}
-                      replayButton={() => handleReply(item)}
-                    />
-                  )
+                  <ReciverMessege
+                    messege={item.messege}
+                    messegeType={item.messegetype}
+                    name={item.messegesendername}
+                    profile={item.messegesenderprofile}
+                    time={item.messegesenttime}
+                    replayButton={() => handleReply(item)}
+                  />
                 )
-              ))}
+              )}
             </Box>
-
             <Box
               className={
                 "bg-white absolute bottom-0 left-0 w-full border-t border-[#dedede]"
@@ -575,9 +536,9 @@ const Group = () => {
           >
             <Box className={"mx-auto w-[120px]"}>
               <ModalImage
-                small={activeGroupData?.groupphoto}
-                large={activeGroupData?.groupphoto}
-                alt={activeGroupData?.groupname}
+                small={activeGroupData.groupphoto}
+                large={activeGroupData.groupphoto}
+                alt={activeGroupData.groupname}
                 className={
                   "w-[120px] h-[120px] rounded-full object-cover border border-[#dedede] mt-10 cursor-pointer"
                 }
@@ -591,7 +552,7 @@ const Group = () => {
               variant="h3"
               className="font-poppins font-semibold text-[20px] mt-[15px]"
             >
-              {activeGroupData?.groupname}
+              {activeGroupData.groupname}
             </Typography>
             <Flex
               alignItems={"center"}
@@ -663,7 +624,7 @@ const Group = () => {
                       : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
                   }
                 >
-                  <Typography>Chat info</Typography>
+                  <Typography>Customize Group</Typography>
 
                   <IoIosArrowDown
                     className={chatInfoShow ? "rotate-180" : "rotate-0"}
@@ -707,7 +668,7 @@ const Group = () => {
                       : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
                   }
                 >
-                  <Typography>View media</Typography>
+                  <Typography>View Media</Typography>
                   <IoIosArrowDown
                     className={mediaShow ? "rotate-180" : "rotate-0"}
                   />
@@ -766,14 +727,17 @@ const Group = () => {
                     {groupMemberLlist.length > 0 ? (
                       groupMemberLlist.map((item) => (
                         <GroupMemberListItem
-                          memberProfile={item.memberprofile}
+                          memberUid={item.memberuid}
                           memberName={item.membername}
+                          memberProfile={item.memberprofile}
                           addedBy={item.addedbyname}
                           removeButton={() => handleMemberRemove(item)}
                         />
                       ))
                     ) : (
-                      <Typography>There are no member in this group</Typography>
+                      <Typography className="text-center">
+                        There are no member in this group
+                      </Typography>
                     )}
                   </Box>
                 )}
@@ -800,14 +764,20 @@ const Group = () => {
                       "px-2.5 py-2 border border-primaryBorder rounded-md mb-1"
                     }
                   >
-                    {groupJoinRequstList.map((item) => (
-                      <JoinRequstItem
-                        profile={item.requstsenderprofile}
-                        name={item.requstsendername}
-                        deleteButton={() => handleJoinRequstDelete(item)}
-                        acceptButton={() => handleJoinRequstAccept(item)}
-                      />
-                    ))}
+                    {groupJoinRequstList.length > 0 ? (
+                      groupJoinRequstList.map((item) => (
+                        <JoinRequstItem
+                          profile={item.requstsenderprofile}
+                          name={item.requstsendername}
+                          deleteButton={() => handleJoinRequstDelete(item)}
+                          acceptButton={() => handleJoinRequstAccept(item)}
+                        />
+                      ))
+                    ) : (
+                      <Typography className="text-center">
+                        No join requst
+                      </Typography>
+                    )}
                   </Box>
                 )}
               </Box>

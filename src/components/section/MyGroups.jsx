@@ -18,12 +18,12 @@ const MyGroups = () => {
   const [groupList, setGroupList] = useState([]);
 
   useEffect(() => {
-    let groupRef = ref(db, "groups");
+    let groupRef = ref(db, "groupmembers");
     onValue(groupRef, (snapshot) => {
       let groupListArray = [];
       snapshot.forEach((item) => {
-        if (activeUserData.uid == item.val().groupcreatoruid) {
-          groupListArray.push({ ...item.val(), groupuid: item.key });
+        if (activeUserData.uid == item.val().memberuid) {
+          groupListArray.push(item.val());
         }
       });
       setGroupList(groupListArray);

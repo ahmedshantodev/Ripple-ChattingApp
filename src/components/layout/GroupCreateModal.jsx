@@ -32,17 +32,57 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
     setGroupCreateError("");
   };
 
+  // const handleCreateGroup = () => {
+  //   if (!groupName) {
+  //     setGroupCreateError("Please enter group name");
+  //   } else {
+  //     setGroupCreateLoadingButton(true);
+  //     set(push(ref(db, "groups/")), {
+  //       groupname: groupName,
+  //       groupphoto: defaultGroupPhoto,
+  //       groupadminuid: activeUserData.uid,
+  //       groupadminname: activeUserData.displayName,
+  //       groupadminprofile: activeUserData.photoURL,
+  //     }).then(() => {
+  //       toast.success(
+  //         `Your group ${groupName} has been created. Join the conversation now!`,
+  //         { position: "bottom-center", autoClose: 2500 }
+  //       );
+  //       setGroupName("");
+  //       setGroupCreateLoadingButton(false);
+  //       modalClose(false);
+  //     });
+  //   }
+  // };
+
   const handleCreateGroup = () => {
-    if (!groupName) {
+    if (!setGroupName) {
       setGroupCreateError("Please enter group name");
     } else {
+      let groupId = Date.now();
       setGroupCreateLoadingButton(true);
-      set(push(ref(db, "groups/")), {
+      set(ref(db, "groups/" + groupId), {
+        groupuid: groupId,
         groupname: groupName,
         groupphoto: defaultGroupPhoto,
-        groupcreatoruid: activeUserData.uid,
-        groupcreatorname: activeUserData.displayName,
-        groupcreatoprofile: activeUserData.photoURL,
+        groupadminuid: activeUserData.uid,
+        groupadminname: activeUserData.displayName,
+        groupadminprofile: activeUserData.photoURL,
+      }).then(() => {
+        set(push(ref(db, "groupmembers/")), {
+          groupuid: groupId,
+          groupname: groupName,
+          groupphoto: defaultGroupPhoto,
+          groupadminuid: activeUserData.uid,
+          groupadminname: activeUserData.displayName,
+          groupadminprofile: activeUserData.photoURL,
+          memberuid: activeUserData.uid,
+          membername: activeUserData.displayName,
+          memberprofile: activeUserData.photoURL,
+          addedbyuid: activeUserData.uid,
+          addedbyname: activeUserData.displayName,
+          addedbyprofile: activeUserData.photoURL,
+        })
       }).then(() => {
         toast.success(
           `Your group ${groupName} has been created. Join the conversation now!`,
@@ -54,43 +94,6 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
       });
     }
   };
-
-  // const handleCreateGroup = () => {
-  //   if (!groupCreateInfo) {
-  //     setGroupCreateError("Please enter group name");
-  //   } else {
-  //     let groupId = Date.now();
-  //     setGroupCreateLoadingButton(true);
-  //     set(push(ref(db, "groups/")), {
-  //       groupuid: groupId,
-  //       groupname: groupCreateInfo,
-  //       groupphoto: defaultGroupPhoto,
-  //       groupcreatoruid: activeUserData.uid,
-  //       groupcreatorname: activeUserData.displayName,
-  //       groupcreatoprofile: activeUserData.photoURL,
-  //     }).then(() => {
-  //       set(push(ref(db, "groupmembers/")), {
-  //         groupuid: groupId,
-  //         groupname: groupCreateInfo,
-  //         groupphoto: defaultGroupPhoto,
-  //         memberuid: activeUserData.uid,
-  //         membername: activeUserData.displayName,
-  //         memberprofile: activeUserData.photoURL,
-  //         addedbyuid: activeUserData.uid,
-  //         addedbyname: activeUserData.displayName,
-  //         addedbyprofile: activeUserData.photoURL,
-  //       }).then(() => {
-  //       });
-  //         toast.success(
-  //           `Your group ${groupCreateInfo} has been created. Join the conversation now!`,
-  //           { position: "bottom-center", autoClose: 2500 }
-  //         );
-  //         setGroupCreateInfo("");
-  //         setGroupCreateLoadingButton(false);
-  //         modalClose(false);
-  //     });
-  //   }
-  // };
 
   return (
     <section
@@ -121,17 +124,11 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
               name={"groupname"}
               onChange={handleInputValue}
               placeholder={"Group Name"}
-              className={`w-full border ${
-                groupCreateError ? "border-red-600" : "border-primaryBorder"
-              } ${
+              className={
                 groupCreateError
-                  ? "focus:outline-red-600"
-                  : "focus:outline-[#141975]"
-              } ${
-                groupCreateError
-                  ? "placeholder:text-red-600"
-                  : "placeholder:text-secoundaryText"
-              } placeholder:text-[13px]  sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
+                  ? "w-full border border-red-600 focus:outline-red-600 placeholder:text-red-600 placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                  : "w-full border border-primaryBorder focus:outline-[#141975] placeholder:text-secoundaryText placeholder:text-[13px]  sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+              }
             />
             {groupCreateError && (
               <Typography className="absolute -bottom-[20px] left-[20px] text-red-600 text-[8px] sm:text-[11px] md:text-[10px] lg:text-[14px]">

@@ -19,7 +19,6 @@ import {
   getDatabase,
   set,
   ref as databaseRef,
-  ref,
   onValue,
 } from "firebase/database";
 import { toast } from "react-toastify";
@@ -27,14 +26,29 @@ import { activeGroup } from "../../slices/activeGroupSlice";
 
 const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
+  const dispatch = useDispatch();
   const storage = getStorage();
   const activeGroupData = useSelector((state) => state.activeGroup.information);
-  const dispatch = useDispatch();
+  const [groupList, setGroupList] = useState([])
   const [uploadLoadingButton, setUploadLoadingButton] = useState(false);
   const [image, setImage] = useState("");
   const cropperRef = createRef();
   const modalRef = useRef();
   const boxRef = useRef();
+  
+  useEffect(() => {
+    let groupRef = databaseRef(db, "groupmembers");
+    onValue(groupRef, (snapshot) => {
+      let groupListArray = [];
+      snapshot.forEach((item) => {
+        if (activeGroupData.groupuid == item.val().groupuid) {
+          groupListArray.push({...item.val() , gid: item.key});
+        }
+      });
+      setGroupList(groupListArray);
+    });
+  }, [activeGroupData]);
+
 
   const onChange = (e) => {
     e.preventDefault();
@@ -59,30 +73,40 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
       uploadString(groupPhotoRef, groupPhoto, "data_url").then((snapshot) => {
         getDownloadURL(groupPhotoRef).then((downloadURL) => {
           set(databaseRef(db, "groups/" + activeGroupData.groupuid), {
+            groupuid: activeGroupData.groupuid,
             groupname: activeGroupData.groupname,
             groupphoto: downloadURL,
-            groupcreatoruid: activeGroupData.groupcreatoruid,
-            groupcreatorname: activeGroupData.groupcreatorname,
-            groupcreatoprofile: activeGroupData.groupcreatoprofile,
+            groupadminuid: activeGroupData.groupadminuid,
+            groupadminname: activeGroupData.groupadminname,
+            groupadminprofile: activeGroupData.groupadminprofile,
           }).then(() => {
-            localStorage.setItem(
-              "activeGroup",
-              JSON.stringify({ ...activeGroupData, groupphoto: downloadURL })
-            );
-            dispatch(
-              activeGroup({ ...activeGroupData, groupphoto: downloadURL })
-            );
-            toast.success(
-              "Group profile picture has been uploaded successfully",
-              {
-                position: "bottom-center",
-                autoClose: 2500,
-              }
-            );
+            groupList.map((item) => {
+              set(databaseRef(db, "groupmembers/" + item.gid), {
+                groupuid: item.groupuid,
+                groupname: item.groupname,
+                groupphoto: downloadURL,
+                groupadminuid: item.groupadminuid,
+                groupadminname: item.groupadminname,
+                groupadminprofile: item.groupadminprofile,
+                memberuid: item.memberuid,
+                membername: item.membername,
+                memberprofile: item.memberprofile,
+                addedbyuid: item.addedbyuid,
+                addedbyname: item.addedbyname,
+                addedbyprofile: item.addedbyprofile,
+              });
+            });
+          }).then(() => {
+            localStorage.setItem("activeGroup", JSON.stringify({ ...activeGroupData, groupphoto: downloadURL }));
+            dispatch(activeGroup({ ...activeGroupData, groupphoto: downloadURL }));
+            toast.success("Group profile picture has been uploaded successfully",{
+              position: "bottom-center",
+              autoClose: 2500,
+            });
             setUploadLoadingButton(false);
             setImage("");
             modalClose(false);
-          });
+          })
         });
       });
     }

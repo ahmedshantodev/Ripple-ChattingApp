@@ -5,12 +5,21 @@ import Image from "./Image";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Typography from "./Typography";
 import Button from "./Button";
+import { useSelector } from "react-redux";
 
-const GroupMemberListItem = ({ memberProfile, memberName, addedBy, removeButton, blockButton }) => {
+const GroupMemberListItem = ({
+  memberUid,
+  memberName,
+  memberProfile,
+  addedBy,
+  removeButton,
+  blockButton,
+}) => {
+  const activeGroupData = useSelector((state) => state.activeGroup.information);
   const [menuShow, setMenuShow] = useState(false);
   const menuRef = useRef();
   const openButtonRef = useRef();
-  const buttonRef = useRef()
+  const buttonRef = useRef();
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
@@ -34,9 +43,15 @@ const GroupMemberListItem = ({ memberProfile, memberName, addedBy, removeButton,
         />
         <Box>
           <Typography className="text-[15px]">{memberName}</Typography>
-          <Typography className="text-[13px] text-secoundaryText">
-            Added by {addedBy}
-          </Typography>
+          {activeGroupData.groupadminuid == memberUid ? (
+            <Typography className="text-[13px] text-secoundaryText">
+              Group Admin
+            </Typography>
+          ) : (
+            <Typography className="text-[13px] text-secoundaryText">
+              Added by {addedBy}
+            </Typography>
+          )}
         </Box>
       </Flex>
       <Box className={"relative"}>
@@ -56,7 +71,7 @@ const GroupMemberListItem = ({ memberProfile, memberName, addedBy, removeButton,
               className={
                 "w-full py-[6px] font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d] text-sm"
               }
-              >
+            >
               Remove
             </button>
             <button

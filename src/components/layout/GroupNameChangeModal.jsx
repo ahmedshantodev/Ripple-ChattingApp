@@ -14,11 +14,25 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
   const dispatch = useDispatch();
   const activeGroupData = useSelector((state) => state.activeGroup.information);
+  const [groupList, setGroupList] = useState([])
   const [loadingButton, setLoadingButton] = useState(false);
   const [newGroupName, setNewGroupName] = useState(activeGroupData?.groupname);
   const [error, setError] = useState("");
   const modalRef = useRef();
   const boxRef = useRef();
+
+  useEffect(() => {
+    let groupRef = ref(db, "groupmembers");
+    onValue(groupRef, (snapshot) => {
+      let groupListArray = [];
+      snapshot.forEach((item) => {
+        if (activeGroupData.groupuid == item.val().groupuid) {
+          groupListArray.push({...item.val() , gid: item.key});
+        }
+      });
+      setGroupList(groupListArray);
+    });
+  }, [activeGroupData]);
 
   const handleInputValue = (e) => {
     setNewGroupName(e.target.value);
@@ -31,11 +45,29 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
     } else {
       setLoadingButton(true);
       set(ref(db, "groups/" + activeGroupData?.groupuid), {
+        groupuid: activeGroupData.groupuid,
         groupname: newGroupName,
         groupphoto: activeGroupData.groupphoto,
-        groupcreatoruid: activeGroupData.groupcreatoruid,
-        groupcreatorname: activeGroupData.groupcreatorname,
-        groupcreatoprofile: activeGroupData.groupcreatoprofile,
+        groupadminuid: activeGroupData.groupadminuid,
+        groupadminname: activeGroupData.groupadminname,
+        groupadminprofile: activeGroupData.groupadminprofile,
+      }).then(() => {
+        groupList.map((item) => {
+          set(ref(db, "groupmembers/" + item.gid), {
+            groupuid: item.groupuid,
+            groupname: newGroupName,
+            groupphoto: item.groupphoto,
+            groupadminuid: item.groupadminuid,
+            groupadminname: item.groupadminname,
+            groupadminprofile: item.groupadminprofile,
+            memberuid: item.memberuid,
+            membername: item.membername,
+            memberprofile: item.memberprofile,
+            addedbyuid: item.addedbyuid,
+            addedbyname: item.addedbyname,
+            addedbyprofile: item.addedbyprofile,
+          });
+        });
       }).then(() => {
         toast.success(
           `Your group name has been changed from ${activeGroupData?.groupname} to ${newGroupName}`,
