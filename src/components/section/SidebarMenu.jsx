@@ -162,14 +162,14 @@ const SidebarMenu = () => {
             ref={outerDivRef}
             className={
               accountSettingShow
-                ? "block fixed top-0 left-0 w-full h-dvh z-50"
-                : "hidden fixed top-0 left-0 w-full h-dvh z-50"
+                ? "block fixed top-0 left-0 w-full h-dvh z-50 bg-white/60"
+                : "hidden fixed top-0 left-0 w-full h-dvh z-50 bg-white/60"
             }
           >
             <div
               ref={menuRef}
               className={
-                "absolute left-10 bottom-[100px] z-40 w-[530px] px-8 pt-8 rounded-lg bg-white shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]"
+                "absolute left-10 bottom-[100px] z-40 w-[530px] px-8 pt-8 rounded-lg bg-white border-[3px] border-[#f2f2f2]"
               }
             >
               <Box className={"flex items-center gap-x-2.5"}>
@@ -206,13 +206,6 @@ const SidebarMenu = () => {
                 </Box>
               </Box>
               <Box className={"pt-12 pb-8"}>
-                <Button
-                  className={
-                    "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
-                  }
-                >
-                  <CiEdit className="text-black" /> Edit Name
-                </Button>
                 <Button
                   className={
                     "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
@@ -260,7 +253,7 @@ const SidebarMenu = () => {
               </Box>
               <Box
                 className={
-                  "bg-white w-[25px] h-[25px] rotate-45 absolute bottom-0 translate-y-2/4 left-10 -z-50"
+                  "bg-white w-[25px] h-[25px] rotate-45 absolute bottom-0 translate-y-2/4 left-10 -z-50 border-b-2 border-r-[3px]  border-[#f2f2f2]"
                 }
               ></Box>
             </div>

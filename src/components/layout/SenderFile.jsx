@@ -15,8 +15,8 @@ const SenderFile = ({
   fileName,
   fileType,
   sentTime,
-  removeButton,
   replyButton,
+  removeButton,
   forwardButton,
 }) => {
   const [menuShow, setMenuShow] = useState(false);

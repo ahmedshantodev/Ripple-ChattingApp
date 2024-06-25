@@ -6,12 +6,7 @@ import Flex from "./Flex";
 import Button from "./Button";
 import { FaEnvelopeCircleCheck } from "react-icons/fa6";
 
-const MessageForwardListItem = ({
-  profile,
-  name,
-  button,
-  sendButton,
-}) => {
+const MessageForwardListItem = ({ profile, name, sendButton }) => {
   return (
     <Box
       className={
@@ -31,23 +26,22 @@ const MessageForwardListItem = ({
           {name}
         </Typography>
       </Flex>
-      {button == "send" ? (
-        <Button
-          onClick={sendButton}
+      <Button
+        onClick={sendButton}
+        className={
+          "bg-[#dbe7f2] text-[#1871e6] w-[100px] py-2 rounded-md mr-2 transition-all ease-in-out duration-200 active:scale-[0.97] font-semibold text-lg"
+        }
+      >
+        send
+      </Button>
+      {/* <Button
           className={
-            "bg-[#dbe7f2] text-[#1871e6] w-[100px] py-2 rounded-md mr-2 transition-all ease-in-out duration-200 active:scale-[0.97] font-semibold text-lg"
+            "bg-[#dbe7f2] text-[#1871e6] w-[100px] py-2 rounded-md mr-2 font-semibold flex items-center justify-center gap-x-2 text-lg cursor-default"
           }
         >
-          send
-        </Button>
-      ) : (
-        <Button
-          className={"bg-[#dbe7f2] text-[#1871e6] w-[100px] py-2 rounded-md mr-2 font-semibold flex items-center justify-center gap-x-2 text-lg cursor-default"}
-        >
-          <FaEnvelopeCircleCheck /> 
+          <FaEnvelopeCircleCheck />
           sent
-        </Button>
-      )}
+        </Button> */}
     </Box>
   );
 };

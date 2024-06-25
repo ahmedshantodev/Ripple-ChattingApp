@@ -80,8 +80,9 @@ const FriendRequsts = () => {
             {filteredList.map((item) => (
               <FriendRequstItem
                 className={"w-[18.50%] mb-[15px]"}
-                profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+                userId={activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid}
                 userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
+                userProfile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
                 friendRequstConfirm={() => handleFriendRequstConfirm(item)}
                 friendRequstDelete={() => handleFriendRequstDelete(item)}
               />

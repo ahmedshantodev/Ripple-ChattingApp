@@ -120,8 +120,9 @@ const AddFriends = () => {
             {filteredList.map((item) => (
               <UserListItem
                 className={"w-[18.50%] mb-[15px]"}
-                profile={item.userprofile}
+                userId={item.userid}
                 userName={item.username}
+                userProfile={item.userprofile}
                 sendRequstBtn={() => handleSendFriendRequst(item)}
                 cencelRequstBtn={() => handleCencelRequstBtn(item)}
                 button={

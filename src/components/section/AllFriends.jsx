@@ -90,8 +90,9 @@ const AllFriends = () => {
             {filteredList.map((item) => (
               <FriendListItem
                 className={"w-[49.5%] mb-[15px]"}
+                uid={activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid}
+                name={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
                 profile={activeUserData.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
-                userName={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}
                 blockButton={() => handleBlock(item)}
                 unfriendButton={() => handleUnfriend(item)}
               />

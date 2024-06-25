@@ -41,6 +41,7 @@ import { LuFileSpreadsheet } from "react-icons/lu";
 import { AiTwotoneVideoCamera } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
 import { MdCancel } from "react-icons/md";
+import { FaArrowLeft } from "react-icons/fa6";
 // Firebase
 import {
   getDatabase,
@@ -69,6 +70,12 @@ import ReciverGif from "./../components/layout/ReciverGif";
 import ReciverForwardMessege from "./../components/layout/ReciverForwardMessege";
 import SenderRepliedMessage from "../components/layout/SenderRepliedMessage";
 import ReciverRepliedMessege from "../components/layout/ReciverRepliedMessege";
+import MediaImageItem from "../components/layout/MediaImageItem";
+import MediaVideoItem from "../components/layout/MediaVideoItem";
+import MediaFileItem from "../components/layout/MediaFileItem";
+import ModalImage from "react-modal-image";
+import SenderDeletedMessage from "../components/layout/SenderDeletedMessage";
+import ReciverDeletedMessage from "../components/layout/ReciverDeletedMessage";
 
 const Chat = () => {
   const db = getDatabase();
@@ -84,15 +91,22 @@ const Chat = () => {
   const [forwardMessegeInfo, setForwardMessegeInfo] = useState("");
   const [replyMessegeInfo, setreplyMessegeInfo] = useState("");
   const [messegeList, setMessegeList] = useState([]);
-  const [messegeNotification, setMessegeNotification] = useState(false);
-  const [mediaShow, setMediaShow] = useState(true);
-  const [privacyShow, setPrivacyShow] = useState(true);
   const [blockList, setBlockList] = useState([]);
   const [blockModalShow, setBlockModalShow] = useState(false);
   const [unblockModalShow, setUnblockModalShow] = useState(false);
   const [messageForwardModalShow, setMessageForwardModalShow] = useState(false);
   const [emojiPickerShow, setEmojiPickerShow] = useState(false);
   const [gifPickerShow, setGifPickerShow] = useState(false);
+  const [messegeNotification, setMessegeNotification] = useState(true);
+  const [mediaDropdownOpen, setMediaDropdwonOpen] = useState(true);
+  const [privacyDropdownOpen, setPrivacyDropdwonOpen] = useState(true); 
+  const [mediaShow, setMediaShow] = useState(false)
+  const [mediaItemOpen, setMediaItemOpen] = useState("")
+  const [chatImageList, setChatImageList] = useState([]) ;
+  const [chatVideoList, setChatVideoList] = useState([]);
+  const [chatFileList, setChatFileList] = useState([]);
+  const [fileSizeErrorShow, setFileSizeErrorShow] = useState(false)
+  const anotherFileSelectButtonRef = useRef()
 
   const time = new Date();
   const year = time.getFullYear();
@@ -109,10 +123,7 @@ const Chat = () => {
     onValue(friendListRef, (snapshot) => {
       const FriendListArray = [];
       snapshot.forEach((item) => {
-        if (
-          activeUserData.uid == item.val().reciveruid ||
-          activeUserData.uid == item.val().senderuid
-        ) {
+        if ( activeUserData?.uid == item.val().reciveruid || activeUserData?.uid == item.val().senderuid) {
           FriendListArray.push(item.val());
         }
       });
@@ -121,7 +132,7 @@ const Chat = () => {
   }, []);
 
   const filteredChatItem = friendList.filter((item) => {
-    let name = activeUserData.uid == item.senderuid ? item.recivername : item.sendername;
+    let name = activeUserData?.uid == item.senderuid ? item.recivername : item.sendername;
     return searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase());
   });
 
@@ -172,7 +183,7 @@ const Chat = () => {
           repliedType: "text",
           repliedmessege: replyMessegeInfo.text,
           repliedto: activeChatData.name,
-          reciveruid: activeChatData.uid,
+          reciveruid: activeChatData?.uid,
           recivername: activeChatData.name,
           reciverrofile: activeChatData.profile,
           senderuid: activeUserData.uid,
@@ -190,7 +201,7 @@ const Chat = () => {
           repliedType: "image",
           repliedmessege: replyMessegeInfo.image,
           repliedto: activeChatData.name,
-          reciveruid: activeChatData.uid,
+          reciveruid: activeChatData?.uid,
           recivername: activeChatData.name,
           reciverrofile: activeChatData.profile,
           senderuid: activeUserData.uid,
@@ -208,7 +219,7 @@ const Chat = () => {
           repliedType: "video",
           repliedmessege: replyMessegeInfo.video,
           repliedto: activeChatData.name,
-          reciveruid: activeChatData.uid,
+          reciveruid: activeChatData?.uid,
           recivername: activeChatData.name,
           reciverrofile: activeChatData.profile,
           senderuid: activeUserData.uid,
@@ -226,7 +237,7 @@ const Chat = () => {
           repliedType: "file",
           repliedmessege: replyMessegeInfo.filename,
           repliedto: activeChatData.name,
-          reciveruid: activeChatData.uid,
+          reciveruid: activeChatData?.uid,
           recivername: activeChatData.name,
           reciverrofile: activeChatData.profile,
           senderuid: activeUserData.uid,
@@ -244,7 +255,7 @@ const Chat = () => {
           repliedType: "gif",
           repliedmessege: replyMessegeInfo.gif,
           repliedto: activeChatData.name,
-          reciveruid: activeChatData.uid,
+          reciveruid: activeChatData?.uid,
           recivername: activeChatData.name,
           reciverrofile: activeChatData.profile,
           senderuid: activeUserData.uid,
@@ -263,9 +274,9 @@ const Chat = () => {
         reciveruid: activeChatData?.uid,
         recivername: activeChatData?.name,
         reciverprofile: activeChatData?.profile,
-        senderuid: activeUserData?.uid,
-        sendername: activeUserData?.displayName,
-        senderprofile: activeUserData?.photoURL,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
         senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       }).then(() => {
         setMessege("");
@@ -285,12 +296,12 @@ const Chat = () => {
   }, []);
 
   const handleBlock = () => {
-    set(ref(db, "block/" + (activeUserData?.uid + activeChatData?.uid)), {
-      blockbyuid: activeUserData?.uid,
-      blockbyname: activeUserData?.displayName,
-      blockbyprofile: activeUserData?.photoURL,
-      blockeduserid: activeChatData?.uid,
-      blockedusername: activeChatData?.name,
+    set(ref(db, "block/" + (activeUserData.uid + activeChatData?.uid)), {
+      blockbyuid: activeUserData.uid,
+      blockbyname: activeUserData.displayName,
+      blockbyprofile: activeUserData.photoURL,
+      blockeduserid: activeChatData.uid,
+      blockedusername: activeChatData.name,
       blockeduserprofile: activeChatData?.profile,
     }).then(() => {
       setBlockModalShow(false);
@@ -298,13 +309,13 @@ const Chat = () => {
   };
 
   const handleUnBlock = () => {
-    remove(ref(db, "block/" + (activeUserData?.uid + activeChatData?.uid)));
+    remove(ref(db, "block/" + (activeUserData.uid + activeChatData?.uid)));
     setUnblockModalShow(false);
   };
 
   const filteredForwardList = friendList.filter((item) => {
-    const uid = activeUserData?.uid == item.reciveruid ? item.senderuid : item.reciveruid;
-    const name = activeUserData?.uid == item.reciveruid ? item.sendername : item.recivername;
+    const uid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid;
+    const name = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername;
     return (
       !blockList.includes(uid + activeUserData.uid) &&
       !blockList.includes(activeUserData.uid + uid) &&
@@ -341,9 +352,9 @@ const Chat = () => {
         reciveruid: reciveruid,
         recivername: recivername,
         reciverprofile: reciverprofile,
-        senderuid: activeUserData?.uid,
-        sendername: activeUserData?.displayName,
-        senderprofile: activeUserData?.photoURL,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
         senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       });
     } else if (forwardMessegeInfo.type.includes("video")) {
@@ -353,9 +364,9 @@ const Chat = () => {
         reciveruid: reciveruid,
         recivername: recivername,
         reciverprofile: reciverprofile,
-        senderuid: activeUserData?.uid,
-        sendername: activeUserData?.displayName,
-        senderprofile: activeUserData?.photoURL,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
         senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       });
     } else if (forwardMessegeInfo.type.includes("file")) {
@@ -366,9 +377,9 @@ const Chat = () => {
         reciveruid: reciveruid,
         recivername: recivername,
         reciverprofile: reciverprofile,
-        senderuid: activeUserData?.uid,
-        sendername: activeUserData?.displayName,
-        senderprofile: activeUserData?.photoURL,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
         senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       });
     } else if (forwardMessegeInfo.type.includes("gif")) {
@@ -379,9 +390,9 @@ const Chat = () => {
         reciveruid: reciveruid,
         recivername: recivername,
         reciverprofile: reciverprofile,
-        senderuid: activeUserData?.uid,
-        sendername: activeUserData?.displayName,
-        senderprofile: activeUserData?.photoURL,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
         senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       });
     }
@@ -412,7 +423,7 @@ const Chat = () => {
       type: "gif/normal",
       gif: e.url,
       gifname: e.description,
-      reciveruid: activeChatData.uid,
+      reciveruid: activeChatData?.uid,
       recivername: activeChatData.name,
       reciverrofile: activeChatData.profile,
       senderuid: activeUserData.uid,
@@ -425,7 +436,9 @@ const Chat = () => {
   const handleFileClick = (e) => {
     let file = e.target.files[0];
 
-    if (file.type.includes("image")) {
+    if (file.size > 15000000 ) {
+      setFileSizeErrorShow(true)
+    } else if (file.type.includes("image")) {
       const fileRef = storageRef(storage, "image as a messege/" + Date.now());
       uploadBytes(fileRef, file).then((snapshot) => {
         getDownloadURL(fileRef).then((downloadURL) => {
@@ -435,9 +448,9 @@ const Chat = () => {
             reciveruid: activeChatData?.uid,
             recivername: activeChatData?.name,
             reciverprofile: activeChatData?.profile,
-            senderuid: activeUserData?.uid,
-            sendername: activeUserData?.displayName,
-            senderprofile: activeUserData?.photoURL,
+            senderuid: activeUserData.uid,
+            sendername: activeUserData.displayName,
+            senderprofile: activeUserData.photoURL,
             senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
           });
         });
@@ -452,9 +465,9 @@ const Chat = () => {
             reciveruid: activeChatData?.uid,
             recivername: activeChatData?.name,
             reciverprofile: activeChatData?.profile,
-            senderuid: activeUserData?.uid,
-            sendername: activeUserData?.displayName,
-            senderprofile: activeUserData?.photoURL,
+            senderuid: activeUserData.uid,
+            sendername: activeUserData.displayName,
+            senderprofile: activeUserData.photoURL,
             senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
           });
         });
@@ -470,15 +483,89 @@ const Chat = () => {
             reciveruid: activeChatData?.uid,
             recivername: activeChatData?.name,
             reciverprofile: activeChatData?.profile,
-            senderuid: activeUserData?.uid,
-            sendername: activeUserData?.displayName,
-            senderprofile: activeUserData?.photoURL,
+            senderuid: activeUserData.uid,
+            sendername: activeUserData.displayName,
+            senderprofile: activeUserData.photoURL,
             senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
           });
         });
       });
     }
   };
+
+  const handleMediaImageShow = () => { 
+    setMediaShow(true)
+    setMediaItemOpen("image")
+  }
+
+  const handleMediaVideoShow = () => { 
+    setMediaShow(true)
+    setMediaItemOpen("video")
+  }
+
+  const handleMediaFilesShow = () => { 
+    setMediaShow(true)
+    setMediaItemOpen("files")
+  }
+
+  useEffect(() => {
+    let chatImageRef = ref(db, "singlemessege/");
+    onValue(chatImageRef, (snapshot) => {
+      let chatImageArray = [];
+      snapshot.forEach((item) => {
+        if (
+          item.val().type.includes("image") &&
+          ((activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid))
+        ) {
+          chatImageArray.push(item.val());
+        }
+      });
+      setChatImageList(chatImageArray);
+    });
+  }, [activeChatData]);
+
+  useEffect(() => {
+    let chatVideoRef = ref(db, "singlemessege/");
+    onValue(chatVideoRef, (snapshot) => {
+      let chatVideoArray = [];
+      snapshot.forEach((item) => {
+        if (
+          item.val().type.includes("video") &&
+          ((activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid))
+        ) {
+          chatVideoArray.push(item.val());
+        }
+      });
+      setChatVideoList(chatVideoArray);
+    });
+  }, [activeChatData]);
+
+  useEffect(() => {
+    let chatFileRef = ref(db, "singlemessege/");
+    onValue(chatFileRef, (snapshot) => {
+      let chatFileArray = [];
+      snapshot.forEach((item) => {
+        if (
+          item.val().type.includes("file") &&
+          ((activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid))
+        ) {
+          chatFileArray.push(item.val());
+        }
+      });
+      setChatFileList(chatFileArray);
+    });
+  }, [activeChatData]);
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (anotherFileSelectButtonRef.current.contains(e.target)) {
+        setFileSizeErrorShow(false)
+      }
+    });
+  }, []);
 
   return (
     <section className="w-full h-dvh bg-[#dddcea] p-4 flex">
@@ -621,14 +708,25 @@ const Chat = () => {
                   You're friends on Ripple
                 </Typography>
               </Box>
+              {/* <SenderDeletedMessage 
+                senderName={"Ahmed Shanto"}
+                sentTime={""}
+              />
+              <ReciverDeletedMessage 
+                senderName={"Ahmed Shanto"}
+                senderProfile={"/public/images/shanto.jpeg"}
+                sentTime={""}
+              /> */}
               {messegeList.map((item) =>
-                activeUserData.uid == item.senderuid ? (
+                activeUserData?.uid == item.senderuid ? (
                   item.type.includes("text") ? (
                     item.type == "text/normal" ? (
                       <SenderNormalMessage
                         message={item.text}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        editButton={() => handleMessageEdit(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : item.type == "text/forwarded" ? (
@@ -636,6 +734,7 @@ const Chat = () => {
                         message={item.text}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : (
@@ -648,9 +747,9 @@ const Chat = () => {
                           repliedBy={item.sendername}
                           sentTime={item.senttime}
                           replyButton={() => handleReply(item)}
-                          forwardButton={() =>
-                            handleMessegeForwardListShow(item)
-                          }
+                          editButton={() => handleMessageEdit(item)}
+                          removeButton={() => handleMessageRemove(item)}
+                          forwardButton={() =>handleMessegeForwardListShow(item)}
                         />
                       )
                     )
@@ -661,6 +760,7 @@ const Chat = () => {
                         imageType={"normal"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : item.type == "image/forwarded" ? (
@@ -669,6 +769,7 @@ const Chat = () => {
                         imageType={"forward"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : (
@@ -681,9 +782,9 @@ const Chat = () => {
                           repliedBy={item.sendername}
                           sentTime={item.senttime}
                           replyButton={() => handleReply(item)}
-                          forwardButton={() =>
-                            handleMessegeForwardListShow(item)
-                          }
+                          editButton={() => handleMessageEdit(item)}
+                          removeButton={() => handleMessageRemove(item)}
+                          forwardButton={() =>handleMessegeForwardListShow(item)}
                         />
                       )
                     )
@@ -694,6 +795,7 @@ const Chat = () => {
                         videoType={"normal"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : item.type == "video/forwarded" ? (
@@ -702,6 +804,7 @@ const Chat = () => {
                         videoType={"forward"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : (
@@ -714,9 +817,9 @@ const Chat = () => {
                           repliedBy={item.sendername}
                           sentTime={item.senttime}
                           replyButton={() => handleReply(item)}
-                          forwardButton={() =>
-                            handleMessegeForwardListShow(item)
-                          }
+                          editButton={() => handleMessageEdit(item)}
+                          removeButton={() => handleMessageRemove(item)}
+                          forwardButton={() => handleMessegeForwardListShow(item)}
                         />
                       )
                     )
@@ -728,6 +831,7 @@ const Chat = () => {
                         fileType={"normal"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : item.type == "file/forwarded" ? (
@@ -737,6 +841,7 @@ const Chat = () => {
                         fileType={"forward"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : (
@@ -749,9 +854,9 @@ const Chat = () => {
                           repliedBy={item.sendername}
                           sentTime={item.senttime}
                           replyButton={() => handleReply(item)}
-                          forwardButton={() =>
-                            handleMessegeForwardListShow(item)
-                          }
+                          editButton={() => handleMessageEdit(item)}
+                          removeButton={() => handleMessageRemove(item)}
+                          forwardButton={() => handleMessegeForwardListShow(item)}
                         />
                       )
                     )
@@ -764,6 +869,7 @@ const Chat = () => {
                         gifType={"normal"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : item.type == "gif/forwarded" ? (
@@ -773,6 +879,7 @@ const Chat = () => {
                         gifType={"forward"}
                         sentTime={item.senttime}
                         replyButton={() => handleReply(item)}
+                        removeButton={() => handleMessageRemove(item)}
                         forwardButton={() => handleMessegeForwardListShow(item)}
                       />
                     ) : (
@@ -785,15 +892,15 @@ const Chat = () => {
                           repliedBy={item.sendername}
                           sentTime={item.senttime}
                           replyButton={() => handleReply(item)}
-                          forwardButton={() =>
-                            handleMessegeForwardListShow(item)
-                          }
+                          editButton={() => handleMessageEdit(item)}
+                          removeButton={() => handleMessageRemove(item)}
+                          forwardButton={() => handleMessegeForwardListShow(item)}
                         />
                       )
                     ))
                   )
                 ) : (
-                  activeChatData.uid == item.senderuid &&
+                  activeChatData?.uid == item.senderuid &&
                   (item.type.includes("text") ? (
                     item.type == "text/normal" ? (
                       <ReciverNormalMessege
@@ -1016,17 +1123,8 @@ const Chat = () => {
                 <Box className={"h-[79%] overflow-y-auto"}>
                   {filteredForwardList.map((item) => (
                     <MessageForwardListItem
-                      profile={
-                        activeUserData.uid == item.senderuid
-                          ? item.reciverprofile
-                          : item.senderprofile
-                      }
-                      name={
-                        activeUserData.uid == item.senderuid
-                          ? item.recivername
-                          : item.sendername
-                      }
-                      button={"send"}
+                      profile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
+                      name={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername}
                       sendButton={() => handleForwardMessegeSend(item)}
                     />
                   ))}
@@ -1115,23 +1213,37 @@ const Chat = () => {
                       onClick={() => setreplyMessegeInfo("")}
                       className="absolute top-2.5 right-2.5 text-[22px] text-secoundaryText cursor-pointer"
                     />
-                    <Typography className="font-inter font-semibold">
-                      Replying to{" "}
-                      {activeUserData.uid == replyMessegeInfo.senderuid
-                        ? "yourself"
-                        : replyMessegeInfo.sendername}
-                    </Typography>
-                    <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
-                      {replyMessegeInfo.type.includes("text")
-                        ? replyMessegeInfo.text
-                        : replyMessegeInfo.type.includes("image")
-                        ? "image"
-                        : replyMessegeInfo.type.includes("video")
-                        ? "video"
-                        : replyMessegeInfo.type.includes("file")
-                        ? "file"
-                        : "gif"}
-                    </Typography>
+                    {activeUserData?.uid == replyMessegeInfo.senderuid ? (
+                      <Typography className="font-inter font-semibold">
+                        Replying to yourself
+                      </Typography>
+                    ) : (
+                      <Typography className="font-inter font-semibold">
+                        Replying to {replyMessegeInfo.sendername}
+                      </Typography>
+                    )}
+
+                    {replyMessegeInfo.type.includes("text") ? (
+                      <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
+                        {replyMessegeInfo.text}
+                      </Typography>
+                    ) : replyMessegeInfo.type.includes("image") ? (
+                      <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
+                        image
+                      </Typography>
+                    ) : replyMessegeInfo.type.includes("video") ? (
+                      <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
+                        video
+                      </Typography>
+                    ) : replyMessegeInfo.type.includes("file") ? (
+                      <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
+                        file
+                      </Typography>
+                    ) : (
+                      <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
+                        gif
+                      </Typography>
+                    )}
                   </Box>
                 )}
                 <Flex
@@ -1162,6 +1274,29 @@ const Chat = () => {
                           }
                         ></Box>
                       </Typography>
+                      <Modal
+                        modalShow={fileSizeErrorShow}
+                        modalClose={setFileSizeErrorShow}
+                        className={"w-[615px] py-5 px-7"}
+                      >
+                        <Typography className="text-[22px] font-semibold font-open-sans mb-1">
+                          Failed to upload files
+                        </Typography>
+                        <Typography className="text-lg font-open-sans text-secoundaryText mb-4">
+                          The file you have selected is too large. The maximum size is 15MB.
+                        </Typography>
+                        <Box className={"flex justify-between items-center"}>
+                          <label ref={anotherFileSelectButtonRef} for="file" className={"w-[49%] text-center py-2.5 font-open-sans bg-[#2176ff] text-white rounded-md cursor-pointer transition-all duration-200 active:scale-[0.98]"}>
+                            Select another file
+                          </label>
+                          <Button
+                            onClick={() => setFileSizeErrorShow(false)}
+                            className={"w-[49%] py-2.5 font-open-sans bg-[#d8dadf] rounded-md transition-all duration-200 active:scale-[0.98]"}
+                          >
+                            Close
+                          </Button>
+                        </Box>
+                      </Modal>
                     </Box>
                     <div ref={gifBoxRef} className="relative">
                       <Box className={"relative group/tooltip mr-[5px]"}>
@@ -1318,223 +1453,387 @@ const Chat = () => {
           <Box
             className={
               friendsProfileOpen
-                ? "w-[30%] ml-4 h-full bg-white rounded-2xl overflow-hidden text-center"
-                : "w-0 ml-0 h-full bg-white rounded-2xl overflow-hidden text-center"
+                ? "w-[30%] ml-4 h-full bg-white rounded-2xl overflow-hidden text-center relative"
+                : "w-0 ml-0 h-full bg-white rounded-2xl overflow-hidden text-center relative"
             }
           >
-            <Image
-              src={activeChatData?.profile}
-              alt={activeChatData?.name}
+            <Box
               className={
-                "w-[130px] h-[130px] rounded-full object-cover mx-auto mt-14 border border-[#dedede]"
+                mediaShow
+                  ? "w-full h-full pt-14 absolute left-0 top-0 transition-all duration-300 ease-in-out -translate-x-full"
+                  : "w-full h-full pt-14 absolute left-0 top-0 transition-all duration-300 ease-in-out"
               }
-            />
-            <Typography
-              variant="h3"
-              className="font-poppins font-semibold text-[22px] mt-[15px]"
             >
-              {activeChatData?.name}
-            </Typography>
-            <Flex
-              alignItems={"center"}
-              justifyContent={"center"}
-              className={"mt-5"}
-            >
-              <Box className="relative mr-6 group">
-                <RiPhoneFill className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
-                <Box
-                  className={
-                    "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
-                  }
-                >
-                  <Typography className="w-[90px] mt-1 py-1 rounded-md bg-[#dedede]">
-                    Audio Call
-                  </Typography>
-                </Box>
-              </Box>
-              <Box className="relative mr-6 group">
-                <AiTwotoneVideoCamera className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
-                <Box
-                  className={
-                    "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
-                  }
-                >
-                  <Typography className="w-[90px] mt-1 py-1 rounded-md bg-[#dedede]">
-                    Video Call
-                  </Typography>
-                </Box>
-              </Box>
-              {messegeNotification ? (
-                <Box className={"relative group"}>
-                  <MdOutlineNotificationsNone
-                    onClick={() => setMessegeNotification(!messegeNotification)}
-                    className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5] transition-all ease-in-out duration-300"
-                  />
+              <ModalImage
+                small={activeChatData?.profile}
+                large={activeChatData?.profile}
+                alt={activeChatData?.name}
+                className={
+                  "w-[130px] h-[130px] rounded-full object-cover mx-auto border border-[#dedede]"
+                }
+              />
+              <Typography
+                variant="h3"
+                className="font-poppins font-semibold text-[22px] mt-[15px]"
+              >
+                {activeChatData?.name}
+              </Typography>
+              <Flex
+                alignItems={"center"}
+                justifyContent={"center"}
+                className={"mt-5"}
+              >
+                <Box className="relative mr-6 group">
+                  <RiPhoneFill className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
                   <Box
                     className={
                       "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
                     }
                   >
-                    <Typography className="w-[65px] mt-1 py-1 rounded-md bg-[#dedede]">
-                      Mute
+                    <Typography className="w-[90px] mt-1 py-1 rounded-md bg-[#dedede]">
+                      Audio Call
                     </Typography>
                   </Box>
                 </Box>
-              ) : (
-                <Box className={"relative group"}>
-                  <MdOutlineNotificationsOff
-                    onClick={() => setMessegeNotification(!messegeNotification)}
-                    className={`box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]`}
-                  />
+                <Box className="relative mr-6 group">
+                  <AiTwotoneVideoCamera className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
                   <Box
                     className={
                       "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
                     }
                   >
-                    <Typography className="w-[70px] mt-1 py-1 rounded-md bg-[#dedede]">
-                      unmute
+                    <Typography className="w-[90px] mt-1 py-1 rounded-md bg-[#dedede]">
+                      Video Call
                     </Typography>
                   </Box>
                 </Box>
-              )}
-            </Flex>
-            <Box className={"text-start px-5 mt-8"}>
-              <Box>
-                <Flex
-                  onClick={() => setMediaShow(!mediaShow)}
-                  alignItems={"center"}
-                  justifyContent={"between"}
-                  className={
-                    mediaShow
-                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
-                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
-                  }
-                >
-                  <Flex alignItems={"center"} className={"gap-x-3"}>
-                    <MdVideoLibrary className="text-xl" />
-                    <Typography>View media</Typography>
-                  </Flex>
-                  <IoIosArrowDown
-                    className={mediaShow ? "rotate-180" : "rotate-0"}
-                  />
-                </Flex>
-                {mediaShow && (
-                  <Box className={"ml-2"}>
-                    <Button
+                {messegeNotification ? (
+                  <Box className={"relative group"}>
+                    <MdOutlineNotificationsNone
+                      onClick={() =>
+                        setMessegeNotification(!messegeNotification)
+                      }
+                      className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5] transition-all ease-in-out duration-300"
+                    />
+                    <Box
                       className={
-                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
                       }
                     >
-                      <FaRegImage className="text-xl" />
-                      <Typography>Images</Typography>
-                    </Button>
-                    <Button
+                      <Typography className="w-[65px] mt-1 py-1 rounded-md bg-[#dedede]">
+                        Mute
+                      </Typography>
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box className={"relative group"}>
+                    <MdOutlineNotificationsOff
+                      onClick={() =>
+                        setMessegeNotification(!messegeNotification)
+                      }
+                      className={`box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]`}
+                    />
+                    <Box
                       className={
-                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
                       }
                     >
-                      <RiMovieLine className="text-xl" />
-                      <Typography>Videos</Typography>
-                    </Button>
-                    <Button
-                      className={
-                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
-                      }
-                    >
-                      <LuFileSpreadsheet className="text-xl" />
-                      <Typography>Files</Typography>
-                    </Button>
+                      <Typography className="w-[70px] mt-1 py-1 rounded-md bg-[#dedede]">
+                        unmute
+                      </Typography>
+                    </Box>
                   </Box>
                 )}
+              </Flex>
+              <Box className={"text-start px-5 mt-8"}>
+                <Box>
+                  <Flex
+                    onClick={() => setMediaDropdwonOpen(!mediaDropdownOpen)}
+                    alignItems={"center"}
+                    justifyContent={"between"}
+                    className={
+                      mediaDropdownOpen
+                        ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
+                        : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                    }
+                  >
+                    <Flex alignItems={"center"} className={"gap-x-3"}>
+                      <MdVideoLibrary className="text-xl" />
+                      <Typography>View media</Typography>
+                    </Flex>
+                    <IoIosArrowDown
+                      className={mediaDropdownOpen ? "rotate-180" : "rotate-0"}
+                    />
+                  </Flex>
+                  {mediaDropdownOpen && (
+                    <Box className={"ml-2"}>
+                      <Button
+                        onClick={handleMediaImageShow}
+                        className={
+                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        }
+                      >
+                        <FaRegImage className="text-xl" />
+                        <Typography>Images</Typography>
+                      </Button>
+                      <Button
+                        onClick={handleMediaVideoShow}
+                        className={
+                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        }
+                      >
+                        <RiMovieLine className="text-xl" />
+                        <Typography>Videos</Typography>
+                      </Button>
+                      <Button
+                        onClick={handleMediaFilesShow}
+                        className={
+                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        }
+                      >
+                        <LuFileSpreadsheet className="text-xl" />
+                        <Typography>Files</Typography>
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+                <Box className={"mt-1"}>
+                  <Flex
+                    onClick={() => setPrivacyDropdwonOpen(!privacyDropdownOpen)}
+                    alignItems={"center"}
+                    justifyContent={"between"}
+                    className={
+                      privacyDropdownOpen
+                        ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
+                        : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                    }
+                  >
+                    <Flex alignItems={"center"} className={"gap-x-3"}>
+                      <MdOutlinePrivacyTip className="text-xl" />
+                      <Typography>Privacy</Typography>
+                    </Flex>
+                    <IoIosArrowDown
+                      className={
+                        privacyDropdownOpen ? "rotate-180" : "rotate-0"
+                      }
+                    />
+                  </Flex>
+                  {privacyDropdownOpen && (
+                    <Box className={"ml-2"}>
+                      <Button
+                        className={
+                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        }
+                      >
+                        <MdOutlineNotificationsOff className="text-xl" />
+                        <Typography>Mute notifications</Typography>
+                      </Button>
+                      {blockList.includes(
+                        activeChatData?.uid + activeUserData?.uid
+                      ) ? (
+                        <Button
+                          onClick={() => setUnblockModalShow(true)}
+                          className={
+                            "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                          }
+                        >
+                          <MdBlock className="text-xl" />
+                          <Typography>Unblock</Typography>
+                        </Button>
+                      ) : blockList.includes(
+                          activeUserData?.uid + activeChatData?.uid
+                        ) ? (
+                        <></>
+                      ) : (
+                        <Button
+                          onClick={() => setBlockModalShow(true)}
+                          className={
+                            "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                          }
+                        >
+                          <MdBlock className="text-xl" />
+                          <Typography>Block</Typography>
+                        </Button>
+                      )}
+                      <Modal
+                        modalShow={blockModalShow}
+                        modalClose={setBlockModalShow}
+                        className={"text-center py-7 px-10 w-[550px]"}
+                      >
+                        <Typography className=" font-open-sans text-3xl font-semibold mb-5">
+                          Block {activeChatData?.name}?
+                        </Typography>
+                        <Typography className="text-lg font-semibold text-secoundaryText mx-auto mb-4 px-[10px]">
+                          You can't message or call {activeChatData?.name} in
+                          this chat, and you won't receive their messages or
+                          calls.
+                        </Typography>
+                        <Flex justifyContent={"between"}>
+                          <Button
+                            onClick={handleBlock}
+                            className={
+                              "bg-[#f87171] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"
+                            }
+                          >
+                            Yes, Block
+                          </Button>
+                          <Button
+                            onClick={() => setBlockModalShow(false)}
+                            className={
+                              "bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"
+                            }
+                          >
+                            Cancel
+                          </Button>
+                        </Flex>
+                      </Modal>
+                    </Box>
+                  )}
+                </Box>
               </Box>
-              <Box className={"mt-1"}>
-                <Flex
-                  onClick={() => setPrivacyShow(!privacyShow)}
-                  alignItems={"center"}
-                  justifyContent={"between"}
+            </Box>
+            <Box
+              className={
+                mediaShow
+                  ? "w-full h-full px-5 py-5 absolute left-0 top-0 transition-all duration-300 ease-in-out text-start"
+                  : "w-full h-full px-5 py-5 absolute left-0 top-0 transition-all duration-300 ease-in-out translate-x-full text-start"
+              }
+            >
+              <Flex alignItems={"center"} className={"gap-x-3"}>
+                <FaArrowLeft
+                  onClick={() => setMediaShow(false)}
+                  className="box-content text-lg p-2.5 rounded-full hover:bg-[#f2f2f2] cursor-pointer"
+                />
+                <Typography className="text-lg font-semibold font-open-sans">
+                  Media, files and links
+                </Typography>
+              </Flex>
+              <Flex
+                alignItems={"center"}
+                className={
+                  "w-full border border-[#f2f2f2] rounded-[50px] overflow-hidden mt-3"
+                }
+              >
+                <Button
+                  onClick={() => setMediaItemOpen("image")}
                   className={
-                    privacyShow
-                      ? "text-lg mb-1 px-2.5 py-2 rounded-md  bg-[#f5f5f5] cursor-pointer text-black"
-                      : "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                    mediaItemOpen == "image"
+                      ? "w-1/3 py-2 text-[15px] font-open-sans font-semibold rounded-[50px] bg-[#dcdcdc]"
+                      : "w-1/3 py-2 text-[15px] font-open-sans font-semibold text-secoundaryText rounded-[50px] hover:bg-[#f5f5f5]"
                   }
                 >
-                  <Flex alignItems={"center"} className={"gap-x-3"}>
-                    <MdOutlinePrivacyTip className="text-xl" />
-                    <Typography>Privacy</Typography>
-                  </Flex>
-                  <IoIosArrowDown
-                    className={privacyShow ? "rotate-180" : "rotate-0"}
-                  />
-                </Flex>
-                {privacyShow && (
-                  <Box className={"ml-2"}>
-                    <Button
+                  Image
+                </Button>
+                <Button
+                  onClick={() => setMediaItemOpen("video")}
+                  className={
+                    mediaItemOpen == "video"
+                      ? "w-1/3 py-2 text-[15px] font-open-sans font-semibold rounded-[50px] bg-[#dcdcdc]"
+                      : "w-1/3 py-2 text-[15px] font-open-sans font-semibold text-secoundaryText rounded-[50px] hover:bg-[#f5f5f5]"
+                  }
+                >
+                  Video
+                </Button>
+                <Button
+                  onClick={() => setMediaItemOpen("files")}
+                  className={
+                    mediaItemOpen == "files"
+                      ? "w-1/3 py-2 text-[15px] font-open-sans font-semibold rounded-[50px] bg-[#dcdcdc]"
+                      : "w-1/3 py-2 text-[15px] font-open-sans font-semibold text-secoundaryText rounded-[50px] hover:bg-[#f5f5f5]"
+                  }
+                >
+                  Files
+                </Button>
+              </Flex>
+              <Box className={"h-[calc(100%-100px)] overflow-y-auto mt-4"}>
+                {mediaItemOpen == "image" ? (
+                  chatImageList.length >= 1 ? (
+                    <Flex
+                      justifyContent={"between"}
+                      className={"gap-y-[7px] flex-wrap"}
+                    >
+                      {chatImageList.map((item) => (
+                        <MediaImageItem
+                          image={item.image}
+                          className={"w-[49%]"}
+                        />
+                      ))}
+                    </Flex>
+                  ) : (
+                    <Box
                       className={
-                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                        "w-full h-full flex items-center justify-center text-center"
                       }
                     >
-                      <MdOutlineNotificationsOff className="text-xl" />
-                      <Typography>Mute notifications</Typography>
-                    </Button>
-                    {blockList.includes(
-                      activeChatData?.uid + activeUserData?.uid
-                    ) ? (
-                      <Button
-                        onClick={() => setUnblockModalShow(true)}
-                        className={
-                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
-                        }
-                      >
-                        <MdBlock className="text-xl" />
-                        <Typography>Unblock</Typography>
-                      </Button>
-                    ) : blockList.includes(
-                        activeUserData?.uid + activeChatData?.uid
-                      ) ? (
-                      <></>
-                    ) : (
-                      <Button
-                        onClick={() => setBlockModalShow(true)}
-                        className={
-                          "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
-                        }
-                      >
-                        <MdBlock className="text-xl" />
-                        <Typography>Block</Typography>
-                      </Button>
-                    )}
-                    <Modal
-                      modalShow={blockModalShow}
-                      modalClose={setBlockModalShow}
-                      className={"text-center py-7 px-10 w-[550px]"}
+                      <Box>
+                        <Typography className="text-[22px] text-secoundaryText">
+                          No Image
+                        </Typography>
+                        <Typography className="text-secoundaryText text-lg">
+                          Image that you exchange with {activeChatData.name} will appear here.
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )
+                ) : mediaItemOpen == "video" ? (
+                  chatVideoList.length >= 1 ? (
+                    <Flex
+                      justifyContent={"between"}
+                      className={"gap-y-[7px] flex-wrap"}
                     >
-                      <Typography className=" font-open-sans text-3xl font-semibold mb-5">
-                        Block {activeChatData?.name}?
-                      </Typography>
-                      <Typography className="text-lg font-semibold text-secoundaryText mx-auto mb-4 px-[10px]">
-                        You can't message or call {activeChatData?.name} in this
-                        chat, and you won't receive their messages or calls.
-                      </Typography>
-                      <Flex justifyContent={"between"}>
-                        <Button
-                          onClick={handleBlock}
-                          className={
-                            "bg-[#f87171] w-[48%] rounded-lg text-lg py-3 text-white font-semibold"
-                          }
-                        >
-                          Yes, Block
-                        </Button>
-                        <Button
-                          onClick={() => setBlockModalShow(false)}
-                          className={
-                            "bg-[#c7f1db] text-[#4e4f50] w-[48%] rounded-lg text-lg py-3 font-semibold"
-                          }
-                        >
-                          Cancel
-                        </Button>
-                      </Flex>
-                    </Modal>
-                  </Box>
+                      {chatVideoList.map((item) => (
+                        <MediaVideoItem
+                          video={item.video}
+                          className={"w-[49%]"}
+                        />
+                      ))}
+                    </Flex>
+                  ) : (
+                    <Box
+                      className={
+                        "w-full h-full flex items-center justify-center text-center"
+                      }
+                    >
+                      <Box>
+                        <Typography className="text-[22px] text-secoundaryText">
+                          No video
+                        </Typography>
+                        <Typography className="text-secoundaryText text-lg">
+                          Video that you exchange with {activeChatData.name}{" "}
+                          will appear here.
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )
+                ) : (
+                  mediaItemOpen == "files" &&
+                  (chatFileList.length >= 1 ? (
+                    <Box>
+                      {chatFileList.map((item) => (
+                        <MediaFileItem
+                          file={item.file}
+                          fileName={item.filename}
+                          className={"w-full"}
+                        />
+                      ))}
+                    </Box>
+                  ) : (
+                    <Box
+                      className={
+                        "w-full h-full flex items-center justify-center text-center"
+                      }
+                    >
+                      <Box>
+                        <Typography className="text-[22px] text-secoundaryText">
+                          No files
+                        </Typography>
+                        <Typography className="text-secoundaryText text-lg">
+                          Files that you exchange with {activeChatData.name}{" "}
+                          will appear here.
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ))
                 )}
               </Box>
             </Box>

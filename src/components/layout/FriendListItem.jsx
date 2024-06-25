@@ -4,18 +4,31 @@ import Image from "./Image";
 import Typography from "./Typography";
 import Button from "./Button";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { getDatabase, onValue, ref } from "firebase/database";
+import { useSelector } from "react-redux";
 
 const FriendListItem = ({
   className,
+  uid,
+  name,
   profile,
-  userName,
   unfriendButton,
   blockButton,
 }) => {
+  const db = getDatabase();
+  const activeUserData = useSelector((state) => state.user.information);
+  const [userFriendList, setUserFriendList] = useState([]);
+  const [myFriendList, setMyFriendList] = useState([]);
   const [dropdownShow, setDropdownShow] = useState(false);
-
   const menuRef = useRef();
   const buttonRef = useRef();
+
+  const mergeEqualItems = (userFriendList, myFriendList) => {
+    const mergedSet = new Set(userFriendList);
+    return myFriendList.filter((item) => mergedSet.has(item));
+  };
+
+  const mutualFriend = mergeEqualItems(userFriendList, myFriendList);
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
@@ -29,6 +42,43 @@ const FriendListItem = ({
     });
   }, []);
 
+  useEffect(() => {
+    let friendRequstRef = ref(db, "friends");
+    onValue(friendRequstRef, (snapshot) => {
+      let friendListArray = [];
+      snapshot.forEach((item) => {
+        if (uid == item.val().senderuid || uid == item.val().reciveruid) {
+          const friendId =
+            uid == item.val().senderuid
+              ? item.val().reciveruid
+              : item.val().senderuid;
+          friendListArray.push(friendId);
+        }
+      });
+      setUserFriendList(friendListArray);
+    });
+  }, []);
+
+  useEffect(() => {
+    let friendRequstRef = ref(db, "friends");
+    onValue(friendRequstRef, (snapshot) => {
+      let friendListArray = [];
+      snapshot.forEach((item) => {
+        if (
+          activeUserData.uid == item.val().senderuid ||
+          activeUserData.uid == item.val().reciveruid
+        ) {
+          const friendId =
+            activeUserData.uid == item.val().senderuid
+              ? item.val().reciveruid
+              : item.val().senderuid;
+          friendListArray.push(friendId);
+        }
+      });
+      setMyFriendList(friendListArray);
+    });
+  }, []);
+
   return (
     <Box
       className={`${className} border border-[#dedede] rounded-md flex justify-between items-center p-2.5 transition-all ease-in-out duration-200`}
@@ -36,7 +86,7 @@ const FriendListItem = ({
       <Box className={"flex items-center"}>
         <Image
           src={profile}
-          alt={userName}
+          alt={name}
           className={"w-[100px] aspect-square object-cover rounded-lg"}
         />
         <Box className={""}>
@@ -44,14 +94,16 @@ const FriendListItem = ({
             variant="h3"
             className="font-inter font-semibold text-[20px] ml-3"
           >
-            {userName}
+            {name}
           </Typography>
-          <Typography
-            variant="h3"
-            className="font-inter text-[15px] ml-3 text-secoundaryText"
-          >
-            5 Mutual Friends
-          </Typography>
+          {mutualFriend.length >= 1 && (
+            <Typography
+              variant="h3"
+              className="font-inter text-[15px] ml-3 text-secoundaryText"
+            >
+              {mutualFriend.length} Mutual Friends
+            </Typography>
+          )}
         </Box>
       </Box>
       <Box className={"relative"}>

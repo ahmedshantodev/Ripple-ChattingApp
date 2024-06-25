@@ -13,6 +13,7 @@ const SenderForwardMessage = ({
   sentTime,
   reactButton,
   replyButton,
+  removeButton,
   forwardButton,
 }) => {
   const [menuShow, setMenuShow] = useState(false);
@@ -75,15 +76,7 @@ const SenderForwardMessage = ({
                   }
                 ></Box>
                 <Button
-                  onClick={forwardButton}
-                  className={
-                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
-                  }
-                >
-                  Edit
-                </Button>
-                <Button
-                  onClick={forwardButton}
+                  onClick={removeButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }

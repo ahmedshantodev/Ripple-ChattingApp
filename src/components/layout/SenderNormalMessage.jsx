@@ -14,6 +14,8 @@ const SenderNormalMessage = ({
   reactButton,
   replyButton,
   forwardButton,
+  editButton,
+  removeButton
 }) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
@@ -69,6 +71,7 @@ const SenderNormalMessage = ({
                   }
                 ></Box>
                 <Button
+                  onClick={editButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -76,6 +79,7 @@ const SenderNormalMessage = ({
                   Edit
                 </Button>
                 <Button
+                  onClick={removeButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }

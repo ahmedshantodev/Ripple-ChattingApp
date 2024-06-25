@@ -20,6 +20,8 @@ const SenderRepliedMessage = ({
   sentTime,
   reactButton,
   replyButton,
+  editButton,
+  removeButton,
   forwardButton,
 }) => {
   const activeUserData = useSelector((state) => state.user.information);
@@ -93,7 +95,7 @@ const SenderRepliedMessage = ({
                   }
                 ></Box>
                 <Button
-                  onClick={forwardButton}
+                  onClick={editButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -101,7 +103,7 @@ const SenderRepliedMessage = ({
                   Edit
                 </Button>
                 <Button
-                  onClick={forwardButton}
+                  onClick={removeButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -218,7 +220,7 @@ const SenderRepliedMessage = ({
                   }
                 ></Box>
                 <Button
-                  onClick={forwardButton}
+                  onClick={editButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -226,7 +228,7 @@ const SenderRepliedMessage = ({
                   Edit
                 </Button>
                 <Button
-                  onClick={forwardButton}
+                  onClick={removeButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -343,7 +345,7 @@ const SenderRepliedMessage = ({
                   }
                 ></Box>
                 <Button
-                  onClick={forwardButton}
+                  onClick={editButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -351,7 +353,7 @@ const SenderRepliedMessage = ({
                   Edit
                 </Button>
                 <Button
-                  onClick={forwardButton}
+                  onClick={removeButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -476,7 +478,7 @@ const SenderRepliedMessage = ({
                   }
                 ></Box>
                 <Button
-                  onClick={forwardButton}
+                  onClick={editButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -484,7 +486,7 @@ const SenderRepliedMessage = ({
                   Edit
                 </Button>
                 <Button
-                  onClick={forwardButton}
+                  onClick={removeButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
@@ -604,7 +606,7 @@ const SenderRepliedMessage = ({
                     }
                   ></Box>
                   <Button
-                    onClick={forwardButton}
+                    onClick={editButton}
                     className={
                       "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                     }
@@ -612,7 +614,7 @@ const SenderRepliedMessage = ({
                     Edit
                   </Button>
                   <Button
-                    onClick={forwardButton}
+                    onClick={removeButton}
                     className={
                       "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                     }
