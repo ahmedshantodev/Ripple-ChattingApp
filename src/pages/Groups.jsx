@@ -41,8 +41,6 @@ import GroupPhotoUploadModal from "../components/layout/GroupPhotoUploadModal";
 import noGroupPHoto from "/public/images/no chat image.jpg";
 import { PiUserCirclePlus } from "react-icons/pi";
 import Button from "../components/layout/Button";
-import ReciverMessege from "../components/layout/ReciverMessege";
-import SenderMessege from "../components/layout/SenderMessege";
 import ModalImage from "react-modal-image";
 import GroupNameChangeModal from "../components/layout/GroupNameChangeModal";
 import { HiMiniGif } from "react-icons/hi2";
@@ -344,49 +342,7 @@ const Group = () => {
                   You're a Member of {activeGroupData.groupname}
                 </Typography>
               </Box>
-              {groupMessegeList.map((item) =>
-                item.messegesenderuid == activeUserData.uid ? (
-                  item.messegetype == "reply" ? (
-                    <SenderMessege
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      repliedtomessege={item.repliedtomessege}
-                      repliedtoname={item.repliedtoname}
-                      repliedbyname={item.messegesendername}
-                      time={item.messegesenttime}
-                      replyButton={() => handleReply(item)}
-                    />
-                  ) : (
-                    <SenderMessege
-                      messege={item.messege}
-                      messegeType={item.messegetype}
-                      time={item.messegesenttime}
-                      replyButton={() => handleReply(item)}
-                    />
-                  )
-                ) : item.messegetype == "reply" ? (
-                  <ReciverMessege
-                    messege={item.messege}
-                    messegeType={item.messegetype}
-                    repliedtomessege={item.repliedtomessege}
-                    repliedtoname={item.repliedtoname}
-                    repliedbyname={item.messegesendername}
-                    name={item.messegesendername}
-                    profile={item.messegesenderprofile}
-                    time={item.messegesenttime}
-                    replyButton={() => handleReply(item)}
-                  />
-                ) : (
-                  <ReciverMessege
-                    messege={item.messege}
-                    messegeType={item.messegetype}
-                    name={item.messegesendername}
-                    profile={item.messegesenderprofile}
-                    time={item.messegesenttime}
-                    replyButton={() => handleReply(item)}
-                  />
-                )
-              )}
+              
             </Box>
             <Box
               className={
