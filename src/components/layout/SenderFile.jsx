@@ -5,7 +5,7 @@ import Flex from "./Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { FaReply } from "react-icons/fa";
-import { BsEmojiSmile } from "react-icons/bs";
+import { FaFaceSmile } from "react-icons/fa6";
 import Button from "./Button";
 import moment from "moment";
 import { FaFileArchive } from "react-icons/fa";
@@ -16,7 +16,7 @@ const SenderFile = ({
   fileType,
   sentTime,
   removeButton,
-  replayButton,
+  replyButton,
   forwardButton,
 }) => {
   const [menuShow, setMenuShow] = useState(false);
@@ -90,7 +90,7 @@ const SenderFile = ({
           </button>
           <Box className={"relative group/tooltip"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -102,7 +102,7 @@ const SenderFile = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip"}>
-            <BsEmojiSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
+            <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
               className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
@@ -171,7 +171,7 @@ const SenderFile = ({
           </button>
           <Box className={"relative group/tooltip"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -183,7 +183,7 @@ const SenderFile = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip"}>
-            <BsEmojiSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
+            <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
               className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"

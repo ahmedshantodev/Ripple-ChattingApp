@@ -4,7 +4,7 @@ import Typography from "./Typography";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { FaReply } from "react-icons/fa";
 import Flex from "./Flex";
-import { BsEmojiSmile } from "react-icons/bs";
+import { FaFaceSmile } from "react-icons/fa6";
 import Button from "./Button";
 import moment from "moment";
 import Image from "./Image";
@@ -13,13 +13,13 @@ import { FaFileArchive } from "react-icons/fa";
 
 const SenderRepliedMessage = ({
   message,
-  repliedMessage,
   repliedType,
+  repliedMessage,
   repliedTo,
   repliedBy,
   sentTime,
   reactButton,
-  replayButton,
+  replyButton,
   forwardButton,
 }) => {
   const activeUserData = useSelector((state) => state.user.information);
@@ -46,7 +46,7 @@ const SenderRepliedMessage = ({
       <Box>
         <Typography
           className={
-            "bg-[#e0e3ea] text-secoundaryText pt-2.5 px-5 pb-[26px] -mb-4 mr-[2px] inline-block rounded-t-[20px] rounded-bl-[20px] max-w-[45%] text-start"
+            "bg-[#e0e3ea] text-secoundaryText pt-2.5 px-5 pb-[18px] -mb-4 mr-[2px] inline-block rounded-t-[20px] rounded-bl-[20px] max-w-[45%] text-start"
           }
         >
           {repliedMessage}
@@ -78,7 +78,7 @@ const SenderRepliedMessage = ({
             <PiDotsThreeOutlineVerticalFill
               onClick={() => setMenuShow(!menuShow)}
               className={`box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2] ${
-                menuShow ? "bg-[#f2f2f2]" : "bg-white"
+                menuShow && "bg-[#f2f2f2]"
               }`}
             />
             {menuShow && (
@@ -121,7 +121,7 @@ const SenderRepliedMessage = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -137,7 +137,7 @@ const SenderRepliedMessage = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip z-10"}>
-            <BsEmojiSmile
+            <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
@@ -203,7 +203,7 @@ const SenderRepliedMessage = ({
             <PiDotsThreeOutlineVerticalFill
               onClick={() => setMenuShow(!menuShow)}
               className={`box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2] ${
-                menuShow ? "bg-[#f2f2f2]" : "bg-white"
+                menuShow && "bg-[#f2f2f2]"
               }`}
             />
             {menuShow && (
@@ -246,7 +246,7 @@ const SenderRepliedMessage = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -262,7 +262,7 @@ const SenderRepliedMessage = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip z-10"}>
-            <BsEmojiSmile
+            <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
@@ -328,7 +328,7 @@ const SenderRepliedMessage = ({
             <PiDotsThreeOutlineVerticalFill
               onClick={() => setMenuShow(!menuShow)}
               className={`box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2] ${
-                menuShow ? "bg-[#f2f2f2]" : "bg-white"
+                menuShow && "bg-[#f2f2f2]"
               }`}
             />
             {menuShow && (
@@ -371,7 +371,7 @@ const SenderRepliedMessage = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -387,7 +387,7 @@ const SenderRepliedMessage = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip z-10"}>
-            <BsEmojiSmile
+            <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
@@ -461,7 +461,7 @@ const SenderRepliedMessage = ({
             <PiDotsThreeOutlineVerticalFill
               onClick={() => setMenuShow(!menuShow)}
               className={`box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2] ${
-                menuShow ? "bg-[#f2f2f2]" : "bg-white"
+                menuShow && "bg-[#f2f2f2]"
               }`}
             />
             {menuShow && (
@@ -504,7 +504,7 @@ const SenderRepliedMessage = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -520,7 +520,7 @@ const SenderRepliedMessage = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip z-10"}>
-            <BsEmojiSmile
+            <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
@@ -555,7 +555,7 @@ const SenderRepliedMessage = ({
         </Box>
         <Box>
           <Box className={"max-w-[35%] inline-block text-start"}>
-            <Box className="w-full h-full flex items-center justify-between gap-x-3 pt-4 pb-10 px-4 -mb-6 ml-[2px] bg-[#f0f0f0] border border-primaryBorder rounded-[10px]">
+            <Box className="w-full h-full flex items-center justify-between gap-x-3 pt-4 pb-7 px-4 -mb-6 ml-[2px] bg-[#f0f0f0] border border-primaryBorder rounded-[10px]">
               <FaFileArchive className="text-5xl box-content text-secoundaryText" />
               <Typography className="text-lg font-semibold text-[#65676b]">
                 {repliedMessage}
@@ -589,7 +589,7 @@ const SenderRepliedMessage = ({
               <PiDotsThreeOutlineVerticalFill
                 onClick={() => setMenuShow(!menuShow)}
                 className={`box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2] ${
-                  menuShow ? "bg-[#f2f2f2]" : "bg-white"
+                  menuShow && "bg-[#f2f2f2]"
                 }`}
               />
               {menuShow && (
@@ -632,7 +632,7 @@ const SenderRepliedMessage = ({
             </button>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography
@@ -648,7 +648,7 @@ const SenderRepliedMessage = ({
               </Typography>
             </Box>
             <Box className={"relative group/tooltip z-10"}>
-              <BsEmojiSmile
+              <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />

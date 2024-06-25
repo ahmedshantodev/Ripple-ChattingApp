@@ -26,6 +26,7 @@ import { activeUser } from "../../slices/activeUserSlice";
 import { activeGroup } from "../../slices/activeGroupSlice";
 import { activeChat } from "../../slices/activeChatSlice";
 import Flex from "../layout/Flex";
+import { IoMdNotificationsOutline } from "react-icons/io";
 
 const SidebarMenu = () => {
   const auth = getAuth();
@@ -81,19 +82,6 @@ const SidebarMenu = () => {
                 <HiOutlineChatBubbleLeft className="text-[24px]" /> Chat
               </NavLink>
             </ListItem>
-
-            <ListItem className={"mb-4"}>
-              <NavLink
-                to={"/pages/friends/all-friends"}
-                className={
-                  pathname.includes("/pages/friends")
-                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
-                }
-              >
-                <HiOutlineUser className="text-[24px]" /> Friends
-              </NavLink>
-            </ListItem>
             <ListItem className={"mb-4"}>
               <NavLink
                 to={"/pages/groups"}
@@ -108,6 +96,18 @@ const SidebarMenu = () => {
             </ListItem>
             <ListItem className={"mb-4"}>
               <NavLink
+                to={"/pages/friends/all-friends"}
+                className={
+                  pathname.includes("/pages/friends")
+                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
+                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
+                }
+              >
+                <HiOutlineUser className="text-[24px]" /> Friends
+              </NavLink>
+            </ListItem>
+            <ListItem className={"mb-4"}>
+              <NavLink
                 to={"/pages/community/my-groups"}
                 className={
                   pathname.includes("/pages/community")
@@ -116,6 +116,18 @@ const SidebarMenu = () => {
                 }
               >
                 <IoNewspaperOutline className="text-[24px]" /> Community
+              </NavLink>
+            </ListItem>
+            <ListItem className={"mb-4"}>
+              <NavLink
+                to={"/pages/notification"}
+                className={
+                  pathname.includes("/pages/notification")
+                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
+                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
+                }
+              >
+                <IoMdNotificationsOutline className="text-[24px]" /> Notification
               </NavLink>
             </ListItem>
           </List>

@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Box from "./Box";
 import Typography from "./Typography";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
+import { FaFaceSmile } from "react-icons/fa6";
 import { FaReply } from "react-icons/fa";
 import Flex from "./Flex";
-import { BsEmojiSmile } from "react-icons/bs";
 import Button from "./Button";
 import moment from "moment";
 
@@ -111,7 +111,7 @@ const SenderNormalMessage = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip z-10"}>
-            <BsEmojiSmile
+            <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />

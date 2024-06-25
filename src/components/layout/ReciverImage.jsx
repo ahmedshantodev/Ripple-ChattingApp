@@ -6,7 +6,7 @@ import Flex from "./Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { IoShareSocialSharp } from "react-icons/io5";
 import { FaReply } from "react-icons/fa";
-import { BsEmojiSmile } from "react-icons/bs";
+import { FaFaceSmile } from "react-icons/fa6";
 import Image from "./Image";
 import moment from "moment";
 
@@ -46,7 +46,7 @@ const ReciverImage = ({
             className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
           >
             <Box className={"relative group/tooltip"}>
-              <BsEmojiSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
+              <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
               <Typography
                 variant="span"
                 className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
@@ -113,7 +113,7 @@ const ReciverImage = ({
             className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
           >
             <Box className={"relative group/tooltip"}>
-              <BsEmojiSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
+              <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
               <Typography
                 variant="span"
                 className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"

@@ -1,7 +1,7 @@
 import React from "react";
 import Typography from "./Typography";
 import { FaReply } from "react-icons/fa";
-import { BsEmojiSmile } from "react-icons/bs";
+import { FaFaceSmile } from "react-icons/fa6";
 import { IoShareSocialSharp } from "react-icons/io5";
 import moment from "moment";
 import Box from "./Box";
@@ -14,7 +14,7 @@ const ReciverNormalMessege = ({
   message,
   sentTime,
   reactButton,
-  replayButton,
+  replyButton,
   forwardButton,
 }) => {
   return (
@@ -48,7 +48,7 @@ const ReciverNormalMessege = ({
             }
           >
             <Box className={"relative group/tooltip z-10"}>
-              <BsEmojiSmile
+              <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
@@ -66,7 +66,7 @@ const ReciverNormalMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography

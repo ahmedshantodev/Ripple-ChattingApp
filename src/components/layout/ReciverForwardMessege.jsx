@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import Typography from "./Typography";
 import { IoShareSocialSharp } from "react-icons/io5";
 import { FaReply } from "react-icons/fa";
-import { BsEmojiSmile } from "react-icons/bs";
+import { FaFaceSmile } from "react-icons/fa6";
 import moment from "moment";
 import Box from "./Box";
 import Image from "./Image";
@@ -14,7 +14,7 @@ const ReciverForwardMessege = ({
   name,
   profile,
   reactButton,
-  replayButton,
+  replyButton,
   forwardButton,
 }) => {
   return (
@@ -52,7 +52,7 @@ const ReciverForwardMessege = ({
             className={"hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"}
           >
             <Box className={"relative group/tooltip z-10"}>
-              <BsEmojiSmile
+              <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
@@ -70,7 +70,7 @@ const ReciverForwardMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography

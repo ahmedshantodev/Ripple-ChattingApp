@@ -4,23 +4,23 @@ import Typography from "./Typography";
 import { IoShareSocialSharp } from "react-icons/io5";
 import { FaReply } from "react-icons/fa";
 import Flex from "./Flex";
-import { BsEmojiSmile } from "react-icons/bs";
+import { FaFaceSmile } from "react-icons/fa6";
 import moment from "moment";
 import Image from "./Image";
 import { useSelector } from "react-redux";
 import { FaFileArchive } from "react-icons/fa";
 
 const ReciverRepliedMessege = ({
+  name,
+  profile,
   message,
   repliedMessage,
   repliedType,
   repliedTo,
   repliedBy,
   sentTime,
-  name,
-  profile,
   reactButton,
-  replayButton,
+  replyButton,
   forwardButton,
 }) => {
   const activeUserData = useSelector((state) => state.user.information);
@@ -52,7 +52,7 @@ const ReciverRepliedMessege = ({
         <Box>
           <Typography
             className={
-              "bg-[#5a3bff] text-white inline-block pt-2.5 px-5 pb-[26px] -mb-4 ml-[2px] rounded-t-[20px] rounded-br-[20px] max-w-[45%]"
+              "bg-[#5a3bff] text-white inline-block pt-2.5 px-5 pb-[18px] -mb-4 ml-[2px] rounded-t-[20px] rounded-br-[20px] max-w-[45%]"
             }
           >
             {repliedMessage}
@@ -79,7 +79,7 @@ const ReciverRepliedMessege = ({
             }
           >
             <Box className={"relative group/tooltip z-10"}>
-              <BsEmojiSmile
+              <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
@@ -97,7 +97,7 @@ const ReciverRepliedMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography
@@ -190,7 +190,7 @@ const ReciverRepliedMessege = ({
             }
           >
             <Box className={"relative group/tooltip z-10"}>
-              <BsEmojiSmile
+              <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
@@ -208,7 +208,7 @@ const ReciverRepliedMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography
@@ -301,7 +301,7 @@ const ReciverRepliedMessege = ({
             }
           >
             <Box className={"relative group/tooltip z-10"}>
-              <BsEmojiSmile
+              <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
@@ -319,7 +319,7 @@ const ReciverRepliedMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography
@@ -420,7 +420,7 @@ const ReciverRepliedMessege = ({
             }
           >
             <Box className={"relative group/tooltip z-10"}>
-              <BsEmojiSmile
+              <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
@@ -438,7 +438,7 @@ const ReciverRepliedMessege = ({
             </Box>
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
-                onClick={replayButton}
+                onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
               />
               <Typography
@@ -508,7 +508,7 @@ const ReciverRepliedMessege = ({
           </Box>
           <Box>
             <Box className={"max-w-[35%] inline-block text-start"}>
-              <Box className="w-full h-full flex items-center justify-between gap-x-3 pt-4 pb-10 px-4 -mb-6 ml-[2px] bg-[#f0f0f0] border border-primaryBorder rounded-[10px]">
+              <Box className="w-full h-full flex items-center justify-between gap-x-3 pt-4 pb-8 px-4 -mb-6 ml-[2px] bg-[#f0f0f0] border border-primaryBorder rounded-[10px]">
                 <FaFileArchive className="text-5xl box-content text-secoundaryText" />
                 <Typography className="text-lg font-semibold text-[#65676b]">
                   {repliedMessage}
@@ -537,7 +537,7 @@ const ReciverRepliedMessege = ({
               }
             >
               <Box className={"relative group/tooltip z-10"}>
-                <BsEmojiSmile
+                <FaFaceSmile
                   onClick={reactButton}
                   className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
                 />
@@ -555,7 +555,7 @@ const ReciverRepliedMessege = ({
               </Box>
               <Box className={"relative group/tooltip z-10"}>
                 <FaReply
-                  onClick={replayButton}
+                  onClick={replyButton}
                   className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
                 />
                 <Typography

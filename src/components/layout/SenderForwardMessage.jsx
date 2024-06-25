@@ -4,7 +4,7 @@ import Typography from "./Typography";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { FaReply } from "react-icons/fa";
 import Flex from "./Flex";
-import { BsEmojiSmile } from "react-icons/bs";
+import { FaFaceSmile } from "react-icons/fa6";
 import Button from "./Button";
 import moment from "moment";
 
@@ -12,7 +12,7 @@ const SenderForwardMessage = ({
   message,
   sentTime,
   reactButton,
-  replayButton,
+  replyButton,
   forwardButton,
 }) => {
   const [menuShow, setMenuShow] = useState(false);
@@ -103,7 +103,7 @@ const SenderForwardMessage = ({
           </button>
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
-              onClick={replayButton}
+              onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />
             <Typography
@@ -119,7 +119,7 @@ const SenderForwardMessage = ({
             </Typography>
           </Box>
           <Box className={"relative group/tooltip z-10"}>
-            <BsEmojiSmile
+            <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
             />

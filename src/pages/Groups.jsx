@@ -354,14 +354,14 @@ const Group = () => {
                       repliedtoname={item.repliedtoname}
                       repliedbyname={item.messegesendername}
                       time={item.messegesenttime}
-                      replayButton={() => handleReply(item)}
+                      replyButton={() => handleReply(item)}
                     />
                   ) : (
                     <SenderMessege
                       messege={item.messege}
                       messegeType={item.messegetype}
                       time={item.messegesenttime}
-                      replayButton={() => handleReply(item)}
+                      replyButton={() => handleReply(item)}
                     />
                   )
                 ) : item.messegetype == "reply" ? (
@@ -374,7 +374,7 @@ const Group = () => {
                     name={item.messegesendername}
                     profile={item.messegesenderprofile}
                     time={item.messegesenttime}
-                    replayButton={() => handleReply(item)}
+                    replyButton={() => handleReply(item)}
                   />
                 ) : (
                   <ReciverMessege
@@ -383,7 +383,7 @@ const Group = () => {
                     name={item.messegesendername}
                     profile={item.messegesenderprofile}
                     time={item.messegesenttime}
-                    replayButton={() => handleReply(item)}
+                    replyButton={() => handleReply(item)}
                   />
                 )
               )}
