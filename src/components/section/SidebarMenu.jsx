@@ -84,18 +84,6 @@ const SidebarMenu = () => {
             </ListItem>
             <ListItem className={"mb-4"}>
               <NavLink
-                to={"/pages/groups"}
-                className={
-                  pathname.includes("/pages/groups")
-                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
-                }
-              >
-                <HiOutlineUsers className="text-[24px]" /> Group
-              </NavLink>
-            </ListItem>
-            <ListItem className={"mb-4"}>
-              <NavLink
                 to={"/pages/friends/all-friends"}
                 className={
                   pathname.includes("/pages/friends")
@@ -108,14 +96,14 @@ const SidebarMenu = () => {
             </ListItem>
             <ListItem className={"mb-4"}>
               <NavLink
-                to={"/pages/community/my-groups"}
+                to={"/pages/groups/my-groups"}
                 className={
                   pathname.includes("/pages/community")
                     ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
                     : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
                 }
               >
-                <IoNewspaperOutline className="text-[24px]" /> Community
+                <IoNewspaperOutline className="text-[24px]" /> Group
               </NavLink>
             </ListItem>
             <ListItem className={"mb-4"}>

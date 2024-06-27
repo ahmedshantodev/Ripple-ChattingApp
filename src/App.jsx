@@ -11,14 +11,14 @@ import {
 import Pages from "./pages/Pages";
 import EmailVerification from "./pages/EmailVerification";
 import Chat from "./pages/Chat";
-import Groups from "./pages/Groups";
+// import Groups from "./pages/Groups";
 import ForgotPassword from "./pages/ForgotPassword";
 import Friends from "./pages/Friends";
 import AllFriends from "./components/section/AllFriends";
 import AddFriends from "./components/section/AddFriends";
 import FriendRequsts from "./components/section/FriendRequsts";
 import BlockList from "./components/section/BlockList";
-import Community from "./pages/Community";
+import Groups from "./pages/Groups";
 import MyGroups from "./components/section/MyGroups";
 import OthersGroup from "./components/section/OthersGroup";
 import GroupInvitation from "./components/section/GroupInvitation";
@@ -40,14 +40,14 @@ const App = () => {
             <Route path="chat-with-friend" element={<ChatWithFriend />} />
             <Route path="chat-with-group" element={<ChatWithGroup />} />
           </Route>
-          <Route path="groups" element={<Groups />} />
+          {/* <Route path="groups" element={<Groups />} /> */}
           <Route path="friends" element={<Friends />}>
             <Route path="all-friends" element={<AllFriends />} />
             <Route path="add-friends" element={<AddFriends />} />
             <Route path="friend-requsts" element={<FriendRequsts />} />
             <Route path="block-list" element={<BlockList />} />
           </Route>
-          <Route path="community" element={<Community />}>
+          <Route path="groups" element={<Groups />}>
             <Route path="my-groups" element={<MyGroups />} />
             <Route path="others-groups" element={<OthersGroup />} />
             <Route path="group-invitation" element={<GroupInvitation />} />

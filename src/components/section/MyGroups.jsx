@@ -35,9 +35,23 @@ const MyGroups = () => {
   })
 
   const handleViewGroup = (item) => {
-    dispatch(activeGroup(item))
-    localStorage.setItem("activeGroup" , JSON.stringify(item))
-    navigate("/pages/groups")
+    navigate("/pages/chat/chat-with-group")
+    dispatch(activeGroup({
+      groupuid: item.groupuid,
+      groupname: item.groupname,
+      groupphoto: item.groupphoto,
+      groupadminuid: item.groupadminuid,
+      groupadminname: item.groupadminname,
+      groupadminprofile: item.groupadminprofile,
+    }));
+    localStorage.setItem("activeGroup", JSON.stringify({
+      groupuid: item.groupuid,
+      groupname: item.groupname,
+      groupphoto: item.groupphoto,
+      groupadminuid: item.groupadminuid,
+      groupadminname: item.groupadminname,
+      groupadminprofile: item.groupadminprofile,
+    }));
   }
 
   return (
