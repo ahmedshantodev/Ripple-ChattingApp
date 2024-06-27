@@ -72,7 +72,7 @@ const SidebarMenu = () => {
           <List>
             <ListItem className={"mb-4"}>
               <NavLink
-                to={"/pages/chat"}
+                to={"/pages/chat/chat-with-friend"}
                 className={
                   pathname.includes("/pages/chat")
                     ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"

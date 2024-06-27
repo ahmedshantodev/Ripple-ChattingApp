@@ -36,7 +36,7 @@ const ReciverFile = ({
             {name} forwarded a file
           </Typography>
         </Box>
-        <Box className={"max-w-[35%] inline-block text-start relative mb-2"}>
+        <Box className={"max-w-[35%] inline-block text-start relative mb-1"}>
           <a
             href={file}
             target="_blank"
@@ -108,7 +108,7 @@ const ReciverFile = ({
         />
       </Box>
       <Box className={"w-[calc(100%-48px)]"}>
-        <Box className={"max-w-[35%] inline-block text-start relative mb-2"}>
+        <Box className={"max-w-[35%] inline-block text-start relative mb-1"}>
           <a
             href={file}
             target="_blank"

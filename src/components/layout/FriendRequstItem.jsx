@@ -32,10 +32,7 @@ const FriendRequstItem = ({
       let friendListArray = [];
       snapshot.forEach((item) => {
         if (userId == item.val().senderuid || userId == item.val().reciveruid) {
-          const friendId =
-            userId == item.val().senderuid
-              ? item.val().reciveruid
-              : item.val().senderuid;
+          const friendId = userId == item.val().senderuid ? item.val().reciveruid : item.val().senderuid;
           friendListArray.push(friendId);
         }
       });
@@ -48,14 +45,8 @@ const FriendRequstItem = ({
     onValue(friendRequstRef, (snapshot) => {
       let friendListArray = [];
       snapshot.forEach((item) => {
-        if (
-          activeUserData.uid == item.val().senderuid ||
-          activeUserData.uid == item.val().reciveruid
-        ) {
-          const friendId =
-            activeUserData.uid == item.val().senderuid
-              ? item.val().reciveruid
-              : item.val().senderuid;
+        if (activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid) {
+          const friendId = activeUserData.uid == item.val().senderuid ? item.val().reciveruid : item.val().senderuid;
           friendListArray.push(friendId);
         }
       });
@@ -72,13 +63,15 @@ const FriendRequstItem = ({
         alt={userName}
         className={"w-full aspect-square object-cover"}
       />
-      <Box className={"pt-2.5 pb-2 px-2"}>
-        <Typography
-          variant="h3"
-          className="font-inter font-semibold text-[18px] mt-2.5 mb-[2px] ml-1 w-[98%] whitespace-nowrap overflow-hidden text-ellipsis capitalize"
-        >
-          {userName}
-        </Typography>
+      <Box className={"pb-2 px-2"}>
+        <Box className={"h-[54px] flex items-end mt-[2px]"}>
+          <Typography
+            variant="h3"
+            className="font-inter font-semibold text-[18px] ml-1 w-full text-ellipsis overflow-hidden line-clamp-2 capitalize"
+          >
+            {userName}
+          </Typography>
+        </Box>
         <Typography
           variant="h3"
           className=" font-open-sans text-[14px] ml-1 text-secoundaryText"

@@ -28,7 +28,7 @@ const ReciverNormalMessege = ({
       </Box>
       <Box className={"w-[calc(100%-55px)]"}>
         <Box className={"relative max-w-[70%] inline-block mb-1"}>
-          <Typography className="text-start break-words bg-[#e0e3ea] text-black/70 rounded-[20px] py-2.5 px-5 font-semibold font-open-sans text-[15px]">
+          <Typography className="text-start break-words bg-[#f0f0f0] text-black rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
             {message}
           </Typography>
           <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -38,7 +38,7 @@ const ReciverNormalMessege = ({
               }
             ></Box>
             <Box
-              className={"w-[19px] h-[20px] bg-[#e0e3ea] rounded-br-[15px]"}
+              className={"w-[19px] h-[20px] bg-[#f0f0f0] rounded-br-[15px]"}
             ></Box>
           </Box>
           <Flex

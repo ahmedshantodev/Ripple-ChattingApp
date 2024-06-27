@@ -8,7 +8,7 @@ import Box from "./Box";
 import Image from "./Image";
 import Flex from "./Flex";
 
-const ReciverForwardMessege = ({
+const ReciverEditedMessage = ({
   message,
   sentTime,
   name,
@@ -23,18 +23,18 @@ const ReciverForwardMessege = ({
         <Image
           src={profile}
           alt={name}
+          title={name}  
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
       <Box className={"w-[calc(100%-55px)]"}>
-        <Box className={"flex items-center gap-x-1 mr-2 mb-1"}>
-          <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
+        <Box className={"flex items-center gap-x-1"}>
           <Typography className="text-secoundaryText text-[15px]">
-            {name} forwarded a message
+            Edited
           </Typography>
         </Box>
         <Box className={"relative max-w-[70%] inline-block mb-1"}>
-          <Typography className="text-start break-words bg-[#f0f0f0] text-black rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
+          <Typography className="text-start break-words bg-[#f0f0f0] rounded-[20px] py-2.5 px-5 text-black font-open-sans text-[15px]">
             {message}
           </Typography>
           <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -112,4 +112,4 @@ const ReciverForwardMessege = ({
   );
 };
 
-export default ReciverForwardMessege;
+export default ReciverEditedMessage;

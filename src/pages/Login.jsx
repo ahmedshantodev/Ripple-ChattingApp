@@ -99,7 +99,7 @@ const Login = () => {
             email: "",
             password: "",
           });
-          navigate("/pages/chat");
+          navigate("/pages/chat/chat-with-friend");
           setLoginLodingBtnShow(false);
         })
         .catch((error) => {

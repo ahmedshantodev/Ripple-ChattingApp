@@ -7,10 +7,10 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 
 const ChatItem = ({
+  frienduid,
+  friendprofile,
+  friendname,
   onClick,
-  profile,
-  userName,
-  userid,
 }) => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
@@ -24,33 +24,35 @@ const ChatItem = ({
       let messegeArray = [];
       snapshot.forEach((item) => {
         if (
-          (activeUserData?.uid == item.val().senderuid && userid == item.val().reciveruid) ||
-          (activeUserData?.uid == item.val().reciveruid && userid == item.val().senderuid)
+          (activeUserData?.uid == item.val().senderuid && frienduid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid && frienduid == item.val().senderuid)
         ) {
           messegeArray.push({ ...item.val(), messegeid: item.key });
         }
       });
       setMessegeList(messegeArray);
     });
-  }, [userid]);
+  }, [frienduid]);
+
+  console.log(lastMessage)
 
   return (
     <Box
       onClick={onClick}
       className={
-        activeChatData?.uid == userid
+        activeChatData?.uid == frienduid
           ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#f0f0f0] cursor-pointer mb-[2px]"
           : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#f5f5f5]/50 transition-all ease-linear duration-300 hover:bg-[#f5f5f5] cursor-pointer mb-[2px]"
       }
     >
       <Image
-        src={profile}
-        alt={userName}
+        src={friendprofile}
+        alt={friendname}
         className={"w-[52px] h-[52px] rounded-full "}
       />
       <Box>
         <Typography variant="h3" className="font-semibold font-open-sans">
-          {userName}
+          {friendname}
         </Typography>
         {lastMessage.map((item) =>
           activeUserData.uid == item.senderuid ? (
@@ -92,8 +94,7 @@ const ChatItem = ({
                   </Typography>
                 )
               )
-            ) : (
-              item.type.includes("gif") &&
+            ) : item.type.includes("gif") ? (
               (item.type == "gif/normal" ? (
                 <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
                   You sent a gif
@@ -105,6 +106,10 @@ const ChatItem = ({
                   </Typography>
                 )
               ))
+            ) : item.type == "deleted" && (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
+                You unsent a message
+              </Typography>
             )
           ) : item.type.includes("text") ? (
             <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
@@ -144,8 +149,7 @@ const ChatItem = ({
                 </Typography>
               )
             )
-          ) : (
-            item.type.includes("gif") &&
+          ) : item.type.includes("gif") ? (
             (item.type == "gif/normal" ? (
               <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
                 {item.sendername} sent a gif
@@ -157,6 +161,10 @@ const ChatItem = ({
                 </Typography>
               )
             ))
+          ) : (
+            <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[250px]">
+              {item.sendername} unsent a message
+            </Typography>
           )
         )}
       </Box>

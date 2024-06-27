@@ -4,7 +4,6 @@ import Image from "./Image";
 import Typography from "./Typography";
 import Flex from "./Flex";
 import Button from "./Button";
-import { FaEnvelopeCircleCheck } from "react-icons/fa6";
 
 const MessageForwardListItem = ({ profile, name, sendButton }) => {
   return (
@@ -34,14 +33,6 @@ const MessageForwardListItem = ({ profile, name, sendButton }) => {
       >
         send
       </Button>
-      {/* <Button
-          className={
-            "bg-[#dbe7f2] text-[#1871e6] w-[100px] py-2 rounded-md mr-2 font-semibold flex items-center justify-center gap-x-2 text-lg cursor-default"
-          }
-        >
-          <FaEnvelopeCircleCheck />
-          sent
-        </Button> */}
     </Box>
   );
 };

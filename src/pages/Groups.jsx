@@ -94,7 +94,7 @@ const Group = () => {
     });
   }, []);
 
-  const handleActiveGroupOpen = (item) => {
+  const handleGroupChatOpen = (item) => {
     dispatch(activeGroup(item));
     localStorage.setItem("activeGroup", JSON.stringify(item));
   };
@@ -249,11 +249,10 @@ const Group = () => {
               return searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase());
             }).map((item) => (
               <GroupItem
-                uid={item.groupuid}
-                name={item?.groupname}
-                profile={item?.groupphoto}
-                activeItem={activeGroupData?.groupuid}
-                onClick={() => handleActiveGroupOpen(item)}
+                groupId={item.groupuid}
+                groupName={item?.groupname}
+                groupPhoto={item?.groupphoto}
+                onClick={() => handleGroupChatOpen(item)}
               />
             ))}
         </Box>

@@ -23,6 +23,8 @@ import MyGroups from "./components/section/MyGroups";
 import OthersGroup from "./components/section/OthersGroup";
 import GroupInvitation from "./components/section/GroupInvitation";
 import Notification from "./pages/Notification";
+import ChatWithFriend from "./pages/ChatWithFriend";
+import ChatWithGroup from "./pages/ChatWithGroup";
 
 const App = () => {
   const router = createBrowserRouter(
@@ -34,7 +36,10 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/pages" element={<Pages />}>
-          <Route path="chat" element={<Chat />} />
+          <Route path="chat" element={<Chat />}>
+            <Route path="chat-with-friend" element={<ChatWithFriend />} />
+            <Route path="chat-with-group" element={<ChatWithGroup />} />
+          </Route>
           <Route path="groups" element={<Groups />} />
           <Route path="friends" element={<Friends />}>
             <Route path="all-friends" element={<AllFriends />} />

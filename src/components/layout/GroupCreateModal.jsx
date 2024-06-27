@@ -32,29 +32,6 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
     setGroupCreateError("");
   };
 
-  // const handleCreateGroup = () => {
-  //   if (!groupName) {
-  //     setGroupCreateError("Please enter group name");
-  //   } else {
-  //     setGroupCreateLoadingButton(true);
-  //     set(push(ref(db, "groups/")), {
-  //       groupname: groupName,
-  //       groupphoto: defaultGroupPhoto,
-  //       groupadminuid: activeUserData.uid,
-  //       groupadminname: activeUserData.displayName,
-  //       groupadminprofile: activeUserData.photoURL,
-  //     }).then(() => {
-  //       toast.success(
-  //         `Your group ${groupName} has been created. Join the conversation now!`,
-  //         { position: "bottom-center", autoClose: 2500 }
-  //       );
-  //       setGroupName("");
-  //       setGroupCreateLoadingButton(false);
-  //       modalClose(false);
-  //     });
-  //   }
-  // };
-
   const handleCreateGroup = () => {
     if (!setGroupName) {
       setGroupCreateError("Please enter group name");

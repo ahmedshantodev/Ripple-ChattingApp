@@ -36,12 +36,12 @@ const SenderForwardMessage = ({
         </Typography>
       </Box>
       <Box className={"max-w-[67%] inline-block relative mb-1 "}>
-        <Typography className="text-start break-words bg-[#5a3bff] text-white rounded-[20px] py-2.5 pr-5 pl-7 font-semibold font-open-sans text-[15px] relative after:content-[''] after:w-[3px] after:h-[calc(100%-24px)] after:bg-[#d0c3ff] after:absolute after:left-4 after:top-2/4 after:-translate-y-2/4 after:rounded-[30px]">
+        <Typography className="text-start break-words bg-[#077aff] text-white rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
           {message}
         </Typography>
         <Box className={"absolute bottom-0 -right-[17px] flex"}>
           <Box
-            className={"w-[19px] h-[20px] bg-[#5a3bff] rounded-bl-[15px]"}
+            className={"w-[19px] h-[20px] bg-[#077aff] rounded-bl-[15px]"}
           ></Box>
           <Box
             className={

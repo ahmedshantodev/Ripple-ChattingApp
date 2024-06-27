@@ -2,20 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import Box from "./Box";
 import Typography from "./Typography";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
-import { FaFaceSmile } from "react-icons/fa6";
 import { FaReply } from "react-icons/fa";
 import Flex from "./Flex";
+import { FaFaceSmile } from "react-icons/fa6";
 import Button from "./Button";
 import moment from "moment";
 
-const SenderNormalMessage = ({
+const SenderEditedMessage = ({
   message,
   sentTime,
   reactButton,
   replyButton,
-  forwardButton,
   editButton,
-  removeButton
+  removeButton,
+  forwardButton,
 }) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
@@ -30,7 +30,12 @@ const SenderNormalMessage = ({
 
   return (
     <Box className={"mt-5 group text-end"}>
-      <Box className={"max-w-[67%] inline-block relative mb-1 ml-2.5 "}>
+      <Box className={"flex justify-end items-center gap-x-2 mr-2"}>
+        <Typography className="text-secoundaryText text-[15px]">
+          Edited
+        </Typography>
+      </Box>
+      <Box className={"max-w-[67%] inline-block relative mb-1 "}>
         <Typography className="text-start break-words bg-[#077aff] text-white rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
           {message}
         </Typography>
@@ -140,4 +145,4 @@ const SenderNormalMessage = ({
   );
 };
 
-export default SenderNormalMessage;
+export default SenderEditedMessage;

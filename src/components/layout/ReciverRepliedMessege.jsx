@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "./Box";
 import Typography from "./Typography";
 import { IoShareSocialSharp } from "react-icons/io5";
@@ -9,12 +9,15 @@ import moment from "moment";
 import Image from "./Image";
 import { useSelector } from "react-redux";
 import { FaFileArchive } from "react-icons/fa";
+import { getDatabase, onValue, ref } from "firebase/database";
 
 const ReciverRepliedMessege = ({
-  name,
-  profile,
+  edited,
+  sendername,
+  senderuid,
+  senderprofile,
   message,
-  repliedMessage,
+  repliedMessageId,
   repliedType,
   repliedTo,
   repliedBy,
@@ -23,14 +26,36 @@ const ReciverRepliedMessege = ({
   replyButton,
   forwardButton,
 }) => {
+  const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
+  const activeChatData = useSelector((state) => state.activeChat.information);
+  const [messegeList, setMessegeList] = useState([]);
+
+  useEffect(() => {
+    let messegeRef = ref(db, "singlemessege/");
+    onValue(messegeRef, (snapshot) => {
+      let messegeArray = [];
+      snapshot.forEach((item) => {
+        if (
+          ((activeUserData?.uid == item.val().senderuid &&
+            activeChatData?.uid == item.val().reciveruid) ||
+            (activeUserData?.uid == item.val().reciveruid &&
+              activeChatData?.uid == item.val().senderuid)) &&
+          item.key == repliedMessageId
+        ) {
+          messegeArray.push(item.val());
+        }
+      });
+      setMessegeList(messegeArray);
+    });
+  }, [activeChatData]);
 
   return repliedType == "text" ? (
     <Box className={"mt-5 flex justify-between items-end w-full group"}>
       <Box className={"w-[40px]"}>
         <Image
-          src={profile}
-          alt={name}
+          src={senderprofile}
+          alt={sendername}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
@@ -39,27 +64,43 @@ const ReciverRepliedMessege = ({
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           {repliedBy == repliedTo ? (
             <Typography className="text-secoundaryText text-[15px]">
-              {repliedBy} replied to herself
+              {repliedBy} replied to herself{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           ) : (
             <Typography className="text-secoundaryText text-[15px]">
               {activeUserData.displayName == repliedBy ? "you" : repliedBy}{" "}
               replied to{" "}
-              {activeUserData.displayName == repliedTo ? "you" : repliedTo}
+              {activeUserData.displayName == repliedTo ? "you" : repliedTo}{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           )}
         </Box>
         <Box>
-          <Typography
-            className={
-              "bg-[#5a3bff] text-white inline-block pt-2.5 px-5 pb-[18px] -mb-4 ml-[2px] rounded-t-[20px] rounded-br-[20px] max-w-[45%]"
-            }
-          >
-            {repliedMessage}
-          </Typography>
+          {messegeList.map((item) =>
+            item.type == "deleted" ? (
+              item.senderuid == senderuid ? (
+                <Typography className="text-start inline-block bg-white border-[2px] border-[#e0e3ea] text-secoundaryText italic rounded-[20px] pt-2.5 pb-4 -mb-4 px-5 font-open-sans text-[15px]">
+                  {item.sendername} unsent a messeage
+                </Typography>
+              ) : (
+                <Typography className="text-start inline-block bg-white border-[2px] border-[#e0e3ea] text-secoundaryText italic rounded-[20px] pt-2.5 pb-4 -mb-4 px-5 font-open-sans text-[15px]">
+                  you unsent a messeage
+                </Typography>
+              )
+            ) : (
+              <Typography
+                className={
+                  "bg-[#077aff] text-white inline-block pt-2 px-5 pb-[18px] -mb-4 ml-[2px] rounded-t-[20px] rounded-br-[20px] max-w-[45%]"
+                }
+              >
+                {item.text}
+              </Typography>
+            )
+          )}
         </Box>
         <Box className={"relative max-w-[70%] inline-block mb-1"}>
-          <Typography className="text-start break-words bg-[#e0e3ea] text-black/70 rounded-[20px] py-2.5 px-5 font-semibold font-open-sans text-[15px]">
+          <Typography className="text-start break-words bg-[#f0f0f0] text-black rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
             {message}
           </Typography>
           <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -69,7 +110,7 @@ const ReciverRepliedMessege = ({
               }
             ></Box>
             <Box
-              className={"w-[19px] h-[20px] bg-[#e0e3ea] rounded-br-[15px]"}
+              className={"w-[19px] h-[20px] bg-[#f0f0f0] rounded-br-[15px]"}
             ></Box>
           </Box>
           <Flex
@@ -140,8 +181,8 @@ const ReciverRepliedMessege = ({
     <Box className={"mt-5 flex justify-between items-end w-full group"}>
       <Box className={"w-[40px]"}>
         <Image
-          src={profile}
-          alt={name}
+          src={senderprofile}
+          alt={sendername}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
@@ -150,27 +191,37 @@ const ReciverRepliedMessege = ({
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           {repliedBy == repliedTo ? (
             <Typography className="text-secoundaryText text-[15px]">
-              {repliedBy} replied to herself
+              {repliedBy} replied to herself{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           ) : (
             <Typography className="text-secoundaryText text-[15px]">
               {activeUserData.displayName == repliedBy ? "you" : repliedBy}{" "}
               replied to{" "}
-              {activeUserData.displayName == repliedTo ? "you" : repliedTo}
+              {activeUserData.displayName == repliedTo ? "you" : repliedTo}{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           )}
         </Box>
         <Box>
-          <Image
-            src={repliedMessage}
-            alt={"random image"}
-            className={
-              "max-w-[220px] rounded-[10px] border border-[#dcdcdc] -mb-6 ml-[2px]"
-            }
-          />
+          {messegeList.map((item) =>
+            item.type == "deleted" ? (
+              <Typography className="text-start inline-block bg-white border-[2px] border-[#e0e3ea] text-secoundaryText italic rounded-[20px] pt-2.5 pb-4 -mb-4 px-5 font-open-sans text-[15px]">
+                {sendername} unsent a message
+              </Typography>
+            ) : (
+              <Image
+                src={item.gif}
+                alt={"random gif"}
+                className={
+                  "max-w-[200px] rounded-[10px] border border-[#f5f5f5] -mb-6 ml-[2px]"
+                }
+              />
+            )
+          )}
         </Box>
         <Box className={"relative max-w-[70%] inline-block mb-1"}>
-          <Typography className="text-start break-words bg-[#e0e3ea] text-black/70 rounded-[20px] py-2.5 px-5 font-semibold font-open-sans text-[15px]">
+          <Typography className="text-start break-words bg-[#f0f0f0] text-black/70 rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
             {message}
           </Typography>
           <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -180,7 +231,7 @@ const ReciverRepliedMessege = ({
               }
             ></Box>
             <Box
-              className={"w-[19px] h-[20px] bg-[#e0e3ea] rounded-br-[15px]"}
+              className={"w-[19px] h-[20px] bg-[#f0f0f0] rounded-br-[15px]"}
             ></Box>
           </Box>
           <Flex
@@ -251,8 +302,8 @@ const ReciverRepliedMessege = ({
     <Box className={"mt-5 flex justify-between items-end w-full group"}>
       <Box className={"w-[40px]"}>
         <Image
-          src={profile}
-          alt={name}
+          src={senderprofile}
+          alt={sendername}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
@@ -261,27 +312,37 @@ const ReciverRepliedMessege = ({
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           {repliedBy == repliedTo ? (
             <Typography className="text-secoundaryText text-[15px]">
-              {repliedBy} replied to herself
+              {repliedBy} replied to herself{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           ) : (
             <Typography className="text-secoundaryText text-[15px]">
               {activeUserData.displayName == repliedBy ? "you" : repliedBy}{" "}
               replied to{" "}
-              {activeUserData.displayName == repliedTo ? "you" : repliedTo}
+              {activeUserData.displayName == repliedTo ? "you" : repliedTo}{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           )}
         </Box>
         <Box>
-          <Image
-            src={repliedMessage}
-            alt={"random image"}
-            className={
-              "max-w-[220px] rounded-[10px] border border-[#dcdcdc] -mb-6 ml-[2px]"
-            }
-          />
+          {messegeList.map((item) =>
+            item.type == "deleted" ? (
+              <Typography className="text-start inline-block bg-white border-[2px] border-[#e0e3ea] text-secoundaryText italic rounded-[20px] pt-2.5 pb-4 -mb-4 px-5 font-open-sans text-[15px]">
+                {sendername} unsent an message
+              </Typography>
+            ) : (
+              <Image
+                src={item.image}
+                alt={"random image"}
+                className={
+                  "max-w-[200px] rounded-[10px] border border-[#f5f5f5] -mb-6 ml-[2px]"
+                }
+              />
+            )
+          )}
         </Box>
         <Box className={"relative max-w-[70%] inline-block mb-1"}>
-          <Typography className="text-start break-words bg-[#e0e3ea] text-black/70 rounded-[20px] py-2.5 px-5 font-semibold font-open-sans text-[15px]">
+          <Typography className="text-start break-words bg-[#f0f0f0] text-black/70 rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
             {message}
           </Typography>
           <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -291,7 +352,7 @@ const ReciverRepliedMessege = ({
               }
             ></Box>
             <Box
-              className={"w-[19px] h-[20px] bg-[#e0e3ea] rounded-br-[15px]"}
+              className={"w-[19px] h-[20px] bg-[#f0f0f0] rounded-br-[15px]"}
             ></Box>
           </Box>
           <Flex
@@ -362,8 +423,8 @@ const ReciverRepliedMessege = ({
     <Box className={"mt-5 flex justify-between items-end w-full group"}>
       <Box className={"w-[40px]"}>
         <Image
-          src={profile}
-          alt={name}
+          src={senderprofile}
+          alt={sendername}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
@@ -372,35 +433,49 @@ const ReciverRepliedMessege = ({
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           {repliedBy == repliedTo ? (
             <Typography className="text-secoundaryText text-[15px]">
-              {repliedBy} replied to herself
+              {repliedBy} replied to herself{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           ) : (
             <Typography className="text-secoundaryText text-[15px]">
               {activeUserData.displayName == repliedBy ? "you" : repliedBy}{" "}
               replied to{" "}
-              {activeUserData.displayName == repliedTo ? "you" : repliedTo}
+              {activeUserData.displayName == repliedTo ? "you" : repliedTo}{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
             </Typography>
           )}
         </Box>
-        <Box className={"relative w-[220px] -mb-6 ml-[2px]"}>
-          <video
-            src={repliedMessage}
-            className={"w-[220px] rounded-[10px] border border-[#dcdcdc]"}
-          />
-          <Box
-            className={
-              "w-full h-full absolute top-0 left-0 bg-white/50 flex justify-center items-center"
-            }
-          >
-            <Image
-              src={"/public/images/play-ui-icon-png.webp"}
-              alt={"play ui icon"}
-              className={"w-[33%]"}
-            />
-          </Box>
-        </Box>
+        {messegeList.map((item) =>
+          item.type == "deleted" ? (
+            <Box>
+              <Typography className="text-start inline-block bg-white border-[2px] border-[#e0e3ea] text-secoundaryText italic rounded-[20px] pt-2.5 pb-4 -mb-4 px-5 font-open-sans text-[15px]">
+                {sendername} unsent a message
+              </Typography>
+            </Box>
+          ) : (
+            <Box className={"relative w-[220px] -mb-6 ml-[2px]"}>
+              {messegeList.map((item) => (
+                <video
+                  src={item.video}
+                  className={"w-[200px] rounded-[10px] border border-[#f5f5f5]"}
+                />
+              ))}
+              <Box
+                className={
+                  "w-full h-full absolute top-0 left-0 bg-white/50 flex justify-center items-center"
+                }
+              >
+                <Image
+                  src={"/public/images/play-ui-icon-png.webp"}
+                  alt={"play ui icon"}
+                  className={"w-[33%]"}
+                />
+              </Box>
+            </Box>
+          )
+        )}
         <Box className={"relative max-w-[70%] inline-block mb-1"}>
-          <Typography className="text-start break-words bg-[#e0e3ea] text-black/70 rounded-[20px] py-2.5 px-5 font-semibold font-open-sans text-[15px]">
+          <Typography className="text-start break-words bg-[#f0f0f0] text-black/70 rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
             {message}
           </Typography>
           <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -410,7 +485,7 @@ const ReciverRepliedMessege = ({
               }
             ></Box>
             <Box
-              className={"w-[19px] h-[20px] bg-[#e0e3ea] rounded-br-[15px]"}
+              className={"w-[19px] h-[20px] bg-[#f0f0f0] rounded-br-[15px]"}
             ></Box>
           </Box>
           <Flex
@@ -486,8 +561,8 @@ const ReciverRepliedMessege = ({
       >
         <Box className={"w-[40px]"}>
           <Image
-            src={profile}
-            alt={name}
+            src={senderprofile}
+            alt={sendername}
             className={"w-full object-cover aspect-square rounded-full"}
           />
         </Box>
@@ -495,29 +570,41 @@ const ReciverRepliedMessege = ({
           <Box className={"flex items-center gap-x-1 mr-2 mb-1"}>
             <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
             {repliedBy == repliedTo ? (
-              <Typography className="text-secoundaryText text-[15px]">
-                {repliedBy} replied to herself
-              </Typography>
-            ) : (
-              <Typography className="text-secoundaryText text-[15px]">
-                {activeUserData.displayName == repliedBy ? "you" : repliedBy}{" "}
-                replied to{" "}
-                {activeUserData.displayName == repliedTo ? "you" : repliedTo}
-              </Typography>
-            )}
+            <Typography className="text-secoundaryText text-[15px]">
+              {repliedBy} replied to herself{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
+            </Typography>
+          ) : (
+            <Typography className="text-secoundaryText text-[15px]">
+              {activeUserData.displayName == repliedBy ? "you" : repliedBy}{" "}
+              replied to{" "}
+              {activeUserData.displayName == repliedTo ? "you" : repliedTo}{" "}
+              {edited && <span className="text-[#077aff]"> - edited</span>}
+            </Typography>
+          )}
           </Box>
           <Box>
-            <Box className={"max-w-[35%] inline-block text-start"}>
-              <Box className="w-full h-full flex items-center justify-between gap-x-3 pt-4 pb-8 px-4 -mb-6 ml-[2px] bg-[#f0f0f0] border border-primaryBorder rounded-[10px]">
-                <FaFileArchive className="text-5xl box-content text-secoundaryText" />
-                <Typography className="text-lg font-semibold text-[#65676b]">
-                  {repliedMessage}
+            {messegeList.map((item) =>
+              item.type == "deleted" ? (
+                <Typography className="text-start inline-block bg-white border-[2px] border-[#e0e3ea] text-secoundaryText italic rounded-[20px] pt-2.5 pb-4 -mb-4 px-5 font-open-sans text-[15px]">
+                  {sendername} unsent a message
                 </Typography>
-              </Box>
-            </Box>
+              ) : (
+                <Box className={"max-w-[35%] inline-block text-start"}>
+                  <Box className="w-full h-full flex items-center justify-between gap-x-3 pt-4 pb-8 px-4 -mb-6 ml-[2px] border border-primaryBorder rounded-[10px]">
+                    <FaFileArchive className="text-2xl box-content text-secoundaryText" />
+                    {messegeList.map((item) => (
+                      <Typography className="font-semibold text-[#65676b]">
+                        {item.filename}
+                      </Typography>
+                    ))}
+                  </Box>
+                </Box>
+              )
+            )}
           </Box>
           <Box className={"relative max-w-[70%] inline-block mb-1"}>
-            <Typography className="text-start break-words bg-[#e0e3ea] text-black/70 rounded-[20px] py-2.5 px-5 font-semibold font-open-sans text-[15px]">
+            <Typography className="text-start break-words bg-[#f0f0f0] text-black/70 rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
               {message}
             </Typography>
             <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -527,7 +614,7 @@ const ReciverRepliedMessege = ({
                 }
               ></Box>
               <Box
-                className={"w-[19px] h-[20px] bg-[#e0e3ea] rounded-br-[15px]"}
+                className={"w-[19px] h-[20px] bg-[#f0f0f0] rounded-br-[15px]"}
               ></Box>
             </Box>
             <Flex
