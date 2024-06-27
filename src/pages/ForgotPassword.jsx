@@ -27,7 +27,7 @@ const ForgotPassword = () => {
             theme: "dark",
           });
           setLoadingButtonShow(false);
-          navigate("/login");
+          navigate("/");
         })
         .catch((error) => {
           setLoadingButtonShow(false);
@@ -100,7 +100,7 @@ const ForgotPassword = () => {
           </Button>
         )}
         <NavLink
-          to={"/login"}
+          to={"/"}
           className={
             "rounded-md w-[49%] py-2.5 capitalize text-[16px] bg-[#dddcea] font-semibold text-center"
           }

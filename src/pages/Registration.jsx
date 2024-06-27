@@ -423,7 +423,7 @@ const Registration = () => {
             )}
 
             <Link
-              to={"/login"}
+              to={"/"}
               className="cursor-pointer hover:text-red-400 inline-block mt-3 sm:mt-4 md:mt-6 lg:mt-7 xl:mt-8 2xl:mt-10 text-[12px] sm:text-[14px] md:text-[15px] lg:text-[16px]"
             >
               already have account? Login

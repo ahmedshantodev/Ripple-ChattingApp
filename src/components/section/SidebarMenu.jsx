@@ -49,7 +49,7 @@ const SidebarMenu = () => {
         dispatch(activeGroup(null));
         localStorage.removeItem("activeChat");
         dispatch(activeChat(null));
-        navigate("/login");
+        navigate("/");
       })
       .catch((error) => {});
   };

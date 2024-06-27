@@ -11,7 +11,7 @@ const Pages = () => {
 
   useEffect(() => {
     if (!activeUserData?.email) {
-      navigate("/login");
+      navigate("/");
     }
   }, []);
 
