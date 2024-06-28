@@ -33,7 +33,7 @@ const Login = () => {
   const [loginLodingBtnShow, setLoginLodingBtnShow] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
-    password: "123123a",
+    password: "",
   });
   const [loginError, setLoginError] = useState({
     email: "",
