@@ -108,9 +108,8 @@ const Registration = () => {
         .then((userCredential) => {
           const userInformation = userCredential?.user;
           updateProfile(auth.currentUser, {
-            displayName:
-              registrationData.firstName + " " + registrationData.lastName,
-            photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault%20profile.png?alt=media&token=66982e58-1271-405f-b98e-83992f8bec46",
+            displayName: registrationData.firstName + " " + registrationData.lastName,
+            photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779",
           })
             .then(() => {
               localStorage.setItem("user", JSON.stringify(userInformation));

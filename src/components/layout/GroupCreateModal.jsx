@@ -15,7 +15,8 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
   const [groupCreateLoadingButton, setGroupCreateLoadingButton] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupCreateError, setGroupCreateError] = useState("");
-  const defaultGroupPhoto = "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defualt%20group%20%20photo%2Fgroup%20defualt%20profile.png?alt=media&token=511df1b9-d171-4ab9-b201-a4ae882bab6f";
+  // const defaultGroupPhoto = "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defualt%20group%20%20photo%2Fgroup%20defualt%20profile.png?alt=media&token=511df1b9-d171-4ab9-b201-a4ae882bab6f";
+  const defaultGroupPhoto = "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/defualt%20group%20%20photo%2Fimages.png?alt=media&token=80080876-e462-4459-88a3-ceebb4b83a61";
   const modalRef = useRef();
   const boxRef = useRef();
 
