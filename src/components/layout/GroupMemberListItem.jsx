@@ -19,7 +19,7 @@ const GroupMemberListItem = ({
   const [menuShow, setMenuShow] = useState(false);
   const menuRef = useRef();
   const openButtonRef = useRef();
-  const buttonRef = useRef();
+  // const buttonRef = useRef();
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
@@ -27,9 +27,10 @@ const GroupMemberListItem = ({
         setMenuShow(true);
       } else if (!menuRef.current.contains(e.target)) {
         setMenuShow(false);
-      } else if (buttonRef.current.contains(e.target)) {
-        setMenuShow(false);
-      }
+      } 
+      // else if (buttonRef.current.contains(e.target)) {
+      //   setMenuShow(false);
+      // }
     });
   }, []);
 
@@ -74,7 +75,7 @@ const GroupMemberListItem = ({
             >
               Remove
             </button>
-            <button
+            {/* <button
               ref={buttonRef}
               onClick={blockButton}
               className={
@@ -82,7 +83,7 @@ const GroupMemberListItem = ({
               }
             >
               Block
-            </button>
+            </button> */}
           </div>
         )}
       </Box>

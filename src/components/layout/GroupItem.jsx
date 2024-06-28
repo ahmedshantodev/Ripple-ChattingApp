@@ -28,6 +28,8 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
     });
   }, []);
 
+  console.log(lastMessage)
+
   return (
     <Box
       onClick={onClick}
@@ -114,7 +116,7 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
             )
           ) : item.type.includes("text") ? (
             <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
-              {item.text}
+              {item.sendername}: {item.text}
             </Typography>
           ) : item.type.includes("image") ? (
             item.type == "image/normal" ? (

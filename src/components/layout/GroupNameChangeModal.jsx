@@ -98,7 +98,7 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
   return (
     <section
       ref={modalRef}
-      className={`w-full h-dvh bg-white/70 absolute top-0 left-0 z-20 ${
+      className={`w-full h-dvh bg-white/70 fixed   top-0 left-0 z-20 ${
         modalShow ? "flex" : "hidden"
       } justify-center items-center`}
     >
