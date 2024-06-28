@@ -43,7 +43,7 @@ const Login = () => {
 
   useEffect(() => {
     if (activeUserData?.email) {
-      navigate("/pages/chat");
+      navigate("/pages/chat/chat-with-friend");
     }
   }, []);
 
