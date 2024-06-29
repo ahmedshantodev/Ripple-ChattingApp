@@ -42,16 +42,10 @@ This chat application provides a robust platform for users to connect, communica
 - **Storage:** Firebase Storage for storing and retrieving media files.
 - **Real-Time Communication:** Firebase Realtime Database to enable live chat updates and store user and chat data.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Credits
-
-**Design and Development:** Monsur Ahmed Shanto
-
 ## Contact
 
-**email:** ahmedshantodev@gmail.com
+For any questions or feedback, feel free to reach out:
 
-If you have any questions or suggestions, feel free to reach out.
+- **Email:** ahmedshantodev@gmail.com
+- **Facebook:** [facebook.com/ahmedshantodev](https://www.facebook.com/ahmedshantodev)
+
