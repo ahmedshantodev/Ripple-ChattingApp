@@ -1,5 +1,7 @@
 # Chat Application
 
+**[View Live Demo](https://ripple-chatting-app.vercel.app/)**
+
 This chat application provides a robust platform for users to connect, communicate, and manage relationships in both one-on-one and group settings. The key features include user registration, friend management, chat functionalities, and group administration.
 
 ## Features
@@ -25,18 +27,31 @@ This chat application provides a robust platform for users to connect, communica
 - **Group Administration:** Group admins have the authority to manage the group by accepting join requests, removing members, and maintaining overall group order.
 - **Invite Management:** Admins can handle group join invitations sent to friends.
 
+## Usage
+
+- **Register or Log In:** Use your email or Google account to access the chat application.
+- **Manage Friends:** Send, accept, or decline friend requests. Block or unblock users and manage your friend list.
+- **Chat:** Start conversations with friends or participate in group chats.
+- **Create and Manage Groups:** Form new groups, handle join requests, and invite friends to enhance your group interactions.
+- **Group Admin Controls:** Admins can manage group membership and handle join requests efficiently.
+
 ## Technologies Used
 
 - **Frontend:** React.js for the user interface, providing a dynamic and responsive experience.
-- **Backend:** Node.js and Express for server-side operations and API management.
 - **Authentication:** Firebase Authentication for secure user login with email and Google.
-- **Database:** Firebase Firestore for storing user and chat data.
-- **Real-Time Communication:** Firebase Real-time Database to enable live chat updates.
+- **Storage:** Firebase Storage for storing and retrieving media files.
+- **Real-Time Communication:** Firebase Realtime Database to enable live chat updates and store user and chat data.
 
 ## License
 
-This project is licensed under the Monsur Ahmed Shanto License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Credits
+
+**Design and Development:** Monsur Ahmed Shanto
 
 ## Contact
+
+**email:** ahmedshantodev@gmail.com
 
 If you have any questions or suggestions, feel free to reach out.
