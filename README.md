@@ -38,9 +38,16 @@ This chat application provides a robust platform for users to connect, communica
 ## Technologies Used
 
 - **Frontend:** React.js for the user interface, providing a dynamic and responsive experience.
-- **Authentication:** Firebase Authentication for secure user login with email and Google.
-- **Storage:** Firebase Storage for storing and retrieving media files.
-- **Real-Time Communication:** Firebase Realtime Database to enable live chat updates and store user and chat data.
+- **UI Framework:** Tailwind CSS for styling and UI components.
+- **State Management:** React Redux Toolkit for efficient state management in React applications.
+- **Routing:** React Router DOM for declarative routing in single-page applications.
+- **Emoji Picker:** emoji-picker-react for integrating emoji selection in chat interfaces.
+- **GIF Picker:** gif-picker-react for adding GIF search and selection capabilities.
+- **Date Formatting:** moment.js for parsing, validating, manipulating, and formatting dates.
+- **Image Cropping:** react-cropper for image cropping functionality.
+- **Loading Spinner:** react-loader-spinner for customizable loading spinners.
+- **Modal Images:** react-modal-image for displaying images in a modal view.
+- **Toast Notifications:** react-toastify for adding toast notifications to your application.
 
 ## Contact
 
@@ -48,4 +55,3 @@ For any questions or feedback, feel free to reach out:
 
 - **Email:** ahmedshantodev@gmail.com
 - **Facebook:** [facebook.com/ahmedshantodev](https://www.facebook.com/ahmedshantodev)
-
