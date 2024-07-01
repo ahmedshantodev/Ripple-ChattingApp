@@ -21,8 +21,10 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
       let messegeArray = [];
       snapshot.forEach((item) => {
         if (
-          (activeUserData?.uid == item.val().senderuid && frienduid == item.val().reciveruid) ||
-          (activeUserData?.uid == item.val().reciveruid && frienduid == item.val().senderuid)
+          (activeUserData?.uid == item.val().senderuid &&
+            frienduid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid &&
+            frienduid == item.val().senderuid)
         ) {
           messegeArray.push({ ...item.val(), messegeid: item.key });
         }
@@ -108,10 +110,14 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
                   </Typography>
                 )
               )
+            ) : item.type == "deleted" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                You unsent a message
+              </Typography>
             ) : (
-              item.type == "deleted" && (
+              item.type == "like" && (
                 <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
-                  You unsent a message
+                  you send a like
                 </Typography>
               )
             )
@@ -165,10 +171,16 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
                 </Typography>
               )
             )
-          ) : (
+          ) : item.type == "deleted" ? (
             <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
               {item.sendername} unsent a message
             </Typography>
+          ) : (
+            item.type == "like" && (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.sendername} send a like
+              </Typography>
+            )
           )
         )}
       </Box>

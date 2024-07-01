@@ -85,6 +85,7 @@ import SenderLike from "../components/layout/SenderLike";
 const ChatWithGroup = () => {
   const db = getDatabase();
   const storage = getStorage();
+  const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
   const activeGroupData = useSelector((state) => state.activeGroup.information);
 
@@ -778,8 +779,6 @@ const ChatWithGroup = () => {
       setChatFileList(chatFileArray);
     });
   }, [activeGroupData]);
-
-  const dispatch = useDispatch();
 
   const handleGroupLeave = () => {
     remove(ref(db , "groupmembers/" + activeGroupData.groupmemberid))
@@ -1590,10 +1589,12 @@ const ChatWithGroup = () => {
               </Box>
               {messege == "" ? (
                 <Box
-                  onClick={handleSendLike}
                   className={"relative group/tooltip mr-[5px]"}
                 >
-                  <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                  <MdThumbUpAlt
+                    onClick={handleSendLike}
+                    className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                  />
                   <Typography
                     variant="span"
                     className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"

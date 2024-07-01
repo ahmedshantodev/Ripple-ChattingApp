@@ -45,6 +45,12 @@ const GroupInvitation = () => {
       addedbyname: item.invitationsendername,
       addedbyprofile: item.invitationsenderprofile,
     }).then(() => {
+      set(push(ref(db , "groupmessege/")) , {
+        type: "groupmanagment/member-added",
+        groupuid: item.groupuid,
+        whoadded: item.invitationsendername,
+        whojoined: item.invitationrecivername,
+      })
       remove(ref(db, "groupinvitation/" + item.invitationId));
     });
   };

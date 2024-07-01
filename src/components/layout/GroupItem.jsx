@@ -15,6 +15,8 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
   const [messegeList, setMessegeList] = useState([]);
   const lastMessage = messegeList.slice(-1);
 
+  console.log(lastMessage);
+
   useEffect(() => {
     let messageREf = ref(db, "groupmessege");
     onValue(messageREf, (snapshot) => {
@@ -105,12 +107,38 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
                   </Typography>
                 )
               )
+            ) : item.type == "deleted" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                You unsent a message
+              </Typography>
             ) : (
-              item.type == "deleted" && (
+              item.type == "like" && (
                 <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
-                  You unsent a message
+                  you sent a like
                 </Typography>
               )
+            )
+          ) : item.type.includes("groupmanagment") ? (
+            item.type == "groupmanagment/member-added" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.whoadded} added {item.whojoined} to the group
+              </Typography>
+            ) : item.type == "groupmanagment/member-remove" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.whoremove} removed {item.whoremoved} from the group
+              </Typography>
+            ) : item.type == "groupmanagment/member-left" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.wholeft} left the group.
+              </Typography>
+            ) : item.type == "groupmanagment/groupname-changed" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.whochanged} changed the group name
+              </Typography>
+            ) : (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.whochanged} changed the group photo
+              </Typography>
             )
           ) : item.type.includes("text") ? (
             <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
@@ -162,10 +190,16 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
                 </Typography>
               )
             )
-          ) : (
+          ) : item.type == "deleted" ? (
             <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
               {item.sendername} unsent a message
             </Typography>
+          ) : (
+            item.type == "like" && (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.sendername} send a like
+              </Typography>
+            )
           )
         )}
       </Box>

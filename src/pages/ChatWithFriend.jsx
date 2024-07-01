@@ -70,6 +70,8 @@ import SenderDeletedMessage from "../components/layout/SenderDeletedMessage";
 import ReciverDeletedMessage from "../components/layout/ReciverDeletedMessage";
 import SenderEditedMessage from "../components/layout/SenderEditedMessage";
 import ReciverEditedMessage from "../components/layout/ReciverEditedMessage";
+import ReciverLike from "../components/layout/ReciverLike";
+import SenderLike from "../components/layout/SenderLike";
 
 const ChatWithFriend = () => {
   const db = getDatabase();
@@ -169,6 +171,19 @@ const ChatWithFriend = () => {
   useEffect(() => {
     setMessege("");
   }, [activeChatData]);
+
+  const handleSendLike = () => {
+    set(push(ref(db, "singlemessege/")), {
+      type: "like",
+      reciveruid: activeChatData?.uid,
+      recivername: activeChatData?.name,
+      reciverprofile: activeChatData?.profile,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    })
+  }
 
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
@@ -992,11 +1007,11 @@ const ChatWithFriend = () => {
                     />
                   )
                 )
-              ) : (
-                item.type.includes("deleted") && (
+              ) : item.type.includes("deleted") ? (
                   <SenderDeletedMessage sentTime={item.senttime} />
+                ) : item.type == "like" && (
+                  <SenderLike sentTime={item.senttime}/>
                 )
-              )
             ) : (
               activeChatData?.uid == item.senderuid &&
               (item.type.includes("text") ? (
@@ -1161,15 +1176,20 @@ const ChatWithFriend = () => {
                     />
                   )
                 )
-              ) : (
-                item.type.includes("deleted") && (
+              ) : item.type.includes("deleted") ? (
                   <ReciverDeletedMessage
                     senderName={item.sendername}
                     senderProfile={item.senderprofile}
                     sentTime={item.senttime}
                   />
+                ) : item.type == "like" && (
+                  <ReciverLike
+                    name={item.sendername}
+                    profile={item.senderprofile}
+                    sentTime={item.senttime}
+                  />
                 )
-              ))
+              )
             )
           )}
           <div ref={lastMessageRef}/>
@@ -1544,7 +1564,10 @@ const ChatWithFriend = () => {
                 </Box>
                 {messege == "" ? (
                   <Box className={"relative group/tooltip mr-[5px]"}>
-                    <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+                    <MdThumbUpAlt
+                      onClick={handleSendLike}
+                      className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                    />
                     <Typography
                       variant="span"
                       className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"

@@ -4,7 +4,6 @@ import Flex from "./Flex";
 import Image from "./Image";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Typography from "./Typography";
-import Button from "./Button";
 import { useSelector } from "react-redux";
 
 const GroupMemberListItem = ({
@@ -54,9 +53,11 @@ const GroupMemberListItem = ({
         </Box>
       </Flex>
       <Box className={"relative"}>
-        <div ref={openButtonRef} onClick={() => setMenuShow(!menuShow)}>
-          <BsThreeDotsVertical className=" box-content bg-[#f2f2f2] hover:bg-primaryBgColor p-[6px] rounded-full cursor-pointer" />
-        </div>
+        {activeGroupData.groupadminuid != memberUid && 
+          <div ref={openButtonRef} onClick={() => setMenuShow(!menuShow)}>
+            <BsThreeDotsVertical className=" box-content bg-[#f2f2f2] hover:bg-primaryBgColor p-[6px] rounded-full cursor-pointer" />
+          </div>
+        }
         {menuShow && (
           <div
             ref={menuRef}
