@@ -20,7 +20,7 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+      if (modalRef.current?.contains(e.target) && !boxRef.current?.contains(e.target)) {
         modalClose(false)
       }
     });

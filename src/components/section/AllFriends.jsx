@@ -3,16 +3,22 @@ import Box from "../layout/Box";
 import Typography from "../layout/Typography";
 import Flex from "../layout/Flex";
 import FriendListItem from "../layout/FriendListItem";
-import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
+import {
+  getDatabase,
+  onValue,
+  ref,
+  remove,
+  set,
+} from "firebase/database";
 import { useSelector } from "react-redux";
-import SearchBox from './../layout/SearchBox';
+import SearchBox from "./../layout/SearchBox";
 
 const AllFriends = () => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
   const [friendList, setFriendList] = useState([]);
   const [blockList, setBlockList] = useState([]);
-  const [searchValue, setSearchValue] = useState("")
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     let friendRequstRef = ref(db, "friends");
@@ -28,18 +34,19 @@ const AllFriends = () => {
   }, []);
 
   const handleBlock = (item) => {
-    set(ref(db, "block/" + (activeUserData.uid + (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid))), {
-      blockbyuid: activeUserData.uid,
-      blockbyname: activeUserData.displayName,
-      blockbyprofile: activeUserData.photoURL,
-      blockeduserid: activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid,
-      blockedusername: activeUserData.uid == item.reciveruid ? item.sendername : item.recivername,
-      blockeduserprofile: activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
-    })
+    set(ref(db, "block/" + (activeUserData.uid + (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid))),{
+        blockbyuid: activeUserData.uid,
+        blockbyname: activeUserData.displayName,
+        blockbyprofile: activeUserData.photoURL,
+        blockeduserid: activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid,
+        blockedusername: activeUserData.uid == item.reciveruid ? item.sendername : item.recivername,
+        blockeduserprofile: activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile,
+      }
+    );
   };
-  
+
   const handleUnfriend = (item) => {
-    remove(ref( db , "friends/" + item.friendId))
+    remove(ref(db, "friends/" + item.friendId));
   };
 
   useEffect(() => {
@@ -54,14 +61,14 @@ const AllFriends = () => {
   }, []);
 
   const filteredList = friendList.filter((item) => {
-    const uid = (activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid)
-    const name = (activeUserData.uid == item.reciveruid ? item.sendername : item.recivername)
+    const uid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid;
+    const name = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername;
     return (
-      !blockList.includes(uid + activeUserData.uid)) &&
-      (!blockList.includes(activeUserData.uid + uid)) &&
-      (searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase())
-    )
-  })
+      !blockList.includes(uid + activeUserData.uid) &&
+      !blockList.includes(activeUserData.uid + uid) &&
+      (searchValue == "" ? item : name.toLowerCase().includes(searchValue.toLowerCase()))
+    );
+  });
 
   return (
     <Box className={"h-full"}>
@@ -69,7 +76,7 @@ const AllFriends = () => {
         <Typography
           variant="h4"
           className="font-inter text-[28px] font-semibold ml-2"
-          >
+        >
           Friend List
         </Typography>
         <SearchBox
@@ -79,11 +86,22 @@ const AllFriends = () => {
         />
       </Box>
       <Box className={"h-[86%] overflow-y-auto"}>
-        {filteredList.length == 0 ? (
+        {filteredList.length == 0 && searchValue ? (
           <Box className={"flex h-full justify-center items-center"}>
             <Typography className="font-mono text-3xl text-secoundaryText">
-              You don't have any friends
+              No results found.
             </Typography>
+          </Box>
+        ) : filteredList.length == 0 ? (
+          <Box className={"flex h-full justify-center items-center"}>
+            <Box className={"text-center"}>
+              <Typography className="font-mono text-3xl mb-2">
+                No Friends
+              </Typography>
+              <Typography className="font-mono text-2xl text-secoundaryText">
+                friends will appear here.
+              </Typography>
+            </Box>
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[12px]"}>

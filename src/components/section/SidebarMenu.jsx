@@ -56,7 +56,7 @@ const SidebarMenu = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (outerDivRef.current.contains(e.target) && !menuRef.current.contains(e.target)) {
+      if (outerDivRef.current?.contains(e.target) && !menuRef.current?.contains(e.target)) {
         setAccountSettingShow(false);
       }
     });
@@ -70,7 +70,7 @@ const SidebarMenu = () => {
         </Typography>
         <nav className="mt-8">
           <List>
-            <ListItem className={"mb-4"}>
+            <ListItem className={"mb-3"}>
               <NavLink
                 to={"/pages/chat/chat-with-friend"}
                 className={
@@ -82,7 +82,7 @@ const SidebarMenu = () => {
                 <HiOutlineChatBubbleLeft className="text-[24px]" /> Chat
               </NavLink>
             </ListItem>
-            <ListItem className={"mb-4"}>
+            <ListItem className={"mb-3"}>
               <NavLink
                 to={"/pages/friends/all-friends"}
                 className={
@@ -94,11 +94,11 @@ const SidebarMenu = () => {
                 <HiOutlineUser className="text-[24px]" /> Friends
               </NavLink>
             </ListItem>
-            <ListItem className={"mb-4"}>
+            <ListItem className={"mb-3"}>
               <NavLink
                 to={"/pages/groups/my-groups"}
                 className={
-                  pathname.includes("/pages/community")
+                  pathname.includes("/pages/group")
                     ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
                     : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
                 }
@@ -106,7 +106,7 @@ const SidebarMenu = () => {
                 <IoNewspaperOutline className="text-[24px]" /> Group
               </NavLink>
             </ListItem>
-            <ListItem className={"mb-4"}>
+            <ListItem className={"mb-3"}>
               <NavLink
                 to={"/pages/notification"}
                 className={

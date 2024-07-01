@@ -6,7 +6,7 @@ const Modal = ({ modalShow, modalClose, children, className }) => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+      if (modalRef.current?.contains(e.target) && !boxRef.current?.contains(e.target)) {
         modalClose(false)
       }
     });

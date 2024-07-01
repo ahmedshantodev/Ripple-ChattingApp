@@ -14,7 +14,7 @@ import { HiDotsVertical } from "react-icons/hi";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoCall, IoVideocam } from "react-icons/io5";
 import { FaPlus, FaRegImage } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import {
   MdThumbUpAlt,
@@ -77,6 +77,10 @@ import GifPicker from "gif-picker-react";
 import Modal from "../components/layout/Modal";
 import SearchBox from "../components/layout/SearchBox";
 import MessageForwardListItem from "../components/layout/MessageForwardListItem";
+import GroupManagementMessage from "../components/layout/GroupManagementMessage";
+import { activeGroup } from "../slices/activeGroupSlice";
+import ReciverLike from "../components/layout/ReciverLike";
+import SenderLike from "../components/layout/SenderLike";
 
 const ChatWithGroup = () => {
   const db = getDatabase();
@@ -87,7 +91,7 @@ const ChatWithGroup = () => {
   const [messege, setMessege] = useState("");
   const [messegeList, setMessegeList] = useState([]);
 
-  const [groupProfileOpen, setGroupProfileOpen] = useState(false);
+  const [groupProfileOpen, setGroupProfileOpen] = useState(true);
   const [groupNotificationOn, setGroupNotificationOn] = useState(true);
   const [groupMemberShow, setGroupMemberShow] = useState(false);
   const [membarRequstShow, setMembarRequstShow] = useState(false);
@@ -119,12 +123,14 @@ const ChatWithGroup = () => {
   const [mediaShow, setMediaShow] = useState(false);
   const [mediaItemOpen, setMediaItemOpen] = useState("");
 
+  const [groupLeaveModal, setGroupLeaveModal] = useState(false)
 
   const [groupJoinRequstList, setGroupJoinRequstList] = useState([]);
   const [emojiPickerShow, setEmojiPickerShow] = useState(false);
   const [gifPickerShow, setGifPickerShow] = useState(false);
   const [fileSizeErrorShow, setFileSizeErrorShow] = useState(false);
   const anotherFileSelectButtonRef = useRef();
+  const lastMessageRef = useRef();
 
   const time = new Date();
   const year = time.getFullYear();
@@ -150,6 +156,10 @@ const ChatWithGroup = () => {
   }, [activeGroupData]);
 
   useEffect(() => {
+    lastMessageRef.current?.scrollIntoView()
+  } , [messegeList])
+
+  useEffect(() => {
     let groupMemberRef = ref(db, "groupmembers");
     onValue(groupMemberRef, (snapshot) => {
       let groupMemberArray = [];
@@ -164,6 +174,12 @@ const ChatWithGroup = () => {
 
   const handleMemberRemove = (item) => {
     remove(ref(db, "groupmembers/" + item.groupmemberid));
+    set(push(ref(db , "groupmessege/")) , {
+      type: "groupmanagment/member-remove",
+      groupuid: item.groupuid,
+      whoremove: activeUserData.displayName,
+      whoremoved: item.membername,
+    })
   };
 
   useEffect(() => {
@@ -194,6 +210,12 @@ const ChatWithGroup = () => {
       addedbyname: activeUserData.displayName,
       addedbyprofile: activeUserData.photoURL,
     }).then(() => {
+      set(push(ref(db , "groupmessege/")) , {
+        type: "groupmanagment/member-added",
+        groupuid: item.groupuid,
+        whoadded: activeUserData.displayName,
+        whojoined: item.requstsendername,
+      })
       remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
     });
   };
@@ -201,6 +223,19 @@ const ChatWithGroup = () => {
   const handleJoinRequstDelete = (item) => {
     remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
   };
+
+  const handleSendLike = () => {
+    set(push(ref(db, "groupmessege/")), {
+      type: "like",
+      groupuid: activeGroupData.groupuid,
+      groupname: activeGroupData.groupname,
+      groupphoto: activeGroupData.groupphoto,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    })
+  }
 
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
@@ -649,7 +684,7 @@ const ChatWithGroup = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (anotherFileSelectButtonRef.current.contains(e.target)) {
+      if (anotherFileSelectButtonRef.current?.contains(e.target)) {
         setFileSizeErrorShow(false);
       }
     });
@@ -676,7 +711,7 @@ const ChatWithGroup = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (!gifBoxRef.current.contains(e.target)) {
+      if (!gifBoxRef.current?.contains(e.target)) {
         setGifPickerShow(false);
       }
     });
@@ -684,7 +719,7 @@ const ChatWithGroup = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (!emojiBoxRef.current.contains(e.target)) {
+      if (!emojiBoxRef.current?.contains(e.target)) {
         setEmojiPickerShow(false);
       }
     });
@@ -743,6 +778,20 @@ const ChatWithGroup = () => {
       setChatFileList(chatFileArray);
     });
   }, [activeGroupData]);
+
+  const dispatch = useDispatch();
+
+  const handleGroupLeave = () => {
+    remove(ref(db , "groupmembers/" + activeGroupData.groupmemberid))
+    set(push(ref(db , "groupmessege/")) , {
+      type: "groupmanagment/member-left",
+      groupuid: activeGroupData.groupuid,
+      wholeft: activeUserData.displayName,
+    })
+    dispatch(activeGroup(null));
+    localStorage.removeItem("activeGroup");
+    setGroupLeaveModal(false)
+  }
 
   return activeGroupData == null ? (
     <Box
@@ -825,7 +874,7 @@ const ChatWithGroup = () => {
               {activeGroupData.groupname}
             </Typography>
             <Typography className="text-sm text-secoundaryText">
-              You're a Member of {activeGroupData.groupname}
+              {activeGroupData.groupadminname} created this group
             </Typography>
           </Box>
           <Modal
@@ -1014,9 +1063,42 @@ const ChatWithGroup = () => {
                     />
                   )
                 )
+              ) : item.type.includes("deleted") ? (
+                <SenderDeletedMessage sentTime={item.senttime} />
               ) : (
-                item.type.includes("deleted") && (
-                  <SenderDeletedMessage sentTime={item.senttime} />
+                item.type == "like" && <SenderLike sentTime={item.senttime}/>
+              )
+            ) : item.type.includes("groupmanagment") ? (
+              item.type == "groupmanagment/member-added" ? (
+                <GroupManagementMessage
+                  type={item.type}
+                  whoAdded={item.whoadded}
+                  whoJoined={item.whojoined}
+                />
+              ) : item.type == "groupmanagment/member-remove" ? (
+                <GroupManagementMessage
+                  type={item.type}
+                  whoRemove={item.whoremove}
+                  whoRemoved={item.whoremoved}
+                />
+              ) : item.type == "groupmanagment/member-left" ? (
+                <GroupManagementMessage
+                  type={item.type}
+                  whoLeft={item.wholeft}
+                />
+              ) : item.type == "groupmanagment/groupphoto-changed" ? (
+                <GroupManagementMessage
+                  type={item.type}
+                  whoChanged={item.whochanged}
+                />
+              ) : (
+                item.type == "groupmanagment/groupname-changed" && (
+                  <GroupManagementMessage
+                    type={item.type}
+                    whoChanged={item.whochanged}
+                    oldGroupName={item.oldgroupname}
+                    newGroupName={item.newgroupname}
+                  />
                 )
               )
             ) : item.type.includes("text") ? (
@@ -1181,7 +1263,7 @@ const ChatWithGroup = () => {
                   />
                 )
               )
-            ) : (
+            ) : item.type.includes("deleted") ? (
               item.type.includes("deleted") && (
                 <ReciverDeletedMessage
                   senderName={item.sendername}
@@ -1189,8 +1271,17 @@ const ChatWithGroup = () => {
                   sentTime={item.senttime}
                 />
               )
+            ) : (
+              item.type == "like" && (
+                <ReciverLike
+                  name={item.sendername}
+                  profile={item.senderprofile}
+                  sentTime={item.senttime}
+                />
+              )
             )
           )}
+          <div ref={lastMessageRef} />
           <Modal
             modalShow={messageForwardModalShow}
             modalClose={setMessageForwardModalShow}
@@ -1244,8 +1335,16 @@ const ChatWithGroup = () => {
               {messageForwardListOpen == "friend"
                 ? filteredFriendForwardList.map((item) => (
                     <MessageForwardListItem
-                      profile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile }
-                      name={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername }
+                      profile={
+                        activeUserData?.uid == item.senderuid
+                          ? item.reciverprofile
+                          : item.senderprofile
+                      }
+                      name={
+                        activeUserData?.uid == item.senderuid
+                          ? item.recivername
+                          : item.sendername
+                      }
                       sendButton={() => handleForwardMessegeSend(item)}
                     />
                   ))
@@ -1331,7 +1430,7 @@ const ChatWithGroup = () => {
                   type={"file"}
                   className={"hidden"}
                 />
-                <label for="file">
+                <label htmlFor="file">
                   <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                 </label>
                 <Typography
@@ -1360,7 +1459,7 @@ const ChatWithGroup = () => {
                   <Box className={"flex justify-between items-center"}>
                     <label
                       ref={anotherFileSelectButtonRef}
-                      for="file"
+                      htmlFor="file"
                       className={
                         "w-[49%] text-center py-2.5 font-open-sans bg-[#2176ff] text-white rounded-md cursor-pointer transition-all duration-200 active:scale-[0.98]"
                       }
@@ -1490,7 +1589,10 @@ const ChatWithGroup = () => {
                 </div>
               </Box>
               {messege == "" ? (
-                <Box className={"relative group/tooltip mr-[5px]"}>
+                <Box
+                  onClick={handleSendLike}
+                  className={"relative group/tooltip mr-[5px]"}
+                >
                   <MdThumbUpAlt className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                   <Typography
                     variant="span"
@@ -1530,15 +1632,15 @@ const ChatWithGroup = () => {
       <Box
         className={
           groupProfileOpen
-            ? "w-[30%] ml-4 h-full bg-white rounded-2xl overflow-hidden text-center overflow-y-auto relative"
-            : "w-0 ml-0 h-full bg-white rounded-2xl overflow-hidden text-center overflow-y-auto relative"
+            ? "w-[30%] ml-4 h-full bg-white rounded-2xl overflow-hidden text-center relative"
+            : "w-0 ml-0 h-full bg-white rounded-2xl overflow-hidden text-center relative"
         }
       >
         <Box
           className={
             mediaShow
-              ? "w-full h-full pt-14 absolute left-0 top-0 transition-all duration-300 ease-in-out -translate-x-full"
-              : "w-full h-full pt-14 absolute left-0 top-0 transition-all duration-300 ease-in-out"
+              ? "w-full h-full pt-14 pb-3 overflow-y-auto absolute left-0 top-0 transition-all duration-300 ease-in-out -translate-x-full"
+              : "w-full h-full pt-14 pb-3 overflow-y-auto absolute left-0 top-0 transition-all duration-300 ease-in-out"
           }
         >
           <Box className={"mx-auto w-[120px]"}>
@@ -1792,15 +1894,51 @@ const ChatWithGroup = () => {
               )}
             </Box>
             <Flex
+              onClick={() => setGroupLeaveModal(true)}
               alignItems={"center"}
               justifyContent={"between"}
               className={
-                "text-lg mb-1 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                "text-lg mb-2 px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
               }
             >
               <Typography>Leave Group</Typography>
               <CiLogout className={"rotate-180 text-black text-xl"} />
             </Flex>
+            <Modal
+              modalShow={groupLeaveModal}
+              modalClose={setGroupLeaveModal}
+              className={"py-5 px-7 w-[600px]"}
+            >
+              <Typography variant="h3" className="text-2xl text-black">
+                Are you sure you want to leave the group?
+              </Typography>
+              <Typography
+                variant="h3"
+                className="text-secoundaryText mt-4 font-open-sans"
+              >
+                You are about to leave the group. If you proceed, you will no
+                longer receive updates or participate in group discussions. Are
+                you sure you want to leave? This action cannot be undone.
+              </Typography>
+              <Box className={"flex items-center justify-between mt-3"}>
+                <Button
+                  onClick={handleGroupLeave}
+                  className={
+                    "w-[49%] py-2 text-white rounded-md bg-[#2176ff] transition-all duration-200 ease-in-out active:scale-[0.98]"
+                  }
+                >
+                  Leave Group
+                </Button>
+                <Button
+                  onClick={() => setGroupLeaveModal(false)}
+                  className={
+                    "w-[49%] py-2 rounded-md bg-[#d8dadf] transition-all duration-200 ease-in-out active:scale-[0.98]"
+                  }
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </Modal>
           </Box>
         </Box>
         <Box

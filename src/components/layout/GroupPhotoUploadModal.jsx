@@ -20,6 +20,7 @@ import {
   set,
   ref as databaseRef,
   onValue,
+  push,
 } from "firebase/database";
 import { toast } from "react-toastify";
 import { activeGroup } from "../../slices/activeGroupSlice";
@@ -28,6 +29,7 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
   const dispatch = useDispatch();
   const storage = getStorage();
+  const activeUserData = useSelector((state) => state.user.information)
   const activeGroupData = useSelector((state) => state.activeGroup.information);
   const [groupList, setGroupList] = useState([])
   const [uploadLoadingButton, setUploadLoadingButton] = useState(false);
@@ -96,6 +98,11 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
                 addedbyprofile: item.addedbyprofile,
               });
             });
+            set(push(databaseRef(db , "groupmessege/")) , {
+              type: "groupmanagment/groupphoto-changed",
+              groupuid: activeGroupData.groupuid,
+              whochanged: activeUserData.displayName,
+            })
           }).then(() => {
             localStorage.setItem("activeGroup", JSON.stringify({ ...activeGroupData, groupphoto: downloadURL }));
             dispatch(activeGroup({ ...activeGroupData, groupphoto: downloadURL }));
@@ -114,7 +121,7 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+      if (modalRef.current?.contains(e.target) && !boxRef.current?.contains(e.target)) {
         modalClose(false);
       }
     });
@@ -144,7 +151,7 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
             </Typography>
             <Box className={"w-[300px] mx-auto"}>
               <label
-                for="file-upload"
+                htmlFor="file-upload"
                 class="bg-[#dfe9f2] text-[#005fc6] flex items-center justify-center gap-x-2.5 text-[20px] py-2.5 rounded-md cursor-pointer font-bold"
               >
                 <RiUploadLine className="font-bold text-[22px]" /> Upload Photo

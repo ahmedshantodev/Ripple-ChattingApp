@@ -13,24 +13,22 @@ const GroupMemberListItem = ({
   memberProfile,
   addedBy,
   removeButton,
-  blockButton,
 }) => {
   const activeGroupData = useSelector((state) => state.activeGroup.information);
   const [menuShow, setMenuShow] = useState(false);
   const menuRef = useRef();
   const openButtonRef = useRef();
-  // const buttonRef = useRef();
+  const buttonRef = useRef();
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (openButtonRef.current.contains(e.target)) {
+      if (openButtonRef.current?.contains(e.target)) {
         setMenuShow(true);
-      } else if (!menuRef.current.contains(e.target)) {
+      } else if (!menuRef.current?.contains(e.target)) {
         setMenuShow(false);
-      } 
-      // else if (buttonRef.current.contains(e.target)) {
-      //   setMenuShow(false);
-      // }
+      } else if (buttonRef.current?.contains(e.target)) {
+        setMenuShow(false);
+      }
     });
   }, []);
 
@@ -75,15 +73,6 @@ const GroupMemberListItem = ({
             >
               Remove
             </button>
-            {/* <button
-              ref={buttonRef}
-              onClick={blockButton}
-              className={
-                "w-full py-[6px] font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d] text-sm"
-              }
-            >
-              Block
-            </button> */}
           </div>
         )}
       </Box>

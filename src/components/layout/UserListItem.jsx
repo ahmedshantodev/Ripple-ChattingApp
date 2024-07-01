@@ -63,7 +63,7 @@ const UserListItem = ({
       <Image
         src={userProfile}
         alt={userName}
-        className={"w-full aspect-square object-cover"}
+        className={"w-full"}
       />
       <Box className={"pb-2 px-2"}>
         <Box className={"h-[54px] flex items-end mt-[2px]"}>

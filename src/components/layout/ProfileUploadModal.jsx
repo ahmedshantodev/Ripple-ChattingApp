@@ -84,7 +84,7 @@ const ProfileUploadModal = ({ modalShow, modalClose }) => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)) {
+      if (modalRef.current?.contains(e.target) && !boxRef.current?.contains(e.target)) {
         modalClose(false)
       }
     });
@@ -114,7 +114,7 @@ const ProfileUploadModal = ({ modalShow, modalClose }) => {
             </Typography>
             <Box className={"w-[300px] mx-auto"}>
               <label
-                for="file-upload"
+                htmlFor="file-upload"
                 class="bg-[#dfe9f2] text-[#005fc6] flex items-center justify-center gap-x-2.5 text-[20px] py-2.5 rounded-md cursor-pointer font-bold"
               >
                 <RiUploadLine className="font-bold text-[22px]" /> Upload Photo

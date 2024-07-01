@@ -76,7 +76,7 @@ const ChatWithFriend = () => {
   const storage = getStorage();
   const activeUserData = useSelector((state) => state.user.information);
   const activeChatData = useSelector((state) => state.activeChat.information);
-  const [friendsProfileOpen, setFriendsProfileOpen] = useState(false);
+  const [friendsProfileOpen, setFriendsProfileOpen] = useState(true);
 
   const [friendList, setFriendList] = useState([]);
   const [groupList, setGroupList] = useState([]);
@@ -103,10 +103,12 @@ const ChatWithFriend = () => {
   const [chatVideoList, setChatVideoList] = useState([]);
   const [chatFileList, setChatFileList] = useState([]);
   const [fileSizeErrorShow, setFileSizeErrorShow] = useState(false);
-  const anotherFileSelectButtonRef = useRef();
   const [editedMessageInfo, setEditedMessageInfo] = useState("");
   const [messageRemoveModal, setMessageRemoveModal] = useState(false);
   const [removedMessageInfo, setRemovedMessageInfo] = useState("");
+
+  const anotherFileSelectButtonRef = useRef();
+  const lastMessageRef = useRef();
 
   const time = new Date();
   const year = time.getFullYear();
@@ -159,6 +161,10 @@ const ChatWithFriend = () => {
       setMessegeList(messegeArray);
     });
   }, [activeChatData]);
+
+  useEffect(() => {
+    lastMessageRef.current?.scrollIntoView()
+  } , [messegeList])
 
   useEffect(() => {
     setMessege("");
@@ -314,7 +320,7 @@ const ChatWithFriend = () => {
 
   const handleMessageEdit = (item) => {
     setreplyMessegeInfo("");
-    inputRef.current.focus();
+    inputRef.current?.focus();
     setEditedMessageInfo(item);
     setMessege(item.text);
   };
@@ -353,7 +359,7 @@ const ChatWithFriend = () => {
   const handleReply = (item) => {
     setEditedMessageInfo("");
     setreplyMessegeInfo(item);
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   const filteredFriendForwardList = friendList.filter((item) => {
@@ -513,7 +519,7 @@ const ChatWithFriend = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (!emojiBoxRef.current.contains(e.target)) {
+      if (!emojiBoxRef.current?.contains(e.target)) {
         setEmojiPickerShow(false);
       }
     });
@@ -521,7 +527,7 @@ const ChatWithFriend = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (!gifBoxRef.current.contains(e.target)) {
+      if (!gifBoxRef.current?.contains(e.target)) {
         setGifPickerShow(false);
       }
     });
@@ -608,7 +614,7 @@ const ChatWithFriend = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (anotherFileSelectButtonRef.current.contains(e.target)) {
+      if (anotherFileSelectButtonRef.current?.contains(e.target)) {
         setFileSizeErrorShow(false);
       }
     });
@@ -1166,6 +1172,7 @@ const ChatWithFriend = () => {
               ))
             )
           )}
+          <div ref={lastMessageRef}/>
           <Modal
             modalShow={messageForwardModalShow}
             modalClose={setMessageForwardModalShow}
@@ -1377,7 +1384,7 @@ const ChatWithFriend = () => {
                     type={"file"}
                     className={"hidden"}
                   />
-                  <label for="file">
+                  <label htmlFor="file">
                     <FaRegImage className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
                   </label>
                   <Typography
@@ -1406,7 +1413,7 @@ const ChatWithFriend = () => {
                     <Box className={"flex justify-between items-center"}>
                       <label
                         ref={anotherFileSelectButtonRef}
-                        for="file"
+                        htmlFor="file"
                         className={
                           "w-[49%] text-center py-2.5 font-open-sans bg-[#2176ff] text-white rounded-md cursor-pointer transition-all duration-200 active:scale-[0.98]"
                         }

@@ -28,8 +28,6 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
     });
   }, []);
 
-  console.log(lastMessage)
-
   return (
     <Box
       onClick={onClick}
@@ -53,119 +51,119 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
           activeUserData.uid == item.senderuid ? (
             item.type.includes("text") ? (
               item.type == "text/forwarded" ? (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   you forward a message
                 </Typography>
               ) : (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   <span className="font-semibold">You:</span> {item.text}
                 </Typography>
               )
             ) : item.type.includes("image") ? (
               item.type == "image/normal" ? (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   You sent an image
                 </Typography>
               ) : (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   you forwarded an image
                 </Typography>
               )
             ) : item.type.includes("video") ? (
               item.type == "video/normal" ? (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   You sent a video
                 </Typography>
               ) : (
                 item.type == "video/forwarded" && (
-                  <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                  <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                     You forwarded a video
                   </Typography>
                 )
               )
             ) : item.type.includes("file") ? (
               item.type == "file/normal" ? (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   You sent a file
                 </Typography>
               ) : (
                 item.type == "file/forwarded" && (
-                  <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                  <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                     You forwarded a file
                   </Typography>
                 )
               )
             ) : item.type.includes("gif") ? (
               item.type == "gif/normal" ? (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   You sent a gif
                 </Typography>
               ) : (
                 item.type == "gif/forwarded" && (
-                  <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                  <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                     You forwarded a gif
                   </Typography>
                 )
               )
             ) : (
               item.type == "deleted" && (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   You unsent a message
                 </Typography>
               )
             )
           ) : item.type.includes("text") ? (
-            <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+            <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
               {item.sendername}: {item.text}
             </Typography>
           ) : item.type.includes("image") ? (
             item.type == "image/normal" ? (
-              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                 {item.sendername} sent an image
               </Typography>
             ) : (
-              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                 {item.sendername} forwarded an image
               </Typography>
             )
           ) : item.type.includes("video") ? (
             item.type == "video/normal" ? (
-              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                 {item.sendername} sent a video
               </Typography>
             ) : (
               item.type == "video/forwarded" && (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   {item.sendername} forwarded a video
                 </Typography>
               )
             )
           ) : item.type.includes("file") ? (
             item.type == "file/normal" ? (
-              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                 {item.sendername} sent a video
               </Typography>
             ) : (
               item.type == "file/forwarded" && (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   {item.sendername} forwarded a video
                 </Typography>
               )
             )
           ) : item.type.includes("gif") ? (
             item.type == "gif/normal" ? (
-              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                 {item.sendername} sent a gif
               </Typography>
             ) : (
               item.type == "gif/forwarded" && (
-                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   {item.sendername} forwarded a gif
                 </Typography>
               )
             )
           ) : (
-            <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[300px]">
+            <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
               {item.sendername} unsent a message
             </Typography>
           )

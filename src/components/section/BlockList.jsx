@@ -11,7 +11,7 @@ const BlockList = () => {
   const db = getDatabase();
   const activeUserData = useSelector((state) => state?.user?.information);
   const [blockList, setBlockList] = useState([]);
-  const [searchValue, setSearchValue] = useState("")
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     const blockListRef = ref(db, "block/");
@@ -27,12 +27,12 @@ const BlockList = () => {
   }, []);
 
   const handleUnblock = (item) => {
-    remove(ref(db , "block/" + item.blockid))
-  }
+    remove(ref(db, "block/" + item.blockid));
+  };
 
   const filteredList = blockList.filter((item) => {
-    return searchValue == "" ? item : item.blockedusername.toLowerCase().includes(searchValue.toLowerCase())
-  })
+    return searchValue == "" ? item : item.blockedusername.toLowerCase().includes(searchValue.toLowerCase());
+  });
 
   return (
     <Box className={"h-full"}>
@@ -40,7 +40,7 @@ const BlockList = () => {
         <Typography
           variant="h4"
           className="font-inter text-[28px] font-semibold ml-2"
-          >
+        >
           Block List
         </Typography>
         <SearchBox
@@ -49,16 +49,23 @@ const BlockList = () => {
           className={"mt-2"}
         />
       </Box>
-      <Box
-        className={
-          "h-[86%] overflow-y-auto"
-        }
-      >
-        {filteredList.length == 0 ? (
+      <Box className={"h-[86%] overflow-y-auto"}>
+        {filteredList.length == 0 && searchValue ? (
           <Box className={"flex h-full justify-center items-center"}>
             <Typography className="font-mono text-3xl text-secoundaryText">
-              You have not blocked anyone
+              No results found.
             </Typography>
+          </Box>
+        ) : filteredList.length == 0 ? (
+          <Box className={"flex h-full justify-center items-center"}>
+            <Box className={"text-center"}>
+              <Typography className="font-mono text-3xl mb-2">
+                No blocked user
+              </Typography>
+              <Typography className="font-mono text-2xl text-secoundaryText">
+                Blocked user will appear here.
+              </Typography>
+            </Box>
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[12px]"}>

@@ -51,7 +51,7 @@ const ForgotPassword = () => {
           send you a link. Click Link & Enter Your New Password
         </Typography>
         <label
-          for="email"
+          htmlFor="email"
           className="font-poppins font-semibold text-[20px] block mb-[5px]"
         >
           Enter Your Email

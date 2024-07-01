@@ -69,11 +69,22 @@ const GroupInvitation = () => {
         />
       </Box>
       <Box className={"h-[86%] overflow-y-auto"}>
-        {filteredList.length == 0 ? (
+        {filteredList.length == 0 && searchValue ? (
           <Box className={"flex h-full justify-center items-center"}>
             <Typography className="font-mono text-3xl text-secoundaryText">
-              No group invitation
+              No results found.
             </Typography>
+          </Box>
+        ) : filteredList.length == 0 ? (
+          <Box className={"flex h-full justify-center items-center"}>
+            <Box className={"text-center"}>
+              <Typography className="font-mono text-3xl mb-2">
+                No invitation
+              </Typography>
+              <Typography className="font-mono text-2xl text-secoundaryText">
+                Invitation will appear here.
+              </Typography>
+            </Box>
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[12px]"}>

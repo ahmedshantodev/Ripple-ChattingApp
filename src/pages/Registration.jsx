@@ -138,7 +138,7 @@ const Registration = () => {
                 });
                 // navigate("/email-verification");
                 setSignupLodingBtnShow(false);
-                navigate("/pages/chat");
+                navigate("/pages/chat/chat-with-friend");
               // });
             })
             .catch((error) => {
@@ -163,15 +163,21 @@ const Registration = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const userInformation = result.user;
-        localStorage.setItem("user", JSON.stringify(userInformation));
-        dispatch(activeUser(userInformation));
+        localStorage.setItem("user", JSON.stringify({
+          ...userInformation,
+          photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779"
+        }));
+        dispatch(activeUser({
+          ...userInformation,
+          photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779"
+        }));
         set(ref(db, "users/" + userInformation.uid), {
           userid: userInformation.uid,
           username: userInformation.displayName,
           useremail: userInformation.email,
-          userprofile: userInformation.photoURL,
+          userprofile: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779",
         });
-        navigate("/pages/chat");
+        navigate("/pages/chat/chat-with-friend");
       })
       .catch((error) => {});
   };

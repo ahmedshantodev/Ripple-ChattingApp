@@ -4,7 +4,7 @@ import Typography from "./Typography";
 import Box from "./Box";
 import Input from "./Input";
 import Button from "./Button";
-import { getDatabase, onValue, ref, set } from "firebase/database";
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
 import { ColorRing } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -13,6 +13,7 @@ import { activeGroup } from "../../slices/activeGroupSlice";
 const GroupNameChangeModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();
   const dispatch = useDispatch();
+  const activeUserData = useSelector((state) => state.user.information)
   const activeGroupData = useSelector((state) => state.activeGroup.information);
   const [groupList, setGroupList] = useState([])
   const [loadingButton, setLoadingButton] = useState(false);
@@ -68,6 +69,13 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
             addedbyprofile: item.addedbyprofile,
           });
         });
+        set(push(ref(db , "groupmessege/")) , {
+          type: "groupmanagment/groupname-changed",
+          groupuid: activeGroupData.groupuid,
+          whochanged: activeUserData.displayName,
+          oldgroupname: activeGroupData.groupname,
+          newgroupname: newGroupName
+        })
       }).then(() => {
         toast.success(
           `Your group name has been changed from ${activeGroupData?.groupname} to ${newGroupName}`,
@@ -88,7 +96,7 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
       if (
-        modalRef.current.contains(e.target) && !boxRef.current.contains(e.target)
+        modalRef.current?.contains(e.target) && !boxRef.current?.contains(e.target)
       ) {
         modalClose(false);
       }

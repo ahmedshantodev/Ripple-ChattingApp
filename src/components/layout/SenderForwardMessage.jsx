@@ -21,7 +21,7 @@ const SenderForwardMessage = ({
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (!buttonRef.current.contains(e.target)) {
+      if (!buttonRef.current?.contains(e.target)) {
         setMenuShow(false);
       }
     });

@@ -22,7 +22,7 @@ const SenderNormalMessage = ({
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (!buttonRef.current.contains(e.target)) {
+      if (!buttonRef.current?.contains(e.target)) {
         setMenuShow(false);
       }
     });
@@ -30,7 +30,7 @@ const SenderNormalMessage = ({
 
   return (
     <Box className={"mt-5 group text-end"}>
-      <Box className={"max-w-[67%] inline-block relative mb-1 ml-2.5 "}>
+      <Box className={"max-w-[67%] inline-block relative mb-1"}>
         <Typography className="text-start break-words bg-[#077aff] text-white rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
           {message}
         </Typography>
