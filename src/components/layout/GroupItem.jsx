@@ -15,8 +15,6 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
   const [messegeList, setMessegeList] = useState([]);
   const lastMessage = messegeList.slice(-1);
 
-  console.log(lastMessage);
-
   useEffect(() => {
     let messageREf = ref(db, "groupmessege");
     onValue(messageREf, (snapshot) => {

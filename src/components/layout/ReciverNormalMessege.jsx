@@ -23,6 +23,7 @@ const ReciverNormalMessege = ({
         <Image
           src={profile}
           alt={name}
+          title={name}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>

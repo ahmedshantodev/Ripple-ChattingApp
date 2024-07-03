@@ -73,6 +73,10 @@ import ReciverEditedMessage from "../components/layout/ReciverEditedMessage";
 import ReciverLike from "../components/layout/ReciverLike";
 import SenderLike from "../components/layout/SenderLike";
 
+import { AudioRecorder } from 'react-audio-voice-recorder';
+import SenderVoiceMessage from "../components/layout/SenderVoiceMessage";
+import ReciverVoiceMessage from "../components/layout/ReciverVoiceMessage";
+
 const ChatWithFriend = () => {
   const db = getDatabase();
   const storage = getStorage();
@@ -108,7 +112,7 @@ const ChatWithFriend = () => {
   const [editedMessageInfo, setEditedMessageInfo] = useState("");
   const [messageRemoveModal, setMessageRemoveModal] = useState(false);
   const [removedMessageInfo, setRemovedMessageInfo] = useState("");
-
+  const [voiceMessageUrl, setVoiceMessageUrl] = useState("")
   const anotherFileSelectButtonRef = useRef();
   const lastMessageRef = useRef();
 
@@ -121,6 +125,27 @@ const ChatWithFriend = () => {
   const inputRef = useRef();
   const emojiBoxRef = useRef();
   const gifBoxRef = useRef();
+
+  const addAudioElement = (blob) => {
+    const url = URL.createObjectURL(blob);
+    setVoiceMessageUrl(url)
+  };
+
+  const handleSendVoiceMessage = () => {
+    set(push(ref(db, "singlemessege/")), {
+      type: "voice/normal",
+      voice: voiceMessageUrl,
+      reciveruid: activeChatData?.uid,
+      recivername: activeChatData?.name,
+      reciverprofile: activeChatData?.profile,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    }).then(() => {
+      setVoiceMessageUrl("");
+    });
+  }
 
   useEffect(() => {
     const friendListRef = ref(db, "friends");
@@ -184,7 +209,7 @@ const ChatWithFriend = () => {
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     })
   }
-
+console.log(replyMessegeInfo)
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
       if (replyMessegeInfo.type.includes("text")) {
@@ -205,7 +230,25 @@ const ChatWithFriend = () => {
           setMessege("");
           setreplyMessegeInfo("");
         });
-      } else if (replyMessegeInfo.type.includes("image")) {
+      } else if (replyMessegeInfo.type.includes("voice")) {
+        set(push(ref(db, "singlemessege/")), {
+          type: "text/reply-normal",
+          text: messege,
+          repliedType: "voice",
+          repliedmessegeid: replyMessegeInfo.messegeid,
+          repliedto: replyMessegeInfo.sendername,
+          reciveruid: activeChatData?.uid,
+          recivername: activeChatData.name,
+          reciverrofile: activeChatData.profile,
+          senderuid: activeUserData.uid,
+          sendername: activeUserData.displayName,
+          senderprofile: activeUserData.photoURL,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        }).then(() => {
+          setMessege("");
+          setreplyMessegeInfo("");
+        });
+      }else if (replyMessegeInfo.type.includes("image")) {
         set(push(ref(db, "singlemessege/")), {
           type: "text/reply-normal",
           text: messege,
@@ -406,6 +449,18 @@ const ChatWithFriend = () => {
         set(push(ref(db, "singlemessege/")), {
           type: "text/forwarded",
           text: forwardMessegeInfo.text,
+          reciveruid: reciveruid,
+          recivername: recivername,
+          reciverprofile: reciverprofile,
+          senderuid: activeUserData.uid,
+          sendername: activeUserData.displayName,
+          senderprofile: activeUserData.photoURL,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        });
+      } else if (forwardMessegeInfo.type.includes("voice")) {
+        set(push(ref(db, "singlemessege/")), {
+          type: "voice/forwarded",
+          voice: forwardMessegeInfo.voice,
           reciveruid: reciveruid,
           recivername: recivername,
           reciverprofile: reciverprofile,
@@ -915,6 +970,28 @@ const ChatWithFriend = () => {
                     )
                   ))
                 )
+              ) : item.type.includes("voice") ? (
+                item.type == "voice/normal" ? (
+                  <SenderVoiceMessage
+                    voiceType={"normal"}
+                    voice={item.voice}
+                    sentTime={item.senttime}
+                    replyButton={() => handleReply(item)}
+                    removeButton={() => handleMessageRemoveModalShow(item)}
+                    forwardButton={() => handleMessegeForwardListShow(item)}
+                  />
+                ) : (
+                  item.type == "voice/forwarded" && (
+                    <SenderVoiceMessage
+                      voiceType={"forward"}
+                      voice={item.voice}
+                      sentTime={item.senttime}
+                      replyButton={() => handleReply(item)}
+                      removeButton={() => handleMessageRemoveModalShow(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                    />
+                  )
+                )
               ) : item.type.includes("image") ? (
                 item.type == "image/normal" ? (
                   <SenderImage
@@ -1008,10 +1085,10 @@ const ChatWithFriend = () => {
                   )
                 )
               ) : item.type.includes("deleted") ? (
-                  <SenderDeletedMessage sentTime={item.senttime} />
-                ) : item.type == "like" && (
-                  <SenderLike sentTime={item.senttime}/>
-                )
+                <SenderDeletedMessage sentTime={item.senttime} />
+              ) : (
+                item.type == "like" && <SenderLike sentTime={item.senttime} />
+              )
             ) : (
               activeChatData?.uid == item.senderuid &&
               (item.type.includes("text") ? (
@@ -1075,6 +1152,30 @@ const ChatWithFriend = () => {
                       forwardButton={() => handleMessegeForwardListShow(item)}
                     />
                   ))
+                )
+              ) : item.type.includes("voice") ? (
+                item.type == "voice/normal" ? (
+                  <ReciverVoiceMessage
+                    voiceType={"normal"}
+                    name={item.sendername}
+                    profile={item.senderprofile}
+                    voice={item.voice}
+                    sentTime={item.senttime}
+                    replyButton={() => handleReply(item)}
+                    forwardButton={() => handleMessegeForwardListShow(item)}
+                  />
+                ) : (
+                  item.type == "voice/forwarded" && (
+                    <ReciverVoiceMessage
+                      voiceType={"forward"}
+                      name={item.sendername}
+                      profile={item.senderprofile}
+                      voice={item.voice}
+                      sentTime={item.senttime}
+                      replyButton={() => handleReply(item)}
+                      forwardButton={() => handleMessegeForwardListShow(item)}
+                    />
+                  )
                 )
               ) : item.type.includes("image") ? (
                 item.type == "image/normal" ? (
@@ -1177,22 +1278,23 @@ const ChatWithFriend = () => {
                   )
                 )
               ) : item.type.includes("deleted") ? (
-                  <ReciverDeletedMessage
-                    senderName={item.sendername}
-                    senderProfile={item.senderprofile}
-                    sentTime={item.senttime}
-                  />
-                ) : item.type == "like" && (
+                <ReciverDeletedMessage
+                  senderName={item.sendername}
+                  senderProfile={item.senderprofile}
+                  sentTime={item.senttime}
+                />
+              ) : (
+                item.type == "like" && (
                   <ReciverLike
                     name={item.sendername}
                     profile={item.senderprofile}
                     sentTime={item.senttime}
                   />
                 )
-              )
+              ))
             )
           )}
-          <div ref={lastMessageRef}/>
+          <div ref={lastMessageRef} />
           <Modal
             modalShow={messageForwardModalShow}
             modalClose={setMessageForwardModalShow}
@@ -1246,9 +1348,15 @@ const ChatWithFriend = () => {
               {messageForwardListOpen == "friend"
                 ? filteredFriendForwardList.map((item) => (
                     <MessageForwardListItem
-                      profile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile
+                      profile={
+                        activeUserData?.uid == item.senderuid
+                          ? item.reciverprofile
+                          : item.senderprofile
                       }
-                      name={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername
+                      name={
+                        activeUserData?.uid == item.senderuid
+                          ? item.recivername
+                          : item.sendername
                       }
                       sendButton={() => handleForwardMessegeSend(item)}
                     />
@@ -1360,6 +1468,10 @@ const ChatWithFriend = () => {
                   <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
                     image
                   </Typography>
+                ) : replyMessegeInfo.type.includes("voice") ? (
+                  <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
+                    voice
+                  </Typography>
                 ) : replyMessegeInfo.type.includes("video") ? (
                   <Typography className="text-[15px] whitespace-nowrap overflow-hidden text-ellipsis w-[80%] text-[#65676b]">
                     video
@@ -1395,8 +1507,7 @@ const ChatWithFriend = () => {
               alignItems={"center"}
               className={"py-3 pr-[5px] pl-5"}
             >
-              <Flex>
-                <FaPlus className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] mr-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
+              <Flex alignItems={"center"}>
                 <Box className={"relative group/tooltip mr-[5px]"}>
                   <Input
                     onChange={handleFileClick}
@@ -1409,12 +1520,12 @@ const ChatWithFriend = () => {
                   </label>
                   <Typography
                     variant="span"
-                    className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-30 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                    className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-30 left-full -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                   >
                     Attach a file
                     <Box
                       className={
-                        "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                        "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-[29%] -translate-x-2/4 top-[80%] "
                       }
                     ></Box>
                   </Typography>
@@ -1452,10 +1563,10 @@ const ChatWithFriend = () => {
                   </Modal>
                 </Box>
                 <div ref={gifBoxRef} className="relative">
-                  <Box className={"relative group/tooltip mr-[5px]"}>
+                  <Box className={"relative group/tooltip mr-[10px]"}>
                     <HiMiniGif
                       onClick={() => setGifPickerShow(!gifPickerShow)}
-                      className={`box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 ${
+                      className={`box-content text-[#007bf5] text-[30px] p-[8px] rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 ${
                         gifPickerShow && "bg-[#dedede]"
                       } hover:bg-[#dedede]`}
                     />
@@ -1491,115 +1602,174 @@ const ChatWithFriend = () => {
                     </Box>
                   )}
                 </div>
-                <Box className={"relative group/tooltip mr-[5px]"}>
-                  <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-                  <Typography
-                    variant="span"
-                    className="w-[170px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-30 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                  >
-                    Sent voice messege
-                    <Box
-                      className={
-                        "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                      }
-                    ></Box>
-                  </Typography>
-                </Box>
-              </Flex>
-              <Flex alignItems={"center"} className={"w-[80%]"}>
-                <Box className={"relative w-full"}>
-                  <input
-                    value={messege}
-                    ref={inputRef}
-                    onChange={(e) => setMessege(e.target.value)}
-                    placeholder={"Enter your messege"}
-                    className={
-                      "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
-                    }
-                  />
-                  <div ref={emojiBoxRef}>
-                    <Box
-                      className={
-                        " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip"
-                      }
-                    >
-                      <BsEmojiSmileFill
-                        onClick={() => setEmojiPickerShow(!emojiPickerShow)}
-                        className={`box-content text-[#007bf5] ${
-                          emojiPickerShow && "bg-[#dedede]"
-                        } text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]`}
+                {voiceMessageUrl == "" && 
+                  <Box className={"relative group/tooltip"}>
+                    {/* <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" /> */}
+                    <Box>
+                      <AudioRecorder
+                        onRecordingComplete={addAudioElement}
+                        audioTrackConstraints={{
+                          noiseSuppression: true,
+                          echoCancellation: true,
+                        }}
+                        classes={"bg-red-300"}
                       />
-                      {!emojiPickerShow && (
-                        <Typography
-                          variant="span"
-                          className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-10 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
-                        >
-                          Choose an emoji
-                          <Box
-                            className={
-                              "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
-                            }
-                          ></Box>
-                        </Typography>
-                      )}
                     </Box>
-                    {emojiPickerShow && (
-                      <Box
-                        className={
-                          "absolute bottom-[130%] -right-[8px] rounded-[10px] shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
-                        }
-                      >
-                        <EmojiPicker
-                          onEmojiClick={handleEmojiClick}
-                          emojiStyle="facebook"
-                        />
-                        <Box
-                          className={
-                            "w-[20px] h-[20px] bg-white absolute right-5 -translate-y-2/4 top-full rotate-45"
-                          }
-                        ></Box>
-                      </Box>
-                    )}
-                  </div>
-                </Box>
-                {messege == "" ? (
-                  <Box className={"relative group/tooltip mr-[5px]"}>
-                    <MdThumbUpAlt
-                      onClick={handleSendLike}
-                      className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
-                    />
                     <Typography
                       variant="span"
-                      className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[170px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-30 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
-                      send a like
+                      Sent voice messege
                       <Box
                         className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
                         }
                       ></Box>
                     </Typography>
                   </Box>
-                ) : (
+                }
+              </Flex>
+              {voiceMessageUrl ? (
+                <Flex 
+                  alignItems={"center"}
+                  className={"w-full"}
+                >
                   <Box className={"relative group/tooltip mr-[5px]"}>
+                    <MdCancel
+                      onClick={() => setVoiceMessageUrl("")}
+                      className="box-content text-[#007bf5] text-[30px] p-2 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                    />
+                    <Typography
+                      variant="span"
+                      className="w-[130px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-2/4 translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                    >
+                      Click to Cancel
+                      <Box
+                        className={
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-1/4 top-[80%] "
+                        }
+                      ></Box>
+                    </Typography>
+                  </Box>
+                  <audio
+                    src={voiceMessageUrl}
+                    controls
+                    className="w-full max-h-[48px]"
+                  />
+                  <Box className={"relative group/tooltip"}>
                     <IoSend
-                      onClick={handleMessegeSend}
+                      onClick={handleSendVoiceMessage}
                       className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
                     />
                     <Typography
                       variant="span"
-                      className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-full translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
                     >
                       Click to Send
                       <Box
                         className={
-                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                          "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-3/4 top-[80%] "
                         }
                       ></Box>
                     </Typography>
                   </Box>
-                )}
-              </Flex>
+                </Flex>
+              ) : (
+                <Flex alignItems={"center"} className={"w-full ml-4"}>
+                  <Box className={"relative w-full"}>
+                    <input
+                      value={messege}
+                      ref={inputRef}
+                      onChange={(e) => setMessege(e.target.value)}
+                      placeholder={"Enter your messege"}
+                      className={
+                        "bg-[#f3f3f3] py-3 pr-12 pl-5 w-full outline-[#dddcea] rounded-[25px]"
+                      }
+                    />
+                    <div ref={emojiBoxRef}>
+                      <Box
+                        className={
+                          " absolute right-0 top-2/4 -translate-y-2/4 group/tooltip"
+                        }
+                      >
+                        <BsEmojiSmileFill
+                          onClick={() => setEmojiPickerShow(!emojiPickerShow)}
+                          className={`box-content text-[#007bf5] ${
+                            emojiPickerShow && "bg-[#dedede]"
+                          } text-[20px] p-3 rounded-[50%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]`}
+                        />
+                        {!emojiPickerShow && (
+                          <Typography
+                            variant="span"
+                            className="w-[150px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute z-10 left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                          >
+                            Choose an emoji
+                            <Box
+                              className={
+                                "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                              }
+                            ></Box>
+                          </Typography>
+                        )}
+                      </Box>
+                      {emojiPickerShow && (
+                        <Box
+                          className={
+                            "absolute bottom-[130%] -right-[8px] rounded-[10px] shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]"
+                          }
+                        >
+                          <EmojiPicker
+                            onEmojiClick={handleEmojiClick}
+                            emojiStyle="facebook"
+                          />
+                          <Box
+                            className={
+                              "w-[20px] h-[20px] bg-white absolute right-5 -translate-y-2/4 top-full rotate-45"
+                            }
+                          ></Box>
+                        </Box>
+                      )}
+                    </div>
+                  </Box>
+                  {messege == "" ? (
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <MdThumbUpAlt
+                        onClick={handleSendLike}
+                        className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] mb-[2px] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                      />
+                      <Typography
+                        variant="span"
+                        className="w-[100px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        send a like
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 -translate-x-1/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Box className={"relative group/tooltip mr-[5px]"}>
+                      <IoSend
+                        onClick={handleMessegeSend}
+                        className="box-content text-[#007bf5] text-[24px] p-2.5 rounded-[20%] ml-[5px] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
+                      />
+                      <Typography
+                        variant="span"
+                        className="w-[120px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute right-0 bottom-[55px] hidden group-hover/tooltip:block"
+                      >
+                        Click to Send
+                        <Box
+                          className={
+                            "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-3/4 top-[80%] "
+                          }
+                        ></Box>
+                      </Typography>
+                    </Box>
+                  )}
+                </Flex>
+              )}
             </Flex>
           </Box>
         )}
