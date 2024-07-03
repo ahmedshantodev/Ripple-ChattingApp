@@ -19,7 +19,7 @@ import SenderGif from "../components/layout/SenderGif";
 import SenderNormalMessage from "../components/layout/SenderNormalMessage";
 import ReciverNormalMessege from "../components/layout/ReciverNormalMessege";
 import { IoCall, IoVideocam } from "react-icons/io5";
-import { FaPlus, FaRegImage } from "react-icons/fa6";
+import { FaRegImage } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import {
   MdBlock,
@@ -209,7 +209,7 @@ const ChatWithFriend = () => {
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     })
   }
-console.log(replyMessegeInfo)
+
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
       if (replyMessegeInfo.type.includes("text")) {
@@ -322,10 +322,7 @@ console.log(replyMessegeInfo)
         });
       }
     } else if (editedMessageInfo) {
-      if (
-        editedMessageInfo.type == "text/normal" ||
-        editedMessageInfo.type == "text/edited"
-      ) {
+      if (editedMessageInfo.type == "text/normal" || editedMessageInfo.type == "text/edited") {
         set(ref(db, "singlemessege/" + editedMessageInfo.messegeid), {
           type: "text/edited",
           text: messege,
@@ -525,6 +522,18 @@ console.log(replyMessegeInfo)
         set(push(ref(db, "groupmessege/")), {
           type: "text/forwarded",
           text: forwardMessegeInfo.text,
+          groupuid: item.groupuid,
+          groupname: item.groupname,
+          groupphoto: item.groupphoto,
+          senderuid: activeUserData.uid,
+          sendername: activeUserData.displayName,
+          senderprofile: activeUserData.photoURL,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        });
+      } else if (forwardMessegeInfo.type.includes("voice")) {
+        set(push(ref(db, "groupmessege/")), {
+          type: "voice/forwarded",
+          voice: forwardMessegeInfo.voice,
           groupuid: item.groupuid,
           groupname: item.groupname,
           groupphoto: item.groupphoto,
@@ -1123,6 +1132,7 @@ console.log(replyMessegeInfo)
                   item.type.includes("text/reply") &&
                   (item.type == "text/reply-normal" ? (
                     <ReciverRepliedMessege
+                      chatType={"friend"}
                       edited={false}
                       senderuid={item.senderuid}
                       sendername={item.sendername}
@@ -1138,6 +1148,7 @@ console.log(replyMessegeInfo)
                     />
                   ) : (
                     <ReciverRepliedMessege
+                      chatType={"friend"}
                       edited={true}
                       senderuid={item.senderuid}
                       sendername={item.sendername}
@@ -1508,7 +1519,7 @@ console.log(replyMessegeInfo)
               className={"py-3 pr-[5px] pl-5"}
             >
               <Flex alignItems={"center"}>
-                <Box className={"relative group/tooltip mr-[5px]"}>
+                <Box className={"relative group/tooltip"}>
                   <Input
                     onChange={handleFileClick}
                     id={"file"}
@@ -1563,7 +1574,7 @@ console.log(replyMessegeInfo)
                   </Modal>
                 </Box>
                 <div ref={gifBoxRef} className="relative">
-                  <Box className={"relative group/tooltip mr-[10px]"}>
+                  <Box className={"relative group/tooltip mr-[5px]"}>
                     <HiMiniGif
                       onClick={() => setGifPickerShow(!gifPickerShow)}
                       className={`box-content text-[#007bf5] text-[30px] p-[8px] rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 ${
@@ -1604,7 +1615,6 @@ console.log(replyMessegeInfo)
                 </div>
                 {voiceMessageUrl == "" && 
                   <Box className={"relative group/tooltip"}>
-                    {/* <FaMicrophone className="box-content text-[#007bf5] text-[25px] p-2.5 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]" /> */}
                     <Box>
                       <AudioRecorder
                         onRecordingComplete={addAudioElement}
@@ -1612,7 +1622,6 @@ console.log(replyMessegeInfo)
                           noiseSuppression: true,
                           echoCancellation: true,
                         }}
-                        classes={"bg-red-300"}
                       />
                     </Box>
                     <Typography

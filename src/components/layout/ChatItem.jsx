@@ -32,7 +32,7 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
       setMessegeList(messegeArray);
     });
   }, []);
-
+console.log(lastMessage)
   return (
     <Box
       onClick={onClick}
@@ -62,6 +62,16 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
               ) : (
                 <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                   <span className="font-semibold">You:</span> {item.text}
+                </Typography>
+              )
+            ) : item.type.includes("voice") ? (
+              item.type == "voice/normal" ? (
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                  You sent a voice message.
+                </Typography>
+              ) : (
+                <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                  you forwarded a voice messsage.
                 </Typography>
               )
             ) : item.type.includes("image") ? (
@@ -125,6 +135,16 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
             <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
               {item.text}
             </Typography>
+          ) : item.type.includes("voice") ? (
+            item.type == "voice/normal" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.sendername} sent a voice message.
+              </Typography>
+            ) : (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.sendername} forwarded a voice message.
+              </Typography>
+            )
           ) : item.type.includes("image") ? (
             item.type == "image/normal" ? (
               <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">

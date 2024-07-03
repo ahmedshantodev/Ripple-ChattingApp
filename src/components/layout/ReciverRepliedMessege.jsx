@@ -12,6 +12,7 @@ import { FaFileArchive } from "react-icons/fa";
 import { getDatabase, onValue, ref } from "firebase/database";
 
 const ReciverRepliedMessege = ({
+  chatType,
   edited,
   sendername,
   senderuid,
@@ -29,18 +30,18 @@ const ReciverRepliedMessege = ({
   const db = getDatabase();
   const activeUserData = useSelector((state) => state.user.information);
   const activeChatData = useSelector((state) => state.activeChat.information);
+  const activeGroupData = useSelector((state) => state.activeGroup.information)
   const [messegeList, setMessegeList] = useState([]);
-
+  
   useEffect(() => {
+    if (chatType == "friend") {
     let messegeRef = ref(db, "singlemessege/");
     onValue(messegeRef, (snapshot) => {
       let messegeArray = [];
       snapshot.forEach((item) => {
         if (
-          ((activeUserData?.uid == item.val().senderuid &&
-            activeChatData?.uid == item.val().reciveruid) ||
-            (activeUserData?.uid == item.val().reciveruid &&
-              activeChatData?.uid == item.val().senderuid)) &&
+          ((activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid)) &&
           item.key == repliedMessageId
         ) {
           messegeArray.push(item.val());
@@ -48,7 +49,19 @@ const ReciverRepliedMessege = ({
       });
       setMessegeList(messegeArray);
     });
-  }, [activeChatData]);
+  } else if (chatType == "group") {
+    let messageREf = ref(db, "groupmessege");
+    onValue(messageREf, (snapshot) => {
+      const messageArray = [];
+      snapshot.forEach((item) => {
+        if ((activeGroupData.groupuid == item.val().groupuid) && (item.key == repliedMessageId)) {
+          messageArray.push({ ...item.val(), messageId: item.key });
+        }
+      });
+      setMessegeList(messageArray);
+    });
+  }
+  }, []);
 
   return repliedType == "text" ? (
     <Box className={"mt-5 flex justify-between items-end w-full group"}>
