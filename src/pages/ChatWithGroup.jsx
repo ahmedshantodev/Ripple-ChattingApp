@@ -109,7 +109,7 @@ const ChatWithGroup = () => {
   const [memberInviteModal, setMemberInviteModal] = useState(false);
   const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
   const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
-  const [mediaDropdownOpen, setMediaDropdownOpen] = useState(false);
+  const [mediaDropdownOpen, setMediaDropdownOpen] = useState(true);
   const [chatInfoShow, setChatInfoShow] = useState(false);
   const [chatImageList, setChatImageList] = useState([]);
   const [chatVideoList, setChatVideoList] = useState([]);
@@ -204,7 +204,6 @@ const ChatWithGroup = () => {
           whoremoved: removedMemberInfo.membername,
           senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
         });
-        lastMessageSendTimeUpdate()  
         setMemberRemoveModal(false)
       })
     } else {
@@ -1385,12 +1384,12 @@ const ChatWithGroup = () => {
                 </label>
                 <Typography
                   variant="span"
-                  className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[55px] hidden group-hover/tooltip:block"
+                  className="w-[110px] text-center bg-[#323436] text-white py-[6px] px-3 rounded-lg absolute -left-[25%] bottom-[55px] hidden group-hover/tooltip:block"
                 >
                   Attach a file
                   <Box
                     className={
-                      "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-[80%] "
+                      "w-[13px] h-[13px] bg-[#323436] rotate-45 absolute left-[24%] top-[80%] "
                     }
                   ></Box>
                 </Typography>
@@ -1452,7 +1451,7 @@ const ChatWithGroup = () => {
                 {gifPickerShow && (
                   <Box
                     className={
-                      "absolute z-20 bottom-[133%] right-0 translate-x-[55%] bg-white pb-5 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-[10px]"
+                      "absolute z-20 bottom-[134%] left-0 -translate-x-[15%] bg-white pb-5 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-[10px]"
                     }
                   >
                     <GifPicker
@@ -1461,7 +1460,7 @@ const ChatWithGroup = () => {
                     />
                     <Box
                       className={
-                        "w-[20px] h-[20px] bg-white absolute left-[120px] -translate-y-2/4 top-full rotate-45"
+                        "w-[20px] h-[20px] bg-white absolute left-[19%] -translate-y-2/4 top-full rotate-45"
                       }
                     ></Box>
                   </Box>
@@ -1643,8 +1642,8 @@ const ChatWithGroup = () => {
         <Box
           className={
             mediaShow
-              ? "w-full h-full pt-14 pb-3 overflow-y-auto absolute left-0 top-0 transition-all duration-300 ease-in-out -translate-x-full"
-              : "w-full h-full pt-14 pb-3 overflow-y-auto absolute left-0 top-0 transition-all duration-300 ease-in-out"
+              ? "w-full h-full pt-16 pb-3 overflow-y-auto absolute left-0 top-0 transition-all duration-300 ease-in-out -translate-x-full"
+              : "w-full h-full pt-16 pb-3 overflow-y-auto absolute left-0 top-0 transition-all duration-300 ease-in-out"
           }
         >
           <Box className={"mx-auto w-[120px]"}>
@@ -1653,7 +1652,7 @@ const ChatWithGroup = () => {
               large={activeGroupData.groupphoto}
               alt={activeGroupData.groupname}
               className={
-                "w-[120px] h-[120px] rounded-full object-cover border border-[#dedede] mt-10 cursor-pointer"
+                "w-[120px] h-[120px] rounded-full object-cover border border-[#dedede] cursor-pointer"
               }
             />
           </Box>

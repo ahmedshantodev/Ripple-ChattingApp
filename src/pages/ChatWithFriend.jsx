@@ -1352,7 +1352,7 @@ const ChatWithFriend = () => {
                   {gifPickerShow && (
                     <Box
                       className={
-                        "absolute z-20 bottom-[133%] right-0 translate-x-[55%] bg-white pb-5 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-[10px]"
+                        "absolute z-20 bottom-[134%] left-0 -translate-x-[15%] bg-white pb-5 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)] rounded-[10px]"
                       }
                     >
                       <GifPicker
@@ -1361,7 +1361,7 @@ const ChatWithFriend = () => {
                       />
                       <Box
                         className={
-                          "w-[20px] h-[20px] bg-white absolute left-[120px] -translate-y-2/4 top-full rotate-45"
+                          "w-[20px] h-[20px] bg-white absolute left-[19%] -translate-y-2/4 top-full rotate-45"
                         }
                       ></Box>
                     </Box>
