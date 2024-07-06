@@ -37,6 +37,13 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   const cropperRef = createRef();
   const modalRef = useRef();
   const boxRef = useRef();
+
+  const time = new Date();
+  const year = time.getFullYear();
+  const month = time.getMonth() + 1;
+  const date = time.getDate();
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
   
   useEffect(() => {
     let groupRef = databaseRef(db, "groupmembers");
@@ -50,7 +57,6 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
       setGroupList(groupListArray);
     });
   }, [activeGroupData]);
-
 
   const onChange = (e) => {
     e.preventDefault();
@@ -81,6 +87,7 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
             groupadminuid: activeGroupData.groupadminuid,
             groupadminname: activeGroupData.groupadminname,
             groupadminprofile: activeGroupData.groupadminprofile,
+            lastmessagesent: Date.now(),
           }).then(() => {
             groupList.map((item) => {
               set(databaseRef(db, "groupmembers/" + item.gid), {
@@ -96,12 +103,14 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
                 addedbyuid: item.addedbyuid,
                 addedbyname: item.addedbyname,
                 addedbyprofile: item.addedbyprofile,
+                lastmessagesent: Date.now(),
               });
             });
             set(push(databaseRef(db , "groupmessege/")) , {
               type: "groupmanagment/groupphoto-changed",
               groupuid: activeGroupData.groupuid,
               whochanged: activeUserData.displayName,
+              senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
             })
           }).then(() => {
             localStorage.setItem("activeGroup", JSON.stringify({ ...activeGroupData, groupphoto: downloadURL }));

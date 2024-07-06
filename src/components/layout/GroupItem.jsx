@@ -26,7 +26,7 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
       });
       setMessegeList(messageArray);
     });
-  }, []);
+  }, [groupId]);
 
   return (
     <Box
@@ -34,8 +34,8 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
       className={
         activeGroupData?.groupuid == groupId &&
         location.includes("/pages/chat/chat-with-group")
-          ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#f0f0f0]  cursor-pointer"
-          : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative cursor-pointer transition-all ease-linear duration-200 hover:bg-[#f5f5f5]"
+          ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#ebf5ff] cursor-pointer mb-[2px]"
+          : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#f5f5f5]/50 transition-all ease-linear duration-300 hover:bg-[#f5f5f5] cursor-pointer mb-[2px]"
       }
     >
       <Image
@@ -135,9 +135,13 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
               <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
                 {item.whoremove} removed {item.whoremoved} from the group
               </Typography>
-            ) : item.type == "groupmanagment/member-left" ? (
+            ) : item.type == "groupmanagment/member-remove" ? (
               <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
-                {item.wholeft} left the group.
+                {item.whoremove} removed {item.whoremoved} from the group
+              </Typography>
+            ) : item.type == "groupmanagment/groupadmin-change" ? (
+              <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">
+                {item.oldadmin} transferred Admin role to {item.newadmin} for this group
               </Typography>
             ) : item.type == "groupmanagment/groupname-changed" ? (
               <Typography className="text-sm font-open-sans text-secoundaryText whitespace-nowrap overflow-hidden text-ellipsis w-[285px]">

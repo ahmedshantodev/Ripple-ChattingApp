@@ -13,6 +13,13 @@ const GroupInvitation = () => {
   const [groupInvitationList, setGroupInvitationList] = useState([]);
   const activeUserData = useSelector((state) => state.user.information);
 
+  const time = new Date();
+  const year = time.getFullYear();
+  const month = time.getMonth() + 1;
+  const date = time.getDate();
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
+
   useEffect(() => {
     let invitationRef = ref(db, "groupinvitation");
     onValue(invitationRef, (snapshot) => {
@@ -44,12 +51,14 @@ const GroupInvitation = () => {
       addedbyuid: item.invitationsenderuid,
       addedbyname: item.invitationsendername,
       addedbyprofile: item.invitationsenderprofile,
+      lastmessagesent: Date.now(),
     }).then(() => {
       set(push(ref(db , "groupmessege/")) , {
         type: "groupmanagment/member-added",
         groupuid: item.groupuid,
         whoadded: item.invitationsendername,
         whojoined: item.invitationrecivername,
+        senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
       })
       remove(ref(db, "groupinvitation/" + item.invitationId));
     });

@@ -12,6 +12,8 @@ const GroupManagementMessage = ({
   whoChanged,
   newGroupName,
   oldGroupName,
+  oldadmin,
+  newadmin
 }) => {
   return (
     <Box className={"text-center mt-3"}>
@@ -26,6 +28,10 @@ const GroupManagementMessage = ({
       ) : type == "groupmanagment/member-left" ? (
         <Typography className="text-secoundaryText text-sm">
           {whoLeft} has left the group.
+        </Typography>
+      ) : type == "groupmanagment/groupadmin-change" ? (
+        <Typography className="text-secoundaryText text-sm">
+          {oldadmin} transferred Admin role to {newadmin} for this group
         </Typography>
       ) : type == "groupmanagment/groupphoto-changed" ? (
         <Typography className="text-secoundaryText text-sm">

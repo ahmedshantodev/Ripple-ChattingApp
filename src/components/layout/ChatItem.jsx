@@ -31,15 +31,15 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
       });
       setMessegeList(messegeArray);
     });
-  }, []);
-console.log(lastMessage)
+  }, [frienduid]);
+
   return (
     <Box
       onClick={onClick}
       className={
         activeChatData?.uid == frienduid &&
         location.includes("/pages/chat/chat-with-friend")
-          ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#f0f0f0] cursor-pointer mb-[2px]"
+          ? "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#ebf5ff] cursor-pointer mb-[2px]"
           : "group flex items-center gap-x-4 py-[14px] px-3 rounded-[8px] relative bg-[#f5f5f5]/50 transition-all ease-linear duration-300 hover:bg-[#f5f5f5] cursor-pointer mb-[2px]"
       }
     >

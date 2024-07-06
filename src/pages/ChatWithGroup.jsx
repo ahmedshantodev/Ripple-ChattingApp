@@ -13,9 +13,10 @@ import { IoIosArrowDown } from "react-icons/io";
 import { HiDotsVertical } from "react-icons/hi";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoCall, IoVideocam } from "react-icons/io5";
-import { FaPlus, FaRegImage } from "react-icons/fa6";
+import { FaRegImage } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { RxCross2 } from "react-icons/rx";
+import { MdOutlinePrivacyTip } from "react-icons/md";
+import { TbAlertCircle } from "react-icons/tb";
 import {
   MdThumbUpAlt,
   MdOutlineNotificationsOff,
@@ -52,7 +53,6 @@ import Button from "../components/layout/Button";
 import ModalImage from "react-modal-image";
 import GroupNameChangeModal from "../components/layout/GroupNameChangeModal";
 import { HiMiniGif } from "react-icons/hi2";
-import { FaMicrophone } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import ReciverDeletedMessage from "../components/layout/ReciverDeletedMessage";
 import ReciverGif from "../components/layout/ReciverGif";
@@ -75,16 +75,15 @@ import SenderNormalMessage from "../components/layout/SenderNormalMessage";
 import EmojiPicker from "emoji-picker-react";
 import GifPicker from "gif-picker-react";
 import Modal from "../components/layout/Modal";
-import SearchBox from "../components/layout/SearchBox";
-import MessageForwardListItem from "../components/layout/MessageForwardListItem";
 import GroupManagementMessage from "../components/layout/GroupManagementMessage";
 import { activeGroup } from "../slices/activeGroupSlice";
 import ReciverLike from "../components/layout/ReciverLike";
 import SenderLike from "../components/layout/SenderLike";
 
-import { AudioRecorder } from 'react-audio-voice-recorder';
+import { AudioRecorder } from "react-audio-voice-recorder";
 import SenderVoiceMessage from "../components/layout/SenderVoiceMessage";
 import ReciverVoiceMessage from "../components/layout/ReciverVoiceMessage";
+import MessageForwardModal from "../components/layout/MessageForwardModal";
 
 const ChatWithGroup = () => {
   const db = getDatabase();
@@ -92,35 +91,24 @@ const ChatWithGroup = () => {
   const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
   const activeGroupData = useSelector((state) => state.activeGroup.information);
-
-  const [voiceMessageUrl, setVoiceMessageUrl] = useState("")
+  const [voiceMessageUrl, setVoiceMessageUrl] = useState("");
   const [messege, setMessege] = useState("");
   const [messegeList, setMessegeList] = useState([]);
-
   const [groupProfileOpen, setGroupProfileOpen] = useState(true);
   const [groupNotificationOn, setGroupNotificationOn] = useState(true);
   const [groupMemberShow, setGroupMemberShow] = useState(false);
   const [membarRequstShow, setMembarRequstShow] = useState(false);
-  const [groupMemberLlist, setGroupMemberLlist] = useState([]);
-
-  const [blockList, setBlockList] = useState([]);
-  const [groupList, setGroupList] = useState([]);
+  const [groupMemberList, setGroupMemberList] = useState([]);
   const [forwardMessegeInfo, setForwardMessegeInfo] = useState("");
-  const [friendList, setFriendList] = useState([]);
-  const [forwardSearchFriend, setForwardSearchFriend] = useState("");
-  const [forwardSearchGroup, setForwardSearchGroup] = useState("");
   const [messageForwardModalShow, setMessageForwardModalShow] = useState(false);
-  const [messageForwardListOpen, setMessageForwardListOpen] = useState("group");
-
   const [replyMessegeInfo, setreplyMessegeInfo] = useState("");
   const [editedMessageInfo, setEditedMessageInfo] = useState("");
   const [messageRemoveModal, setMessageRemoveModal] = useState(false);
+  const [restrictedActionModal, setRestrictedActionModal] = useState(false)
   const [removedMessageInfo, setRemovedMessageInfo] = useState("");
-
   const [memberInviteModal, setMemberInviteModal] = useState(false);
   const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
   const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
-
   const [mediaDropdownOpen, setMediaDropdownOpen] = useState(false);
   const [chatInfoShow, setChatInfoShow] = useState(false);
   const [chatImageList, setChatImageList] = useState([]);
@@ -128,9 +116,9 @@ const ChatWithGroup = () => {
   const [chatFileList, setChatFileList] = useState([]);
   const [mediaShow, setMediaShow] = useState(false);
   const [mediaItemOpen, setMediaItemOpen] = useState("");
-
-  const [groupLeaveModal, setGroupLeaveModal] = useState(false)
-
+  const [groupLeaveModal, setGroupLeaveModal] = useState(false);
+  const [adminRoleChangeModal, setAdminRoleChangeModal] = useState(false)
+  const [newAdminInfo, setNewAdminInfo] = useState("")
   const [groupJoinRequstList, setGroupJoinRequstList] = useState([]);
   const [emojiPickerShow, setEmojiPickerShow] = useState(false);
   const [gifPickerShow, setGifPickerShow] = useState(false);
@@ -162,8 +150,8 @@ const ChatWithGroup = () => {
   }, [activeGroupData]);
 
   useEffect(() => {
-    lastMessageRef.current?.scrollIntoView()
-  } , [messegeList])
+    lastMessageRef.current?.scrollIntoView();
+  }, [messegeList]);
 
   useEffect(() => {
     let groupMemberRef = ref(db, "groupmembers");
@@ -174,18 +162,54 @@ const ChatWithGroup = () => {
           groupMemberArray.push({ ...item.val(), groupmemberid: item.key });
         }
       });
-      setGroupMemberLlist(groupMemberArray);
+      setGroupMemberList(groupMemberArray);
     });
   }, [activeGroupData]);
 
-  const handleMemberRemove = (item) => {
-    remove(ref(db, "groupmembers/" + item.groupmemberid));
-    set(push(ref(db , "groupmessege/")) , {
-      type: "groupmanagment/member-remove",
-      groupuid: item.groupuid,
-      whoremove: activeUserData.displayName,
-      whoremoved: item.membername,
-    })
+  const lastMessageSendTimeUpdate = () => {
+    groupMemberList.map((item) => {
+      set(ref(db, "groupmembers/" + item.groupmemberid), {
+        groupuid: item.groupuid,
+        groupname: item.groupname,
+        groupphoto: item.groupphoto,
+        groupadminuid: item.groupadminuid,
+        groupadminname: item.groupadminname,
+        groupadminprofile: item.groupadminprofile,
+        memberuid: item.memberuid,
+        membername: item.membername,
+        memberprofile: item.memberprofile,
+        addedbyuid: item.addedbyuid,
+        addedbyname: item.addedbyname,
+        addedbyprofile: item.addedbyprofile,
+        lastmessagesent: Date.now(),
+      });
+    });
+  }
+
+  const [memberRemoveModal, setMemberRemoveModal] = useState(false)
+  const [removedMemberInfo, setRemovedMemberInfo] = useState("")
+
+  const handleMemberRemoveModalShow = (item) => {
+    setRemovedMemberInfo(item)
+    setMemberRemoveModal(true)
+  }
+
+  const handleMemberRemove = () => {
+    if (activeUserData.uid == activeGroupData.groupadminuid) {
+      remove(ref(db, "groupmembers/" + removedMemberInfo.groupmemberid)).then(() => {
+        set(push(ref(db, "groupmessege/")), {
+          type: "groupmanagment/member-remove",
+          groupuid: removedMemberInfo.groupuid,
+          whoremove: activeUserData.displayName,
+          whoremoved: removedMemberInfo.membername,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        });
+        lastMessageSendTimeUpdate()  
+        setMemberRemoveModal(false)
+      })
+    } else {
+      setRestrictedActionModal(true)
+    }
   };
 
   useEffect(() => {
@@ -202,32 +226,42 @@ const ChatWithGroup = () => {
   }, [activeGroupData]);
 
   const handleJoinRequstAccept = (item) => {
-    set(push(ref(db, "groupmembers/")), {
-      groupuid: item.groupuid,
-      groupname: item.groupname,
-      groupphoto: item.groupphoto,
-      groupadminuid: item.groupadminuid,
-      groupadminname: item.groupadminname,
-      groupadminprofile: item.groupadminprofile,
-      memberuid: item.requstsenderuid,
-      membername: item.requstsendername,
-      memberprofile: item.requstsenderprofile,
-      addedbyuid: activeUserData.uid,
-      addedbyname: activeUserData.displayName,
-      addedbyprofile: activeUserData.photoURL,
-    }).then(() => {
-      set(push(ref(db , "groupmessege/")) , {
-        type: "groupmanagment/member-added",
+    if (activeUserData.uid == activeGroupData.groupadminuid) {
+      set(push(ref(db, "groupmembers/")), {
         groupuid: item.groupuid,
-        whoadded: activeUserData.displayName,
-        whojoined: item.requstsendername,
-      })
-      remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
-    });
+        groupname: item.groupname,
+        groupphoto: item.groupphoto,
+        groupadminuid: item.groupadminuid,
+        groupadminname: item.groupadminname,
+        groupadminprofile: item.groupadminprofile,
+        memberuid: item.requstsenderuid,
+        membername: item.requstsendername,
+        memberprofile: item.requstsenderprofile,
+        addedbyuid: activeUserData.uid,
+        addedbyname: activeUserData.displayName,
+        addedbyprofile: activeUserData.photoURL,
+        lastmessagesent: Date.now(),
+      }).then(() => {
+        set(push(ref(db, "groupmessege/")), {
+          type: "groupmanagment/member-added",
+          groupuid: item.groupuid,
+          whoadded: activeUserData.displayName,
+          whojoined: item.requstsendername,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        });
+        remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
+      });
+    } else {
+      setRestrictedActionModal(true);
+    }
   };
 
   const handleJoinRequstDelete = (item) => {
-    remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
+    if (activeUserData.uid == activeGroupData.groupadminuid) {
+      remove(ref(db, "groupjoinrequst/" + item.joinrequstid));
+    } else {
+      setRestrictedActionModal(true);
+    }
   };
 
   const handleSendLike = () => {
@@ -240,31 +274,11 @@ const ChatWithGroup = () => {
       sendername: activeUserData.displayName,
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    })
-  }
-
-  const addAudioElement = (blob) => {
-    const url = URL.createObjectURL(blob);
-    setVoiceMessageUrl(url)
+    });
+    lastMessageSendTimeUpdate()
   };
 
-  const handleSendVoiceMessage = () => {
-    set(push(ref(db, "groupmessege/")), {
-      type: "voice/normal",
-      voice: voiceMessageUrl,
-      groupuid: activeGroupData.groupuid,
-      groupname: activeGroupData.groupname,
-      groupphoto: activeGroupData.groupphoto,
-      senderuid: activeUserData.uid,
-      sendername: activeUserData.displayName,
-      senderprofile: activeUserData.photoURL,
-      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    }).then(() => {
-      setVoiceMessageUrl("");
-    });
-  }
-
-
+  
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
       if (replyMessegeInfo.type.includes("text")) {
@@ -426,7 +440,31 @@ const ChatWithGroup = () => {
         setMessege("");
       });
     }
+    lastMessageSendTimeUpdate()
   };
+
+  const addAudioElement = (blob) => {
+    const url = URL.createObjectURL(blob);
+    setVoiceMessageUrl(url);
+  };
+
+  const handleSendVoiceMessage = () => {
+    set(push(ref(db, "groupmessege/")), {
+      type: "voice/normal",
+      voice: voiceMessageUrl,
+      groupuid: activeGroupData.groupuid,
+      groupname: activeGroupData.groupname,
+      groupphoto: activeGroupData.groupphoto,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    }).then(() => {
+      setVoiceMessageUrl("");
+      lastMessageSendTimeUpdate()
+    });
+  };
+
 
   useEffect(() => {
     setMessege("");
@@ -466,6 +504,7 @@ const ChatWithGroup = () => {
       senderprofile: activeUserData.photoURL,
       senttime: removedMessageInfo.senttime,
     }).then(() => {
+      lastMessageSendTimeUpdate()
       setRemovedMessageInfo("");
       setMessageRemoveModal(false);
     });
@@ -476,220 +515,9 @@ const ChatWithGroup = () => {
     setMessageRemoveModal(false);
   };
 
-  useEffect(() => {
-    const blockListRef = ref(db, "block/");
-    onValue(blockListRef, (snapshot) => {
-      let blockListArray = [];
-      snapshot.forEach((item) => {
-        blockListArray.push(item.val().blockeduserid + item.val().blockbyuid);
-      });
-      setBlockList(blockListArray);
-    });
-  }, []);
-
-  useEffect(() => {
-    const friendListRef = ref(db, "friends");
-    onValue(friendListRef, (snapshot) => {
-      const FriendListArray = [];
-      snapshot.forEach((item) => {
-        if (activeUserData?.uid == item.val().reciveruid || activeUserData?.uid == item.val().senderuid) {
-          FriendListArray.push(item.val());
-        }
-      });
-      setFriendList(FriendListArray);
-    });
-  }, []);
-
-  useEffect(() => {
-    let groupRef = ref(db, "groupmembers");
-    onValue(groupRef, (snapshot) => {
-      let groupListArray = [];
-      snapshot.forEach((item) => {
-        if (activeUserData?.uid == item.val().memberuid) {
-          groupListArray.push(item.val());
-        }
-      });
-      setGroupList(groupListArray);
-    });
-  }, []);
-
-  const filteredFriendForwardList = friendList.filter((item) => {
-    const uid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid;
-    const name = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername;
-    return (
-      !blockList.includes(uid + activeUserData.uid) &&
-      !blockList.includes(activeUserData.uid + uid) &&
-      (forwardSearchFriend == "" ? item : name.toLowerCase().includes(forwardSearchFriend.toLowerCase()))
-    );
-  });
-
-  const filteredGroupForwardList = groupList.filter((item) => {
-    return forwardSearchGroup == "" ? item : item.groupname.toLowerCase().includes(forwardSearchGroup.toLowerCase());
-  });
-
   const handleMessegeForwardListShow = (item) => {
     setMessageForwardModalShow(true);
     setForwardMessegeInfo(item);
-  };
-
-  const handleForwardMessegeSend = (item) => {
-    if (messageForwardListOpen == "friend") {
-      const reciveruid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid;
-      const recivername = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername;
-      const reciverprofile = activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile;
-
-      if (forwardMessegeInfo.type.includes("text")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "text/forwarded",
-          text: forwardMessegeInfo.text,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("voice")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "voice/forwarded",
-          voice: forwardMessegeInfo.voice,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("image")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "image/forwarded",
-          image: forwardMessegeInfo.image,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("video")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "video/forwarded",
-          video: forwardMessegeInfo.video,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("file")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "file/forwarded",
-          file: forwardMessegeInfo.file,
-          filename: forwardMessegeInfo.filename,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("gif")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "gif/forwarded",
-          gif: forwardMessegeInfo.gif,
-          gifname: forwardMessegeInfo.gifname,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      }
-    } else if (messageForwardListOpen == "group") {
-      if (forwardMessegeInfo.type.includes("text")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "text/forwarded",
-          text: forwardMessegeInfo.text,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("voice")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "voice/forwarded",
-          voice: forwardMessegeInfo.voice,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("image")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "image/forwarded",
-          image: forwardMessegeInfo.image,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("video")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "video/forwarded",
-          video: forwardMessegeInfo.video,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("file")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "file/forwarded",
-          file: forwardMessegeInfo.file,
-          filename: forwardMessegeInfo.filename,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("gif")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "gif/forwarded",
-          gif: forwardMessegeInfo.gif,
-          gifname: forwardMessegeInfo.gifname,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      }
-    }
   };
 
   const handleFileClick = (e) => {
@@ -750,6 +578,7 @@ const ChatWithGroup = () => {
         });
       });
     }
+    lastMessageSendTimeUpdate()
   };
 
   useEffect(() => {
@@ -777,6 +606,7 @@ const ChatWithGroup = () => {
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     });
+    lastMessageSendTimeUpdate()
   };
 
   useEffect(() => {
@@ -815,7 +645,10 @@ const ChatWithGroup = () => {
     onValue(chatImageRef, (snapshot) => {
       let chatImageArray = [];
       snapshot.forEach((item) => {
-        if (item.val().type.includes("image") && activeGroupData.groupuid == item.val().groupuid) {
+        if (
+          item.val().type.includes("image") &&
+          activeGroupData.groupuid == item.val().groupuid
+        ) {
           chatImageArray.push(item.val());
         }
       });
@@ -828,7 +661,10 @@ const ChatWithGroup = () => {
     onValue(chatVideoRef, (snapshot) => {
       let chatVideoArray = [];
       snapshot.forEach((item) => {
-        if (item.val().type.includes("video") && activeGroupData.groupuid == item.val().groupuid) {
+        if (
+          item.val().type.includes("video") &&
+          activeGroupData.groupuid == item.val().groupuid
+        ) {
           chatVideoArray.push(item.val());
         }
       });
@@ -841,7 +677,10 @@ const ChatWithGroup = () => {
     onValue(chatFileRef, (snapshot) => {
       let chatFileArray = [];
       snapshot.forEach((item) => {
-        if (item.val().type.includes("file") && activeGroupData.groupuid == item.val().groupuid) {
+        if (
+          item.val().type.includes("file") &&
+          activeGroupData.groupuid == item.val().groupuid
+        ) {
           chatFileArray.push(item.val());
         }
       });
@@ -850,15 +689,71 @@ const ChatWithGroup = () => {
   }, [activeGroupData]);
 
   const handleGroupLeave = () => {
-    remove(ref(db , "groupmembers/" + activeGroupData.groupmemberid))
-    set(push(ref(db , "groupmessege/")) , {
+    remove(ref(db, "groupmembers/" + activeGroupData.groupmemberid));
+    set(push(ref(db, "groupmessege/")), {
       type: "groupmanagment/member-left",
       groupuid: activeGroupData.groupuid,
       wholeft: activeUserData.displayName,
-    })
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    });
+    lastMessageSendTimeUpdate()
     dispatch(activeGroup(null));
     localStorage.removeItem("activeGroup");
-    setGroupLeaveModal(false)
+    setGroupLeaveModal(false);
+  };
+
+  const handleMakeAdminModalShow = (item) => {
+    setNewAdminInfo(item)
+    setAdminRoleChangeModal(true)
+  }
+
+  const handleMakeAdmin = () => {
+    set(ref(db, "groups/" + activeGroupData.groupuid), {
+      groupuid: activeGroupData.groupuid,
+      groupname: activeGroupData.groupname,
+      groupphoto: activeGroupData.groupphoto,
+      groupadminuid: newAdminInfo.memberuid,
+      groupadminname: newAdminInfo.membername,
+      groupadminprofile: newAdminInfo.memberprofile,
+      lastmessagesent: Date.now(),
+    })
+    groupMemberList.map((item) => {
+      set(ref(db, "groupmembers/" + item.groupmemberid), {
+        groupuid: item.groupuid,
+        groupname: item.groupname,
+        groupphoto: item.groupphoto,
+        groupadminuid: newAdminInfo.memberuid,
+        groupadminname: newAdminInfo.membername,
+        groupadminprofile: newAdminInfo.memberprofile,
+        memberuid: item.memberuid,
+        membername: item.membername,
+        memberprofile: item.memberprofile,
+        addedbyuid: item.addedbyuid,
+        addedbyname: item.addedbyname,
+        addedbyprofile: item.addedbyprofile,
+        lastmessagesent: Date.now(),
+      });
+    });
+    set(push(ref(db , "groupmessege/")) , {
+      type: "groupmanagment/groupadmin-change",
+      groupuid: activeGroupData.groupuid,
+      oldadmin: activeUserData.displayName,
+      newadmin: newAdminInfo.membername,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    })
+    localStorage.setItem("activeGroup", JSON.stringify({ 
+      ...activeGroupData, 
+      groupadminuid: newAdminInfo.memberuid,
+      groupadminname: newAdminInfo.membername,
+      groupadminprofile: newAdminInfo.memberprofile,
+    }));
+    dispatch(activeGroup({ 
+      ...activeGroupData,
+      groupadminuid: newAdminInfo.memberuid,
+      groupadminname: newAdminInfo.membername,
+      groupadminprofile: newAdminInfo.memberprofile,
+    }));
+    setAdminRoleChangeModal(false)
   }
 
   return activeGroupData == null ? (
@@ -1176,6 +1071,12 @@ const ChatWithGroup = () => {
                   type={item.type}
                   whoLeft={item.wholeft}
                 />
+              ) : item.type == "groupmanagment/groupadmin-change" ? (
+                <GroupManagementMessage
+                  type={item.type}
+                  oldadmin={item.oldadmin}
+                  newadmin={item.newadmin}
+                />
               ) : item.type == "groupmanagment/groupphoto-changed" ? (
                 <GroupManagementMessage
                   type={item.type}
@@ -1398,81 +1299,11 @@ const ChatWithGroup = () => {
             )
           )}
           <div ref={lastMessageRef} />
-          <Modal
+          <MessageForwardModal
             modalShow={messageForwardModalShow}
             modalClose={setMessageForwardModalShow}
-            className={"w-[600px] h-[550px] py-6 px-[40px]"}
-          >
-            <RxCross2
-              onClick={() => setMessageForwardModalShow(false)}
-              className="absolute top-3 right-3 bg-primaryBgColor box-content p-2 text-lg rounded-full cursor-pointer"
-            />
-            <Box className={"h-[31%]"}>
-              <Typography className="text-lg font-bold mb-3">
-                Forward messege
-              </Typography>
-              <Box
-                className={"w-full border border-[#f2f2f2] rounded-3xl mb-2"}
-              >
-                <Button
-                  onClick={() => setMessageForwardListOpen("friend")}
-                  className={
-                    messageForwardListOpen == "friend"
-                      ? "w-2/4 bg-[#dddcea] text-black rounded-3xl py-2.5 font-open-sans"
-                      : "w-2/4 hover:bg-[#f0f0f0] rounded-3xl py-2.5 font-open-sans text-secoundaryText"
-                  }
-                >
-                  Friends
-                </Button>
-                <Button
-                  onClick={() => setMessageForwardListOpen("group")}
-                  className={
-                    messageForwardListOpen == "group"
-                      ? "w-2/4 bg-[#dddcea] text-black rounded-3xl py-2.5 font-open-sans"
-                      : "w-2/4 hover:bg-[#f0f0f0] rounded-3xl py-2.5 font-open-sans text-secoundaryText"
-                  }
-                >
-                  Groups
-                </Button>
-              </Box>
-              {messageForwardListOpen == "friend" ? (
-                <SearchBox
-                  onChange={(e) => setForwardSearchFriend(e.target.value)}
-                  placeholder={"Search friend"}
-                />
-              ) : (
-                <SearchBox
-                  onChange={(e) => setForwardSearchGroup(e.target.value)}
-                  placeholder={"Search group"}
-                />
-              )}
-            </Box>
-            <Box className={"h-[69%] overflow-y-auto"}>
-              {messageForwardListOpen == "friend"
-                ? filteredFriendForwardList.map((item) => (
-                    <MessageForwardListItem
-                      profile={
-                        activeUserData?.uid == item.senderuid
-                          ? item.reciverprofile
-                          : item.senderprofile
-                      }
-                      name={
-                        activeUserData?.uid == item.senderuid
-                          ? item.recivername
-                          : item.sendername
-                      }
-                      sendButton={() => handleForwardMessegeSend(item)}
-                    />
-                  ))
-                : filteredGroupForwardList.map((item) => (
-                    <MessageForwardListItem
-                      name={item.groupname}
-                      profile={item.groupphoto}
-                      sendButton={() => handleForwardMessegeSend(item)}
-                    />
-                  ))}
-            </Box>
-          </Modal>
+            forwardMessegeInfo={forwardMessegeInfo}
+          />
         </Box>
         <Box
           className={
@@ -2006,26 +1837,95 @@ const ChatWithGroup = () => {
               {groupMemberShow && (
                 <Box
                   className={
-                    "px-2.5 py-2 border border-primaryBorder rounded-md mb-1"
+                    "px-2 py-2 border border-primaryBorder rounded-md mb-1"
                   }
                 >
-                  {groupMemberLlist.length > 0 ? (
-                    groupMemberLlist.map((item) => (
-                      <GroupMemberListItem
-                        memberUid={item.memberuid}
-                        memberName={item.membername}
-                        memberProfile={item.memberprofile}
-                        addedBy={item.addedbyname}
-                        removeButton={() => handleMemberRemove(item)}
-                      />
-                    ))
-                  ) : (
-                    <Typography className="text-center">
-                      There are no member in this group
-                    </Typography>
-                  )}
+                  {groupMemberList.map((item) => (
+                    <GroupMemberListItem
+                      memberUid={item.memberuid}
+                      memberName={item.membername}
+                      memberProfile={item.memberprofile}
+                      addedBy={item.addedbyname}
+                      removeButton={() => handleMemberRemoveModalShow(item)}
+                      makeAdminButton={() => handleMakeAdminModalShow(item)}
+                    />
+                  ))}
                 </Box>
               )}
+              <Modal
+                modalShow={memberRemoveModal}
+                modalClose={setMemberRemoveModal}
+                className={"w-[600px] px-7 py-5"}
+              >
+                <Flex alignItems={"center"} className={"gap-x-2.5"}> 
+                  <TbAlertCircle className="text-[32px] text-red-400"/>
+                  <Typography
+                    variant="h3"
+                    className="text-3xl font-semibold font-open-sans"
+                  >
+                    Remove From Chat?
+                  </Typography>
+                </Flex>
+                <Typography className="text-lg font-open-sans text-secoundaryText mt-3">
+                  Are you sure you want to remove <span className="font-semibold text-black">{removedMemberInfo.membername}</span> from the conversation? They will no longer be able to send or receive new messages.
+                </Typography>
+                <Flex justifyContent={"between"}>
+                  <Button
+                    onClick={handleMemberRemove}
+                    className={
+                      "w-[49%] mt-4 py-2.5 rounded-md bg-[#2176ff] text-white font-semibold font-open-sans transition-all duration-200 active:scale-[0.98]"
+                    }
+                  >
+                    Remove from group
+                  </Button>
+                  <Button
+                    onClick={() => setMemberRemoveModal(false)}
+                    className={
+                      "w-[49%] mt-4 py-2.5 rounded-md bg-[#cacad8] font-semibold font-open-sans transition-all duration-200 active:scale-[0.98]"
+                    }
+                  >
+                    Cancel
+                  </Button>
+
+                </Flex>
+              </Modal>
+              <Modal
+                modalShow={adminRoleChangeModal}
+                modalClose={setAdminRoleChangeModal}
+                className={"w-[600px] px-7 py-5"}
+              >
+                <Flex alignItems={"center"} className={"gap-x-2.5"}> 
+                  <TbAlertCircle className="text-[32px] text-red-400"/>
+                  <Typography
+                    variant="h3"
+                    className="text-3xl font-semibold font-open-sans"
+                  >
+                    Warning: Admin Role Transfer
+                  </Typography>
+                </Flex>
+                <Typography className="text-lg font-open-sans text-secoundaryText mt-3">
+                  Are you sure you want to make <span className="font-semibold text-black">{newAdminInfo.membername}</span> an admin? This action cannot be undone.
+                </Typography>
+                <Flex justifyContent={"between"}>
+                  <Button
+                    onClick={handleMakeAdmin}
+                    className={
+                      "w-[49%] mt-4 py-2.5 rounded-md bg-[#2176ff] text-white font-semibold font-open-sans transition-all duration-200 active:scale-[0.98]"
+                    }
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    onClick={() => setAdminRoleChangeModal(false)}
+                    className={
+                      "w-[49%] mt-4 py-2.5 rounded-md bg-[#cacad8] font-semibold font-open-sans transition-all duration-200 active:scale-[0.98]"
+                    }
+                  >
+                    Cancel
+                  </Button>
+
+                </Flex>
+              </Modal>
             </Box>
             <Box>
               <Flex
@@ -2046,7 +1946,7 @@ const ChatWithGroup = () => {
               {membarRequstShow && (
                 <Box
                   className={
-                    "px-2.5 py-2 border border-primaryBorder rounded-md mb-1"
+                    "px-2 py-2 border border-primaryBorder rounded-md mb-1"
                   }
                 >
                   {groupJoinRequstList.length > 0 ? (
@@ -2066,6 +1966,30 @@ const ChatWithGroup = () => {
                 </Box>
               )}
             </Box>
+            <Modal
+              modalShow={restrictedActionModal}
+              modalClose={setRestrictedActionModal}
+              className={"w-[600px] px-8 py-5"}
+            >
+              <Flex alignItems={"center"} className={"gap-x-2.5"}>
+                <MdOutlinePrivacyTip className="text-3xl text-red-400" />
+                <Typography variant="h3" className="text-3xl">
+                  Restricted Action
+                </Typography>
+              </Flex>
+              <Typography className="text-lg mt-3 font-open-sans text-secoundaryText">
+                This feature is restricted to admins only. To perform this
+                action, please contact an administrator.
+              </Typography>
+              <Button
+                onClick={() => setRestrictedActionModal(false)}
+                className={
+                  "w-full py-2.5 mt-3 bg-[#0861f2] text-white font-semibold font-open-sans rounded-md"
+                }
+              >
+                Close
+              </Button>
+            </Modal>
             <Flex
               onClick={() => setGroupLeaveModal(true)}
               alignItems={"center"}
@@ -2082,35 +2006,64 @@ const ChatWithGroup = () => {
               modalClose={setGroupLeaveModal}
               className={"py-5 px-7 w-[600px]"}
             >
-              <Typography variant="h3" className="text-2xl text-black">
-                Are you sure you want to leave the group?
-              </Typography>
-              <Typography
-                variant="h3"
-                className="text-secoundaryText mt-4 font-open-sans"
-              >
-                You are about to leave the group. If you proceed, you will no
-                longer receive updates or participate in group discussions. Are
-                you sure you want to leave? This action cannot be undone.
-              </Typography>
-              <Box className={"flex items-center justify-between mt-3"}>
-                <Button
-                  onClick={handleGroupLeave}
-                  className={
-                    "w-[49%] py-2 text-white rounded-md bg-[#2176ff] transition-all duration-200 ease-in-out active:scale-[0.98]"
-                  }
-                >
-                  Leave Group
-                </Button>
-                <Button
-                  onClick={() => setGroupLeaveModal(false)}
-                  className={
-                    "w-[49%] py-2 rounded-md bg-[#d8dadf] transition-all duration-200 ease-in-out active:scale-[0.98]"
-                  }
-                >
-                  Cancel
-                </Button>
-              </Box>
+              {activeUserData.uid == activeGroupData.groupadminuid ? (
+                <Box>
+                  <Typography
+                    variant="h3"
+                    className="text-3xl font-semibold font-open-sans"
+                  >
+                    You are Admin!
+                  </Typography>
+                  <Typography className="text-lg font-open-sans text-secoundaryText mt-3">
+                    Heads Up! Before you leave this group, you'll need to assign
+                    a new admin to keep things running smoothly.
+                  </Typography>
+                  <Button
+                    onClick={() => setGroupLeaveModal(false)}
+                    className={
+                      "w-full mt-4 py-2.5 rounded-md bg-[#cacad8] font-semibold font-open-sans transition-all duration-200 active:scale-[0.98]"
+                    }
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              ) : (
+                <Box>
+                  <Typography
+                    variant="h3"
+                    className="text-2xl text-black font-semibold font-open-sans"
+                  >
+                    Are you sure you want to leave the group?
+                  </Typography>
+                  <Typography
+                    variant="h3"
+                    className="text-secoundaryText mt-3 font-open-sans"
+                  >
+                    You are about to leave the group. If you proceed, you will
+                    no longer receive updates or participate in group
+                    discussions. Are you sure you want to leave? This action
+                    cannot be undone.
+                  </Typography>
+                  <Box className={"flex items-center justify-between mt-4"}>
+                    <Button
+                      onClick={handleGroupLeave}
+                      className={
+                        "w-[49%] py-2.5 font-semibold text-white rounded-md bg-[#2176ff] transition-all duration-200 ease-in-out active:scale-[0.98]"
+                      }
+                    >
+                      Leave Group
+                    </Button>
+                    <Button
+                      onClick={() => setGroupLeaveModal(false)}
+                      className={
+                        "w-[49%] py-2.5 font-semibold rounded-md bg-[#d8dadf] transition-all duration-200 ease-in-out active:scale-[0.98]"
+                      }
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Box>
+              )}
             </Modal>
           </Box>
         </Box>

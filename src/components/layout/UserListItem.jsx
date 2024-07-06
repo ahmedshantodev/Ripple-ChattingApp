@@ -60,11 +60,7 @@ const UserListItem = ({
     <Box
       className={`${className} border border-primaryBorder rounded-md overflow-hidden`}
     >
-      <Image
-        src={userProfile}
-        alt={userName}
-        className={"w-full"}
-      />
+      <Image src={userProfile} alt={userName} className={"w-full"} />
       <Box className={"pb-2 px-2"}>
         <Box className={"h-[54px] flex items-end mt-[2px]"}>
           <Typography
@@ -74,12 +70,21 @@ const UserListItem = ({
             {userName}
           </Typography>
         </Box>
-        <Typography
-          variant="h3"
-          className=" font-open-sans text-[14px] ml-1 text-secoundaryText"
-        >
-          {mutualFriend.length} Mutual Friends
-        </Typography>
+        {mutualFriend.length >= 1 ? (
+          <Typography
+            variant="h3"
+            className=" font-open-sans text-[14px] ml-1 text-secoundaryText"
+          >
+            {mutualFriend.length} Mutual Friends
+          </Typography>
+        ) : (
+          <Typography
+            variant="h3"
+            className=" font-open-sans text-[14px] ml-1 text-secoundaryText"
+          >
+            no Mutual Friends
+          </Typography>
+        )}
         {button == "pending" ? (
           <Button
             onClick={cencelRequstBtn}

@@ -11,7 +11,6 @@ import {
 import Pages from "./pages/Pages";
 import EmailVerification from "./pages/EmailVerification";
 import Chat from "./pages/Chat";
-// import Groups from "./pages/Groups";
 import ForgotPassword from "./pages/ForgotPassword";
 import Friends from "./pages/Friends";
 import AllFriends from "./components/section/AllFriends";
@@ -40,7 +39,6 @@ const App = () => {
             <Route path="chat-with-friend" element={<ChatWithFriend />} />
             <Route path="chat-with-group" element={<ChatWithGroup />} />
           </Route>
-          {/* <Route path="groups" element={<Groups />} /> */}
           <Route path="friends" element={<Friends />}>
             <Route path="all-friends" element={<AllFriends />} />
             <Route path="add-friends" element={<AddFriends />} />

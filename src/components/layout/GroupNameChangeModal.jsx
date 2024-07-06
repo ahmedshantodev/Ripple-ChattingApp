@@ -22,6 +22,13 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
   const modalRef = useRef();
   const boxRef = useRef();
 
+  const time = new Date();
+  const year = time.getFullYear();
+  const month = time.getMonth() + 1;
+  const date = time.getDate();
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
+
   useEffect(() => {
     let groupRef = ref(db, "groupmembers");
     onValue(groupRef, (snapshot) => {
@@ -52,6 +59,7 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
         groupadminuid: activeGroupData.groupadminuid,
         groupadminname: activeGroupData.groupadminname,
         groupadminprofile: activeGroupData.groupadminprofile,
+        lastmessagesent: Date.now(),
       }).then(() => {
         groupList.map((item) => {
           set(ref(db, "groupmembers/" + item.gid), {
@@ -67,6 +75,7 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
             addedbyuid: item.addedbyuid,
             addedbyname: item.addedbyname,
             addedbyprofile: item.addedbyprofile,
+            lastmessagesent: Date.now(),
           });
         });
         set(push(ref(db , "groupmessege/")) , {
@@ -74,7 +83,8 @@ const GroupNameChangeModal = ({ modalShow, modalClose }) => {
           groupuid: activeGroupData.groupuid,
           whochanged: activeUserData.displayName,
           oldgroupname: activeGroupData.groupname,
-          newgroupname: newGroupName
+          newgroupname: newGroupName,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
         })
       }).then(() => {
         toast.success(

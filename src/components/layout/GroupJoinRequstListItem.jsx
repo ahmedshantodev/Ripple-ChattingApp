@@ -8,7 +8,7 @@ import Typography from "./Typography";
 
 const JoinRequstItem = ({ profile, name, acceptButton, deleteButton }) => {
   return (
-    <Box className={"py-1 rounded-md flex justify-between items-center"}>
+    <Box className={"py-[6px] px-2 mb-1 bg-[#f5f5f5] rounded-md flex justify-between items-center"}>
       <Flex alignItems={"center"} className={"gap-x-2"}>
         <Image
           src={profile}

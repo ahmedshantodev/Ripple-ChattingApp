@@ -4,13 +4,11 @@ import Modal from "../components/layout/Modal";
 import Input from "../components/layout/Input";
 import Image from "../components/layout/Image";
 import Button from "../components/layout/Button";
-import SearchBox from "../components/layout/SearchBox";
 import SenderImage from "../components/layout/SenderImage";
 import React, { useEffect, useRef, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import Typography from "../components/layout/Typography";
 import ReciverImage from "../components/layout/ReciverImage";
-import MessageForwardListItem from "../components/layout/MessageForwardListItem";
 import SenderVideo from "../components/layout/SenderVideo";
 import ReciverVideo from "../components/layout/ReciverVideo";
 import SenderFile from "../components/layout/SenderFile";
@@ -29,14 +27,12 @@ import {
   MdOutlineNotificationsOff,
   MdOutlinePrivacyTip,
 } from "react-icons/md";
-import { FaMicrophone } from "react-icons/fa";
 import { HiMiniGif } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import { RiPhoneFill, RiMovieLine } from "react-icons/ri";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { AiTwotoneVideoCamera } from "react-icons/ai";
-import { RxCross2 } from "react-icons/rx";
 import { MdCancel } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa6";
 import {
@@ -76,30 +72,31 @@ import SenderLike from "../components/layout/SenderLike";
 import { AudioRecorder } from 'react-audio-voice-recorder';
 import SenderVoiceMessage from "../components/layout/SenderVoiceMessage";
 import ReciverVoiceMessage from "../components/layout/ReciverVoiceMessage";
+import MessageForwardModal from "../components/layout/MessageForwardModal";
 
 const ChatWithFriend = () => {
   const db = getDatabase();
   const storage = getStorage();
   const activeUserData = useSelector((state) => state.user.information);
   const activeChatData = useSelector((state) => state.activeChat.information);
-  const [friendsProfileOpen, setFriendsProfileOpen] = useState(true);
-
-  const [friendList, setFriendList] = useState([]);
-  const [groupList, setGroupList] = useState([]);
-
-  const [forwardSearchFriend, setForwardSearchFriend] = useState("");
-  const [forwardSearchGroup, setForwardSearchGroup] = useState("");
-  const [messageForwardModalShow, setMessageForwardModalShow] = useState(false);
-  const [messageForwardListOpen, setMessageForwardListOpen] = useState("friend");
-  const [messege, setMessege] = useState("");
-  const [forwardMessegeInfo, setForwardMessegeInfo] = useState("");
-  const [replyMessegeInfo, setreplyMessegeInfo] = useState("");
   const [messegeList, setMessegeList] = useState([]);
+  const [messege, setMessege] = useState("");
+  const [voiceMessageUrl, setVoiceMessageUrl] = useState("")
   const [blockList, setBlockList] = useState([]);
   const [blockModalShow, setBlockModalShow] = useState(false);
   const [unblockModalShow, setUnblockModalShow] = useState(false);
+  const lastMessageRef = useRef();
+  const [editedMessageInfo, setEditedMessageInfo] = useState("");
+  const [messageRemoveModal, setMessageRemoveModal] = useState(false);
+  const [removedMessageInfo, setRemovedMessageInfo] = useState("");
+  const [replyMessegeInfo, setreplyMessegeInfo] = useState("");
+  const [forwardMessegeInfo, setForwardMessegeInfo] = useState("");
   const [emojiPickerShow, setEmojiPickerShow] = useState(false);
   const [gifPickerShow, setGifPickerShow] = useState(false);
+  const anotherFileSelectButtonRef = useRef();
+  const [fileSizeErrorShow, setFileSizeErrorShow] = useState(false);
+  const [messageForwardModalShow, setMessageForwardModalShow] = useState(false);  
+  const [friendsProfileOpen, setFriendsProfileOpen] = useState(true);
   const [messegeNotification, setMessegeNotification] = useState(true);
   const [mediaDropdownOpen, setMediaDropdwonOpen] = useState(true);
   const [privacyDropdownOpen, setPrivacyDropdwonOpen] = useState(true);
@@ -108,13 +105,6 @@ const ChatWithFriend = () => {
   const [chatImageList, setChatImageList] = useState([]);
   const [chatVideoList, setChatVideoList] = useState([]);
   const [chatFileList, setChatFileList] = useState([]);
-  const [fileSizeErrorShow, setFileSizeErrorShow] = useState(false);
-  const [editedMessageInfo, setEditedMessageInfo] = useState("");
-  const [messageRemoveModal, setMessageRemoveModal] = useState(false);
-  const [removedMessageInfo, setRemovedMessageInfo] = useState("");
-  const [voiceMessageUrl, setVoiceMessageUrl] = useState("")
-  const anotherFileSelectButtonRef = useRef();
-  const lastMessageRef = useRef();
 
   const time = new Date();
   const year = time.getFullYear();
@@ -125,53 +115,6 @@ const ChatWithFriend = () => {
   const inputRef = useRef();
   const emojiBoxRef = useRef();
   const gifBoxRef = useRef();
-
-  const addAudioElement = (blob) => {
-    const url = URL.createObjectURL(blob);
-    setVoiceMessageUrl(url)
-  };
-
-  const handleSendVoiceMessage = () => {
-    set(push(ref(db, "singlemessege/")), {
-      type: "voice/normal",
-      voice: voiceMessageUrl,
-      reciveruid: activeChatData?.uid,
-      recivername: activeChatData?.name,
-      reciverprofile: activeChatData?.profile,
-      senderuid: activeUserData.uid,
-      sendername: activeUserData.displayName,
-      senderprofile: activeUserData.photoURL,
-      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    }).then(() => {
-      setVoiceMessageUrl("");
-    });
-  }
-
-  useEffect(() => {
-    const friendListRef = ref(db, "friends");
-    onValue(friendListRef, (snapshot) => {
-      const FriendListArray = [];
-      snapshot.forEach((item) => {
-        if (activeUserData?.uid == item.val().reciveruid || activeUserData?.uid == item.val().senderuid) {
-          FriendListArray.push(item.val());
-        }
-      });
-      setFriendList(FriendListArray);
-    });
-  }, []);
-
-  useEffect(() => {
-    let groupRef = ref(db, "groupmembers");
-    onValue(groupRef, (snapshot) => {
-      let groupListArray = [];
-      snapshot.forEach((item) => {
-        if (activeUserData?.uid == item.val().memberuid) {
-          groupListArray.push(item.val());
-        }
-      });
-      setGroupList(groupListArray);
-    });
-  }, []);
 
   useEffect(() => {
     let messegeRef = ref(db, "singlemessege/");
@@ -189,6 +132,18 @@ const ChatWithFriend = () => {
     });
   }, [activeChatData]);
 
+  const lastMessageSendTimeUpdate = () => {
+    set(ref(db, "friends/" + activeChatData.friendid), {
+      reciveruid: activeChatData.uid,
+      recivername: activeChatData.name,
+      reciverprofile: activeChatData.profile,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      lastmessagesent: Date.now(),
+    })
+  }
+  
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView()
   } , [messegeList])
@@ -208,7 +163,20 @@ const ChatWithFriend = () => {
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     })
+    lastMessageSendTimeUpdate()
   }
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (!emojiBoxRef.current?.contains(e.target)) {
+        setEmojiPickerShow(false);
+      }
+    });
+  }, []);
+  
+  const handleEmojiClick = (e) => {
+    setMessege(messege + e.emoji);
+  };
 
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
@@ -360,9 +328,9 @@ const ChatWithFriend = () => {
       set(push(ref(db, "singlemessege/")), {
         type: "text/normal",
         text: messege,
-        reciveruid: activeChatData?.uid,
-        recivername: activeChatData?.name,
-        reciverprofile: activeChatData?.profile,
+        reciveruid: activeChatData.uid,
+        recivername: activeChatData.name,
+        reciverprofile: activeChatData.profile,
         senderuid: activeUserData.uid,
         sendername: activeUserData.displayName,
         senderprofile: activeUserData.photoURL,
@@ -371,6 +339,7 @@ const ChatWithFriend = () => {
         setMessege("");
       });
     }
+    lastMessageSendTimeUpdate()
   };
 
   const handleMessageEdit = (item) => {
@@ -385,251 +354,35 @@ const ChatWithFriend = () => {
     setMessege("");
   };
 
-  const handleMessageRemoveModalShow = (item) => {
-    setRemovedMessageInfo(item);
-    setMessageRemoveModal(true);
+  const addAudioElement = (blob) => {
+    const url = URL.createObjectURL(blob);
+    setVoiceMessageUrl(url)
   };
 
-  const handleMessageRemove = () => {
-    set(ref(db, "singlemessege/" + removedMessageInfo.messegeid), {
-      type: "deleted",
+  const handleSendVoiceMessage = () => {
+    set(push(ref(db, "singlemessege/")), {
+      type: "voice/normal",
+      voice: voiceMessageUrl,
       reciveruid: activeChatData?.uid,
       recivername: activeChatData?.name,
       reciverprofile: activeChatData?.profile,
       senderuid: activeUserData.uid,
       sendername: activeUserData.displayName,
       senderprofile: activeUserData.photoURL,
-      senttime: removedMessageInfo.senttime,
-    }).then(() => {
-      setRemovedMessageInfo("");
-      setMessageRemoveModal(false);
-    });
-  };
-
-  const handleMessageRemoveCancel = () => {
-    setRemovedMessageInfo("");
-    setMessageRemoveModal(false);
-  };
-
-  const handleReply = (item) => {
-    setEditedMessageInfo("");
-    setreplyMessegeInfo(item);
-    inputRef.current?.focus();
-  };
-
-  const filteredFriendForwardList = friendList.filter((item) => {
-    const uid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid;
-    const name = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername;
-    return (
-      !blockList.includes(uid + activeUserData.uid) &&
-      !blockList.includes(activeUserData.uid + uid) &&
-      (forwardSearchFriend == "" ? item : name.toLowerCase().includes(forwardSearchFriend.toLowerCase()))
-    );
-  });
-
-  const filteredGroupForwardList = groupList.filter((item) => {
-    return forwardSearchGroup == "" ? item : item.groupname.toLowerCase().includes(forwardSearchGroup.toLowerCase());
-  });
-
-  const handleMessegeForwardListShow = (item) => {
-    setMessageForwardModalShow(true);
-    setForwardMessegeInfo(item);
-  };
-
-  const handleForwardMessegeSend = (item) => {
-    if (messageForwardListOpen == "friend") {
-      const reciveruid = activeUserData.uid == item.reciveruid ? item.senderuid : item.reciveruid;
-      const recivername = activeUserData.uid == item.reciveruid ? item.sendername : item.recivername;
-      const reciverprofile = activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile;
-
-      if (forwardMessegeInfo.type.includes("text")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "text/forwarded",
-          text: forwardMessegeInfo.text,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("voice")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "voice/forwarded",
-          voice: forwardMessegeInfo.voice,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("image")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "image/forwarded",
-          image: forwardMessegeInfo.image,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("video")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "video/forwarded",
-          video: forwardMessegeInfo.video,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("file")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "file/forwarded",
-          file: forwardMessegeInfo.file,
-          filename: forwardMessegeInfo.filename,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("gif")) {
-        set(push(ref(db, "singlemessege/")), {
-          type: "gif/forwarded",
-          gif: forwardMessegeInfo.gif,
-          gifname: forwardMessegeInfo.gifname,
-          reciveruid: reciveruid,
-          recivername: recivername,
-          reciverprofile: reciverprofile,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      }
-    } else if (messageForwardListOpen == "group") {
-      if (forwardMessegeInfo.type.includes("text")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "text/forwarded",
-          text: forwardMessegeInfo.text,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("voice")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "voice/forwarded",
-          voice: forwardMessegeInfo.voice,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("image")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "image/forwarded",
-          image: forwardMessegeInfo.image,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("video")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "video/forwarded",
-          video: forwardMessegeInfo.video,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("file")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "file/forwarded",
-          file: forwardMessegeInfo.file,
-          filename: forwardMessegeInfo.filename,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      } else if (forwardMessegeInfo.type.includes("gif")) {
-        set(push(ref(db, "groupmessege/")), {
-          type: "gif/forwarded",
-          gif: forwardMessegeInfo.gif,
-          gifname: forwardMessegeInfo.gifname,
-          groupuid: item.groupuid,
-          groupname: item.groupname,
-          groupphoto: item.groupphoto,
-          senderuid: activeUserData.uid,
-          sendername: activeUserData.displayName,
-          senderprofile: activeUserData.photoURL,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-      }
-    }
-  };
-
-  useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (!emojiBoxRef.current?.contains(e.target)) {
-        setEmojiPickerShow(false);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (!gifBoxRef.current?.contains(e.target)) {
-        setGifPickerShow(false);
-      }
-    });
-  }, []);
-
-  const handleEmojiClick = (e) => {
-    setMessege(messege + e.emoji);
-  };
-
-  const handleGifClick = (e) => {
-    set(push(ref(db, "singlemessege/")), {
-      type: "gif/normal",
-      gif: e.url,
-      gifname: e.description,
-      reciveruid: activeChatData?.uid,
-      recivername: activeChatData.name,
-      reciverrofile: activeChatData.profile,
-      senderuid: activeUserData.uid,
-      sendername: activeUserData.displayName,
-      senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    }).then(() => {
+      setVoiceMessageUrl("");
+      set(ref(db, "friends/" + activeChatData.friendid), {
+        reciveruid: activeChatData.uid,
+        recivername: activeChatData.name,
+        reciverprofile: activeChatData.profile,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
+        lastmessagesent: Date.now(),
+      })
     });
-  };
+  }
 
   const handleFileClick = (e) => {
     let file = e.target.files[0];
@@ -689,6 +442,7 @@ const ChatWithFriend = () => {
         });
       });
     }
+    lastMessageSendTimeUpdate()
   };
 
   useEffect(() => {
@@ -698,6 +452,76 @@ const ChatWithFriend = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    document.body.addEventListener("click", (e) => {
+      if (!gifBoxRef.current?.contains(e.target)) {
+        setGifPickerShow(false);
+      }
+    });
+  }, []);
+
+  const handleGifClick = (e) => {
+    set(push(ref(db, "singlemessege/")), {
+      type: "gif/normal",
+      gif: e.url,
+      gifname: e.description,
+      reciveruid: activeChatData?.uid,
+      recivername: activeChatData.name,
+      reciverrofile: activeChatData.profile,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+    });
+    lastMessageSendTimeUpdate()
+  };
+
+  const handleReply = (item) => {
+    setEditedMessageInfo("");
+    setreplyMessegeInfo(item);
+    inputRef.current?.focus();
+  };
+
+  const handleMessegeForwardListShow = (item) => {
+    setMessageForwardModalShow(true);
+    setForwardMessegeInfo(item);
+  };
+
+  const handleMessageRemoveModalShow = (item) => {
+    setRemovedMessageInfo(item);
+    setMessageRemoveModal(true);
+  };
+
+  const handleMessageRemove = () => {
+    set(ref(db, "singlemessege/" + removedMessageInfo.messegeid), {
+      type: "deleted",
+      reciveruid: activeChatData?.uid,
+      recivername: activeChatData?.name,
+      reciverprofile: activeChatData?.profile,
+      senderuid: activeUserData.uid,
+      sendername: activeUserData.displayName,
+      senderprofile: activeUserData.photoURL,
+      senttime: removedMessageInfo.senttime,
+    }).then(() => {
+      setRemovedMessageInfo("");
+      setMessageRemoveModal(false);
+      set(ref(db, "friends/" + activeChatData.friendid), {
+        reciveruid: activeChatData.uid,
+        recivername: activeChatData.name,
+        reciverprofile: activeChatData.profile,
+        senderuid: activeUserData.uid,
+        sendername: activeUserData.displayName,
+        senderprofile: activeUserData.photoURL,
+        lastmessagesent: Date.now(),
+      })
+    });
+  };
+
+  const handleMessageRemoveCancel = () => {
+    setRemovedMessageInfo("");
+    setMessageRemoveModal(false);
+  };
 
   const handleMediaImageShow = () => {
     setMediaShow(true);
@@ -1306,81 +1130,11 @@ const ChatWithFriend = () => {
             )
           )}
           <div ref={lastMessageRef} />
-          <Modal
+          <MessageForwardModal
             modalShow={messageForwardModalShow}
             modalClose={setMessageForwardModalShow}
-            className={"w-[600px] h-[550px] py-6 px-[40px]"}
-          >
-            <RxCross2
-              onClick={() => setMessageForwardModalShow(false)}
-              className="absolute top-3 right-3 bg-primaryBgColor box-content p-2 text-lg rounded-full cursor-pointer"
-            />
-            <Box className={"h-[31%]"}>
-              <Typography className="text-lg font-bold mb-3">
-                Forward messege
-              </Typography>
-              <Box
-                className={"w-full border border-[#f2f2f2] rounded-3xl mb-2"}
-              >
-                <Button
-                  onClick={() => setMessageForwardListOpen("friend")}
-                  className={
-                    messageForwardListOpen == "friend"
-                      ? "w-2/4 bg-[#dddcea] text-black rounded-3xl py-2.5 font-open-sans"
-                      : "w-2/4 hover:bg-[#f0f0f0] rounded-3xl py-2.5 font-open-sans text-secoundaryText"
-                  }
-                >
-                  Friends
-                </Button>
-                <Button
-                  onClick={() => setMessageForwardListOpen("group")}
-                  className={
-                    messageForwardListOpen == "group"
-                      ? "w-2/4 bg-[#dddcea] text-black rounded-3xl py-2.5 font-open-sans"
-                      : "w-2/4 hover:bg-[#f0f0f0] rounded-3xl py-2.5 font-open-sans text-secoundaryText"
-                  }
-                >
-                  Groups
-                </Button>
-              </Box>
-              {messageForwardListOpen == "friend" ? (
-                <SearchBox
-                  onChange={(e) => setForwardSearchFriend(e.target.value)}
-                  placeholder={"Search friend"}
-                />
-              ) : (
-                <SearchBox
-                  onChange={(e) => setForwardSearchGroup(e.target.value)}
-                  placeholder={"Search group"}
-                />
-              )}
-            </Box>
-            <Box className={"h-[69%] overflow-y-auto"}>
-              {messageForwardListOpen == "friend"
-                ? filteredFriendForwardList.map((item) => (
-                    <MessageForwardListItem
-                      profile={
-                        activeUserData?.uid == item.senderuid
-                          ? item.reciverprofile
-                          : item.senderprofile
-                      }
-                      name={
-                        activeUserData?.uid == item.senderuid
-                          ? item.recivername
-                          : item.sendername
-                      }
-                      sendButton={() => handleForwardMessegeSend(item)}
-                    />
-                  ))
-                : filteredGroupForwardList.map((item) => (
-                    <MessageForwardListItem
-                      name={item.groupname}
-                      profile={item.groupphoto}
-                      sendButton={() => handleForwardMessegeSend(item)}
-                    />
-                  ))}
-            </Box>
-          </Modal>
+            forwardMessegeInfo={forwardMessegeInfo}
+          />
         </Box>
         {blockList.includes(activeChatData?.uid + activeUserData?.uid) ? (
           <Box

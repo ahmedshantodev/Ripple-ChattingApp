@@ -16,7 +16,7 @@ const MessageForwardListItem = ({ profile, name, sendButton }) => {
         <Image
           src={profile}
           alt={name}
-          className={"w-[65px] h-[65px] object-cover rounded-full"}
+          className={"w-[60px] aspect-square object-cover rounded-full"}
         />
         <Typography
           variant={"h3"}

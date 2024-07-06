@@ -44,6 +44,7 @@ const FriendRequsts = () => {
       sendername: item.sendername,
       senderprofile: item.senderprofile,
       senderuid: item.senderuid,
+      lastmessagesent: Date.now(),
     }).then(() => {
       remove(ref(db, "friendrequsts/" + item.friendRequstId));
     });

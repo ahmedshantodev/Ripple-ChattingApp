@@ -48,10 +48,7 @@ const FriendListItem = ({
       let friendListArray = [];
       snapshot.forEach((item) => {
         if (uid == item.val().senderuid || uid == item.val().reciveruid) {
-          const friendId =
-            uid == item.val().senderuid
-              ? item.val().reciveruid
-              : item.val().senderuid;
+          const friendId = uid == item.val().senderuid ? item.val().reciveruid : item.val().senderuid;
           friendListArray.push(friendId);
         }
       });
@@ -64,14 +61,8 @@ const FriendListItem = ({
     onValue(friendRequstRef, (snapshot) => {
       let friendListArray = [];
       snapshot.forEach((item) => {
-        if (
-          activeUserData.uid == item.val().senderuid ||
-          activeUserData.uid == item.val().reciveruid
-        ) {
-          const friendId =
-            activeUserData.uid == item.val().senderuid
-              ? item.val().reciveruid
-              : item.val().senderuid;
+        if (activeUserData.uid == item.val().senderuid || activeUserData.uid == item.val().reciveruid) {
+          const friendId = activeUserData.uid == item.val().senderuid ? item.val().reciveruid : item.val().senderuid;
           friendListArray.push(friendId);
         }
       });

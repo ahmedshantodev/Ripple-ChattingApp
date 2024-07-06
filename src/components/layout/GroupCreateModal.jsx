@@ -45,6 +45,7 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
         groupadminuid: activeUserData.uid,
         groupadminname: activeUserData.displayName,
         groupadminprofile: activeUserData.photoURL,
+        lastmessagesent: Date.now(),
       }).then(() => {
         set(push(ref(db, "groupmembers/")), {
           groupuid: groupId,
@@ -59,6 +60,7 @@ const GroupCreateModal = ({ modalShow, modalClose }) => {
           addedbyuid: activeUserData.uid,
           addedbyname: activeUserData.displayName,
           addedbyprofile: activeUserData.photoURL,
+          lastmessagesent: Date.now(),
         })
       }).then(() => {
         toast.success(
