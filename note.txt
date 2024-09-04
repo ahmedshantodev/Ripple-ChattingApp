@@ -1,2 +1,0 @@
-2 line ar boro text hole line ar sesh thre dots boshbe
-text-ellipsis overflow-hidden line-clamp-2 w-[500px]

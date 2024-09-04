@@ -21,6 +21,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
+  const activeGroupData = useSelector((state) => state.activeGroup.information);
   const [friendList, setFriendList] = useState([]);
   const [groupList, setGroupList] = useState([]);
   let chatList = [...friendList, ...groupList];
@@ -55,6 +56,17 @@ const Chat = () => {
       setGroupList(groupListArray);
     });
   }, []);
+
+// group admin user ke group theke kick korle user ar redux ar data faka hoye jabe
+  const groupExists = groupList.some((item) => item.groupuid === activeGroupData?.groupuid);
+  
+  useEffect(() => {
+    if (groupExists == false) {
+      localStorage.removeItem("activeGroup");
+      dispatch(activeGroup(null));
+    }
+    
+  }, [chatList]);
 
   const filteredChatItem = chatList.filter((item) => {
     let name = activeUserData?.uid == item.senderuid ? item.recivername : item.sendername;
