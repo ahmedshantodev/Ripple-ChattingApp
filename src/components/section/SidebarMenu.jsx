@@ -193,13 +193,6 @@ const SidebarMenu = () => {
                 </Box>
               </Box>
               <Box className={"pt-12 pb-8"}>
-                <Button
-                  className={
-                    "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
-                  }
-                >
-                  <PiNewspaperClipping className="text-black" /> Edit BIo
-                </Button>
                 <button
                   onClick={() => setProfileUploadModal(!profileUploadModal)}
                   className={
@@ -208,13 +201,7 @@ const SidebarMenu = () => {
                 >
                   <MdPhotoCamera className="text-black" /> Edit Profile picture
                 </button>
-                <Button
-                  className={
-                    "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
-                  }
-                >
-                  <IoImagesSharp className="text-black" /> Edit Cover photo
-                </Button>
+                
                 <Button
                   className={
                     "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
@@ -222,13 +209,7 @@ const SidebarMenu = () => {
                 >
                   <GoKey className="text-black" /> Change Password
                 </Button>
-                <Button
-                  className={
-                    "flex items-center gap-x-3 text-xl font-semibold text-secoundaryText hover:bg-[#f2f2f2] w-full py-3 px-4 rounded-md"
-                  }
-                >
-                  <RiDeleteBin2Line className="text-black" /> Delete Account
-                </Button>
+
                 <Button
                   onClick={() => setLogoutModalShow(true)}
                   className={

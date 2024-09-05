@@ -23,16 +23,9 @@ const Friends = () => {
         }
       >
         <Box className={"px-2.5 pb-4"}>
-          <Flex
-            justifyContent={"between"}
-            alignItems={"center"}
-            className={"px-2"}
-          >
-            <Typography variant="h4" className="font-bold text-[28px]">
-              Friends
-            </Typography>
-            <BsThreeDotsVertical className=" box-content bg-[#dedede] text-xl p-2 rounded-full transition-all ease duration-300 cursor-pointer hover:bg-[#32375c] hover:text-white" />
-          </Flex>
+          <Typography variant="h4" className="font-bold text-[28px]">
+            Friends
+          </Typography>
         </Box>
         <Box>
           <Link
