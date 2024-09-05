@@ -16,7 +16,6 @@ import ReciverFile from "../components/layout/ReciverFile";
 import SenderGif from "../components/layout/SenderGif";
 import SenderNormalMessage from "../components/layout/SenderNormalMessage";
 import ReciverNormalMessege from "../components/layout/ReciverNormalMessege";
-import { IoCall, IoVideocam } from "react-icons/io5";
 import { FaRegImage } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import {
@@ -30,9 +29,8 @@ import {
 import { HiMiniGif } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
-import { RiPhoneFill, RiMovieLine } from "react-icons/ri";
+import { RiMovieLine } from "react-icons/ri";
 import { LuFileSpreadsheet } from "react-icons/lu";
-import { AiTwotoneVideoCamera } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa6";
 import {
@@ -69,7 +67,7 @@ import ReciverEditedMessage from "../components/layout/ReciverEditedMessage";
 import ReciverLike from "../components/layout/ReciverLike";
 import SenderLike from "../components/layout/SenderLike";
 
-import { AudioRecorder } from 'react-audio-voice-recorder';
+import { AudioRecorder } from "react-audio-voice-recorder";
 import SenderVoiceMessage from "../components/layout/SenderVoiceMessage";
 import ReciverVoiceMessage from "../components/layout/ReciverVoiceMessage";
 import MessageForwardModal from "../components/layout/MessageForwardModal";
@@ -81,7 +79,7 @@ const ChatWithFriend = () => {
   const activeChatData = useSelector((state) => state.activeChat.information);
   const [messegeList, setMessegeList] = useState([]);
   const [messege, setMessege] = useState("");
-  const [voiceMessageUrl, setVoiceMessageUrl] = useState("")
+  const [voiceMessageUrl, setVoiceMessageUrl] = useState("");
   const [blockList, setBlockList] = useState([]);
   const [blockModalShow, setBlockModalShow] = useState(false);
   const [unblockModalShow, setUnblockModalShow] = useState(false);
@@ -95,9 +93,9 @@ const ChatWithFriend = () => {
   const [gifPickerShow, setGifPickerShow] = useState(false);
   const anotherFileSelectButtonRef = useRef();
   const [fileSizeErrorShow, setFileSizeErrorShow] = useState(false);
-  const [messageForwardModalShow, setMessageForwardModalShow] = useState(false);  
+  const [messageForwardModalShow, setMessageForwardModalShow] = useState(false);
   const [friendsProfileOpen, setFriendsProfileOpen] = useState(true);
-  const [messegeNotification, setMessegeNotification] = useState(true);
+  const [messegeNotificationOn, setMessegeNotification] = useState(true);
   const [mediaDropdownOpen, setMediaDropdwonOpen] = useState(true);
   const [privacyDropdownOpen, setPrivacyDropdwonOpen] = useState(true);
   const [mediaShow, setMediaShow] = useState(false);
@@ -122,8 +120,10 @@ const ChatWithFriend = () => {
       let messegeArray = [];
       snapshot.forEach((item) => {
         if (
-          (activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
-          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid)
+          (activeUserData?.uid == item.val().senderuid &&
+            activeChatData?.uid == item.val().reciveruid) ||
+          (activeUserData?.uid == item.val().reciveruid &&
+            activeChatData?.uid == item.val().senderuid)
         ) {
           messegeArray.push({ ...item.val(), messegeid: item.key });
         }
@@ -141,12 +141,12 @@ const ChatWithFriend = () => {
       sendername: activeUserData.displayName,
       senderprofile: activeUserData.photoURL,
       lastmessagesent: Date.now(),
-    })
-  }
-  
+    });
+  };
+
   useEffect(() => {
-    lastMessageRef.current?.scrollIntoView()
-  } , [messegeList])
+    lastMessageRef.current?.scrollIntoView();
+  }, [messegeList]);
 
   useEffect(() => {
     setMessege("");
@@ -162,9 +162,9 @@ const ChatWithFriend = () => {
       sendername: activeUserData.displayName,
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    })
-    lastMessageSendTimeUpdate()
-  }
+    });
+    lastMessageSendTimeUpdate();
+  };
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
@@ -173,7 +173,7 @@ const ChatWithFriend = () => {
       }
     });
   }, []);
-  
+
   const handleEmojiClick = (e) => {
     setMessege(messege + e.emoji);
   };
@@ -216,7 +216,7 @@ const ChatWithFriend = () => {
           setMessege("");
           setreplyMessegeInfo("");
         });
-      }else if (replyMessegeInfo.type.includes("image")) {
+      } else if (replyMessegeInfo.type.includes("image")) {
         set(push(ref(db, "singlemessege/")), {
           type: "text/reply-normal",
           text: messege,
@@ -290,7 +290,10 @@ const ChatWithFriend = () => {
         });
       }
     } else if (editedMessageInfo) {
-      if (editedMessageInfo.type == "text/normal" || editedMessageInfo.type == "text/edited") {
+      if (
+        editedMessageInfo.type == "text/normal" ||
+        editedMessageInfo.type == "text/edited"
+      ) {
         set(ref(db, "singlemessege/" + editedMessageInfo.messegeid), {
           type: "text/edited",
           text: messege,
@@ -339,7 +342,7 @@ const ChatWithFriend = () => {
         setMessege("");
       });
     }
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
   };
 
   const handleMessageEdit = (item) => {
@@ -356,7 +359,7 @@ const ChatWithFriend = () => {
 
   const addAudioElement = (blob) => {
     const url = URL.createObjectURL(blob);
-    setVoiceMessageUrl(url)
+    setVoiceMessageUrl(url);
   };
 
   const handleSendVoiceMessage = () => {
@@ -380,9 +383,9 @@ const ChatWithFriend = () => {
         sendername: activeUserData.displayName,
         senderprofile: activeUserData.photoURL,
         lastmessagesent: Date.now(),
-      })
+      });
     });
-  }
+  };
 
   const handleFileClick = (e) => {
     let file = e.target.files[0];
@@ -442,7 +445,7 @@ const ChatWithFriend = () => {
         });
       });
     }
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
   };
 
   useEffect(() => {
@@ -474,7 +477,7 @@ const ChatWithFriend = () => {
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     });
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
   };
 
   const handleReply = (item) => {
@@ -514,7 +517,7 @@ const ChatWithFriend = () => {
         sendername: activeUserData.displayName,
         senderprofile: activeUserData.photoURL,
         lastmessagesent: Date.now(),
-      })
+      });
     });
   };
 
@@ -545,8 +548,10 @@ const ChatWithFriend = () => {
       snapshot.forEach((item) => {
         if (
           item.val().type.includes("image") &&
-          ((activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
-          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid))
+          ((activeUserData?.uid == item.val().senderuid &&
+            activeChatData?.uid == item.val().reciveruid) ||
+            (activeUserData?.uid == item.val().reciveruid &&
+              activeChatData?.uid == item.val().senderuid))
         ) {
           chatImageArray.push(item.val());
         }
@@ -562,8 +567,10 @@ const ChatWithFriend = () => {
       snapshot.forEach((item) => {
         if (
           item.val().type.includes("video") &&
-          ((activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
-          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid))
+          ((activeUserData?.uid == item.val().senderuid &&
+            activeChatData?.uid == item.val().reciveruid) ||
+            (activeUserData?.uid == item.val().reciveruid &&
+              activeChatData?.uid == item.val().senderuid))
         ) {
           chatVideoArray.push(item.val());
         }
@@ -579,8 +586,10 @@ const ChatWithFriend = () => {
       snapshot.forEach((item) => {
         if (
           item.val().type.includes("file") &&
-          ((activeUserData?.uid == item.val().senderuid && activeChatData?.uid == item.val().reciveruid) ||
-          (activeUserData?.uid == item.val().reciveruid && activeChatData?.uid == item.val().senderuid))
+          ((activeUserData?.uid == item.val().senderuid &&
+            activeChatData?.uid == item.val().reciveruid) ||
+            (activeUserData?.uid == item.val().reciveruid &&
+              activeChatData?.uid == item.val().senderuid))
         ) {
           chatFileArray.push(item.val());
         }
@@ -668,8 +677,6 @@ const ChatWithFriend = () => {
             </Typography>
           </Box>
           <Flex alignItems={"center"}>
-            <IoCall className="box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-            <IoVideocam className="box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
             <HiDotsVertical
               onClick={() => setFriendsProfileOpen(!friendsProfileOpen)}
               className={
@@ -1367,7 +1374,7 @@ const ChatWithFriend = () => {
                     </Box>
                   )}
                 </div>
-                {voiceMessageUrl == "" && 
+                {voiceMessageUrl == "" && (
                   <Box className={"relative group/tooltip"}>
                     <Box>
                       <AudioRecorder
@@ -1390,13 +1397,10 @@ const ChatWithFriend = () => {
                       ></Box>
                     </Typography>
                   </Box>
-                }
+                )}
               </Flex>
               {voiceMessageUrl ? (
-                <Flex 
-                  alignItems={"center"}
-                  className={"w-full"}
-                >
+                <Flex alignItems={"center"} className={"w-full"}>
                   <Box className={"relative group/tooltip mr-[5px]"}>
                     <MdCancel
                       onClick={() => setVoiceMessageUrl("")}
@@ -1565,69 +1569,7 @@ const ChatWithFriend = () => {
           >
             {activeChatData?.name}
           </Typography>
-          <Flex
-            alignItems={"center"}
-            justifyContent={"center"}
-            className={"mt-5"}
-          >
-            <Box className="relative mr-6 group">
-              <RiPhoneFill className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
-              <Box
-                className={
-                  "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
-                }
-              >
-                <Typography className="w-[90px] mt-1 py-1 rounded-md bg-[#dedede]">
-                  Audio Call
-                </Typography>
-              </Box>
-            </Box>
-            <Box className="relative mr-6 group">
-              <AiTwotoneVideoCamera className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]" />
-              <Box
-                className={
-                  "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
-                }
-              >
-                <Typography className="w-[90px] mt-1 py-1 rounded-md bg-[#dedede]">
-                  Video Call
-                </Typography>
-              </Box>
-            </Box>
-            {messegeNotification ? (
-              <Box className={"relative group"}>
-                <MdOutlineNotificationsNone
-                  onClick={() => setMessegeNotification(!messegeNotification)}
-                  className="box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5] transition-all ease-in-out duration-300"
-                />
-                <Box
-                  className={
-                    "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
-                  }
-                >
-                  <Typography className="w-[65px] mt-1 py-1 rounded-md bg-[#dedede]">
-                    Mute
-                  </Typography>
-                </Box>
-              </Box>
-            ) : (
-              <Box className={"relative group"}>
-                <MdOutlineNotificationsOff
-                  onClick={() => setMessegeNotification(!messegeNotification)}
-                  className={`box-content text-[25px] p-2.5 rounded-full cursor-pointer text-[#252b2f] bg-[#f5f5f5]`}
-                />
-                <Box
-                  className={
-                    "absolute top-full left-2/4 -translate-x-2/4 hidden group-hover:block"
-                  }
-                >
-                  <Typography className="w-[70px] mt-1 py-1 rounded-md bg-[#dedede]">
-                    unmute
-                  </Typography>
-                </Box>
-              </Box>
-            )}
-          </Flex>
+
           <Box className={"text-start px-5 mt-8"}>
             <Box>
               <Flex
@@ -1701,14 +1643,32 @@ const ChatWithFriend = () => {
               </Flex>
               {privacyDropdownOpen && (
                 <Box className={"ml-2"}>
-                  <Button
-                    className={
-                      "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
-                    }
-                  >
-                    <MdOutlineNotificationsOff className="text-xl" />
-                    <Typography>Mute notifications</Typography>
-                  </Button>
+                  {messegeNotificationOn ? (
+                    <Button
+                      onClick={() =>
+                        setMessegeNotification(!messegeNotificationOn)
+                      }
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <MdOutlineNotificationsOff className="text-xl" />
+                      <Typography>Mute notifications</Typography>
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() =>
+                        setMessegeNotification(!messegeNotificationOn)
+                      }
+                      className={
+                        "flex items-center gap-x-3 w-full text-lg px-2.5 py-2 rounded-md text-secoundaryText hover:bg-[#f5f5f5] cursor-pointer hover:text-black"
+                      }
+                    >
+                      <MdOutlineNotificationsNone className="text-xl" />
+                      <Typography>Unmute notifications</Typography>
+                    </Button>
+                  )}
+
                   {blockList.includes(
                     activeChatData?.uid + activeUserData?.uid
                   ) ? (

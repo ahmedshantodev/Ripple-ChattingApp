@@ -12,7 +12,6 @@ import { IoSend } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import { HiDotsVertical } from "react-icons/hi";
 import { BsEmojiSmileFill } from "react-icons/bs";
-import { IoCall, IoVideocam } from "react-icons/io5";
 import { FaRegImage } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { MdOutlinePrivacyTip } from "react-icons/md";
@@ -104,11 +103,12 @@ const ChatWithGroup = () => {
   const [replyMessegeInfo, setreplyMessegeInfo] = useState("");
   const [editedMessageInfo, setEditedMessageInfo] = useState("");
   const [messageRemoveModal, setMessageRemoveModal] = useState(false);
-  const [restrictedActionModal, setRestrictedActionModal] = useState(false)
+  const [restrictedActionModal, setRestrictedActionModal] = useState(false);
   const [removedMessageInfo, setRemovedMessageInfo] = useState("");
   const [memberInviteModal, setMemberInviteModal] = useState(false);
   const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
-  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
+  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
+    useState(false);
   const [mediaDropdownOpen, setMediaDropdownOpen] = useState(true);
   const [chatInfoShow, setChatInfoShow] = useState(false);
   const [chatImageList, setChatImageList] = useState([]);
@@ -117,8 +117,8 @@ const ChatWithGroup = () => {
   const [mediaShow, setMediaShow] = useState(false);
   const [mediaItemOpen, setMediaItemOpen] = useState("");
   const [groupLeaveModal, setGroupLeaveModal] = useState(false);
-  const [adminRoleChangeModal, setAdminRoleChangeModal] = useState(false)
-  const [newAdminInfo, setNewAdminInfo] = useState("")
+  const [adminRoleChangeModal, setAdminRoleChangeModal] = useState(false);
+  const [newAdminInfo, setNewAdminInfo] = useState("");
   const [groupJoinRequstList, setGroupJoinRequstList] = useState([]);
   const [emojiPickerShow, setEmojiPickerShow] = useState(false);
   const [gifPickerShow, setGifPickerShow] = useState(false);
@@ -184,30 +184,32 @@ const ChatWithGroup = () => {
         lastmessagesent: Date.now(),
       });
     });
-  }
+  };
 
-  const [memberRemoveModal, setMemberRemoveModal] = useState(false)
-  const [removedMemberInfo, setRemovedMemberInfo] = useState("")
+  const [memberRemoveModal, setMemberRemoveModal] = useState(false);
+  const [removedMemberInfo, setRemovedMemberInfo] = useState("");
 
   const handleMemberRemoveModalShow = (item) => {
-    setRemovedMemberInfo(item)
-    setMemberRemoveModal(true)
-  }
+    setRemovedMemberInfo(item);
+    setMemberRemoveModal(true);
+  };
 
   const handleMemberRemove = () => {
     if (activeUserData.uid == activeGroupData.groupadminuid) {
-      remove(ref(db, "groupmembers/" + removedMemberInfo.groupmemberid)).then(() => {
-        set(push(ref(db, "groupmessege/")), {
-          type: "groupmanagment/member-remove",
-          groupuid: removedMemberInfo.groupuid,
-          whoremove: activeUserData.displayName,
-          whoremoved: removedMemberInfo.membername,
-          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-        });
-        setMemberRemoveModal(false)
-      })
+      remove(ref(db, "groupmembers/" + removedMemberInfo.groupmemberid)).then(
+        () => {
+          set(push(ref(db, "groupmessege/")), {
+            type: "groupmanagment/member-remove",
+            groupuid: removedMemberInfo.groupuid,
+            whoremove: activeUserData.displayName,
+            whoremoved: removedMemberInfo.membername,
+            senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+          });
+          setMemberRemoveModal(false);
+        }
+      );
     } else {
-      setRestrictedActionModal(true)
+      setRestrictedActionModal(true);
     }
   };
 
@@ -274,10 +276,9 @@ const ChatWithGroup = () => {
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     });
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
   };
 
-  
   const handleMessegeSend = () => {
     if (replyMessegeInfo) {
       if (replyMessegeInfo.type.includes("text")) {
@@ -390,7 +391,10 @@ const ChatWithGroup = () => {
         });
       }
     } else if (editedMessageInfo) {
-      if (editedMessageInfo.type == "text/normal" || editedMessageInfo.type == "text/edited") {
+      if (
+        editedMessageInfo.type == "text/normal" ||
+        editedMessageInfo.type == "text/edited"
+      ) {
         set(ref(db, "groupmessege/" + editedMessageInfo.messageId), {
           type: "text/edited",
           text: messege,
@@ -439,7 +443,7 @@ const ChatWithGroup = () => {
         setMessege("");
       });
     }
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
   };
 
   const addAudioElement = (blob) => {
@@ -460,10 +464,9 @@ const ChatWithGroup = () => {
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     }).then(() => {
       setVoiceMessageUrl("");
-      lastMessageSendTimeUpdate()
+      lastMessageSendTimeUpdate();
     });
   };
-
 
   useEffect(() => {
     setMessege("");
@@ -503,7 +506,7 @@ const ChatWithGroup = () => {
       senderprofile: activeUserData.photoURL,
       senttime: removedMessageInfo.senttime,
     }).then(() => {
-      lastMessageSendTimeUpdate()
+      lastMessageSendTimeUpdate();
       setRemovedMessageInfo("");
       setMessageRemoveModal(false);
     });
@@ -577,7 +580,7 @@ const ChatWithGroup = () => {
         });
       });
     }
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
   };
 
   useEffect(() => {
@@ -605,7 +608,7 @@ const ChatWithGroup = () => {
       senderprofile: activeUserData.photoURL,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     });
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
   };
 
   useEffect(() => {
@@ -695,16 +698,16 @@ const ChatWithGroup = () => {
       wholeft: activeUserData.displayName,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
     });
-    lastMessageSendTimeUpdate()
+    lastMessageSendTimeUpdate();
     dispatch(activeGroup(null));
     localStorage.removeItem("activeGroup");
     setGroupLeaveModal(false);
   };
 
   const handleMakeAdminModalShow = (item) => {
-    setNewAdminInfo(item)
-    setAdminRoleChangeModal(true)
-  }
+    setNewAdminInfo(item);
+    setAdminRoleChangeModal(true);
+  };
 
   const handleMakeAdmin = () => {
     set(ref(db, "groups/" + activeGroupData.groupuid), {
@@ -715,7 +718,7 @@ const ChatWithGroup = () => {
       groupadminname: newAdminInfo.membername,
       groupadminprofile: newAdminInfo.memberprofile,
       lastmessagesent: Date.now(),
-    })
+    });
     groupMemberList.map((item) => {
       set(ref(db, "groupmembers/" + item.groupmemberid), {
         groupuid: item.groupuid,
@@ -733,27 +736,32 @@ const ChatWithGroup = () => {
         lastmessagesent: Date.now(),
       });
     });
-    set(push(ref(db , "groupmessege/")) , {
+    set(push(ref(db, "groupmessege/")), {
       type: "groupmanagment/groupadmin-change",
       groupuid: activeGroupData.groupuid,
       oldadmin: activeUserData.displayName,
       newadmin: newAdminInfo.membername,
       senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    })
-    localStorage.setItem("activeGroup", JSON.stringify({ 
-      ...activeGroupData, 
-      groupadminuid: newAdminInfo.memberuid,
-      groupadminname: newAdminInfo.membername,
-      groupadminprofile: newAdminInfo.memberprofile,
-    }));
-    dispatch(activeGroup({ 
-      ...activeGroupData,
-      groupadminuid: newAdminInfo.memberuid,
-      groupadminname: newAdminInfo.membername,
-      groupadminprofile: newAdminInfo.memberprofile,
-    }));
-    setAdminRoleChangeModal(false)
-  }
+    });
+    localStorage.setItem(
+      "activeGroup",
+      JSON.stringify({
+        ...activeGroupData,
+        groupadminuid: newAdminInfo.memberuid,
+        groupadminname: newAdminInfo.membername,
+        groupadminprofile: newAdminInfo.memberprofile,
+      })
+    );
+    dispatch(
+      activeGroup({
+        ...activeGroupData,
+        groupadminuid: newAdminInfo.memberuid,
+        groupadminname: newAdminInfo.membername,
+        groupadminprofile: newAdminInfo.memberprofile,
+      })
+    );
+    setAdminRoleChangeModal(false);
+  };
 
   return activeGroupData == null ? (
     <Box
@@ -804,8 +812,6 @@ const ChatWithGroup = () => {
             </Typography>
           </Box>
           <Flex alignItems={"center"}>
-            <IoCall className="box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
-            <IoVideocam className="box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300 hover:bg-[#dedede]" />
             <HiDotsVertical
               onClick={() => setGroupProfileOpen(!groupProfileOpen)}
               className={`box-content text-[25px] ml-2.5 p-2.5 rounded-full cursor-pointer text-[#007bf5] transition-all ease-in-out duration-300 ${
@@ -1856,8 +1862,8 @@ const ChatWithGroup = () => {
                 modalClose={setMemberRemoveModal}
                 className={"w-[600px] px-7 py-5"}
               >
-                <Flex alignItems={"center"} className={"gap-x-2.5"}> 
-                  <TbAlertCircle className="text-[32px] text-red-400"/>
+                <Flex alignItems={"center"} className={"gap-x-2.5"}>
+                  <TbAlertCircle className="text-[32px] text-red-400" />
                   <Typography
                     variant="h3"
                     className="text-3xl font-semibold font-open-sans"
@@ -1866,7 +1872,12 @@ const ChatWithGroup = () => {
                   </Typography>
                 </Flex>
                 <Typography className="text-lg font-open-sans text-secoundaryText mt-3">
-                  Are you sure you want to remove <span className="font-semibold text-black">{removedMemberInfo.membername}</span> from the conversation? They will no longer be able to send or receive new messages.
+                  Are you sure you want to remove{" "}
+                  <span className="font-semibold text-black">
+                    {removedMemberInfo.membername}
+                  </span>{" "}
+                  from the conversation? They will no longer be able to send or
+                  receive new messages.
                 </Typography>
                 <Flex justifyContent={"between"}>
                   <Button
@@ -1885,7 +1896,6 @@ const ChatWithGroup = () => {
                   >
                     Cancel
                   </Button>
-
                 </Flex>
               </Modal>
               <Modal
@@ -1893,8 +1903,8 @@ const ChatWithGroup = () => {
                 modalClose={setAdminRoleChangeModal}
                 className={"w-[600px] px-7 py-5"}
               >
-                <Flex alignItems={"center"} className={"gap-x-2.5"}> 
-                  <TbAlertCircle className="text-[32px] text-red-400"/>
+                <Flex alignItems={"center"} className={"gap-x-2.5"}>
+                  <TbAlertCircle className="text-[32px] text-red-400" />
                   <Typography
                     variant="h3"
                     className="text-3xl font-semibold font-open-sans"
@@ -1903,7 +1913,11 @@ const ChatWithGroup = () => {
                   </Typography>
                 </Flex>
                 <Typography className="text-lg font-open-sans text-secoundaryText mt-3">
-                  Are you sure you want to make <span className="font-semibold text-black">{newAdminInfo.membername}</span> an admin? This action cannot be undone.
+                  Are you sure you want to make{" "}
+                  <span className="font-semibold text-black">
+                    {newAdminInfo.membername}
+                  </span>{" "}
+                  an admin? This action cannot be undone.
                 </Typography>
                 <Flex justifyContent={"between"}>
                   <Button
@@ -1922,7 +1936,6 @@ const ChatWithGroup = () => {
                   >
                     Cancel
                   </Button>
-
                 </Flex>
               </Modal>
             </Box>
