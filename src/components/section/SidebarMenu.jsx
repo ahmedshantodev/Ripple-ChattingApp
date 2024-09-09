@@ -105,7 +105,7 @@ const SidebarMenu = () => {
                 <IoNewspaperOutline className="text-[24px]" /> Group
               </NavLink>
             </ListItem>
-            <ListItem className={"mb-3"}>
+            {/* <ListItem className={"mb-3"}>
               <NavLink
                 to={"/pages/notification"}
                 className={
@@ -116,7 +116,7 @@ const SidebarMenu = () => {
               >
                 <IoMdNotificationsOutline className="text-[24px]" /> Notification
               </NavLink>
-            </ListItem>
+            </ListItem> */}
           </List>
         </nav>
         <Box>

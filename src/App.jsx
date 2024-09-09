@@ -21,7 +21,6 @@ import Groups from "./pages/Groups";
 import MyGroups from "./components/section/MyGroups";
 import OthersGroup from "./components/section/OthersGroup";
 import GroupInvitation from "./components/section/GroupInvitation";
-import Notification from "./pages/Notification";
 import ChatWithFriend from "./pages/ChatWithFriend";
 import ChatWithGroup from "./pages/ChatWithGroup";
 
@@ -50,7 +49,6 @@ const App = () => {
             <Route path="others-groups" element={<OthersGroup />} />
             <Route path="group-invitation" element={<GroupInvitation />} />
           </Route>
-          <Route path="notification" element={<Notification />} />
         </Route>
       </Route>
     )
