@@ -1,11 +1,11 @@
 import React, { createRef, useEffect, useRef, useState } from "react";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import Box from "./Box";
+import Box from "../layout/Box";
 import { RxCross2 } from "react-icons/rx";
-import Typography from "./Typography";
-import Button from "./Button";
-import Input from "./Input";
+import Typography from "../layout/Typography";
+import Button from "../layout/Button";
+import Input from "../layout/Input";
 import { RiUploadLine } from "react-icons/ri";
 import { ColorRing } from "react-loader-spinner";
 import {
@@ -15,49 +15,21 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getDatabase,
-  set,
-  ref as databaseRef,
-  onValue,
-  push,
-} from "firebase/database";
+import { getDatabase, set, ref as databaseRef } from "firebase/database";
+import { activeUser } from "../../slices/activeUserSlice";
 import { toast } from "react-toastify";
-import { activeGroup } from "../../slices/activeGroupSlice";
+import { getAuth, updateProfile } from "firebase/auth";
 
-const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
+const ProfileUploadModal = ({ modalShow, modalClose }) => {
+  const auth = getAuth();
   const db = getDatabase();
-  const dispatch = useDispatch();
   const storage = getStorage();
-  const activeUserData = useSelector((state) => state.user.information)
-  const activeGroupData = useSelector((state) => state.activeGroup.information);
-  const [groupList, setGroupList] = useState([])
+  const activeUserData = useSelector((state) => state?.user?.information);
+  const dispatch = useDispatch();
   const [uploadLoadingButton, setUploadLoadingButton] = useState(false);
   const [image, setImage] = useState("");
   const cropperRef = createRef();
-  const modalRef = useRef();
-  const boxRef = useRef();
-
-  const time = new Date();
-  const year = time.getFullYear();
-  const month = time.getMonth() + 1;
-  const date = time.getDate();
-  const hours = time.getHours();
-  const minutes = time.getMinutes();
-  
-  useEffect(() => {
-    let groupRef = databaseRef(db, "groupmembers");
-    onValue(groupRef, (snapshot) => {
-      let groupListArray = [];
-      snapshot.forEach((item) => {
-        if (activeGroupData.groupuid == item.val().groupuid) {
-          groupListArray.push({...item.val() , gid: item.key});
-        }
-      });
-      setGroupList(groupListArray);
-    });
-  }, [activeGroupData]);
-
+   
   const onChange = (e) => {
     e.preventDefault();
     let files;
@@ -74,64 +46,46 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   };
 
   const handlePhotoUpload = () => {
+    setUploadLoadingButton(true);
     if (typeof cropperRef.current?.cropper !== "undefined") {
-      setUploadLoadingButton(true);
-      const groupPhoto = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
-      const groupPhotoRef = storageRef(storage, "group photo/" + `groupphoto-${activeGroupData.groupuid}`);
-      uploadString(groupPhotoRef, groupPhoto, "data_url").then((snapshot) => {
-        getDownloadURL(groupPhotoRef).then((downloadURL) => {
-          set(databaseRef(db, "groups/" + activeGroupData.groupuid), {
-            groupuid: activeGroupData.groupuid,
-            groupname: activeGroupData.groupname,
-            groupphoto: downloadURL,
-            groupadminuid: activeGroupData.groupadminuid,
-            groupadminname: activeGroupData.groupadminname,
-            groupadminprofile: activeGroupData.groupadminprofile,
-            lastmessagesent: Date.now(),
+      const profileImage = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
+      const profileRef = storageRef(storage, "profile/" + `profile-${activeUserData.uid}`);
+      uploadString(profileRef, profileImage, "data_url").then((snapshot) => {
+        getDownloadURL(profileRef).then((downloadURL) => {
+          updateProfile(auth.currentUser, {
+            photoURL: downloadURL
           }).then(() => {
-            groupList.map((item) => {
-              set(databaseRef(db, "groupmembers/" + item.gid), {
-                groupuid: item.groupuid,
-                groupname: item.groupname,
-                groupphoto: downloadURL,
-                groupadminuid: item.groupadminuid,
-                groupadminname: item.groupadminname,
-                groupadminprofile: item.groupadminprofile,
-                memberuid: item.memberuid,
-                membername: item.membername,
-                memberprofile: item.memberprofile,
-                addedbyuid: item.addedbyuid,
-                addedbyname: item.addedbyname,
-                addedbyprofile: item.addedbyprofile,
-                lastmessagesent: Date.now(),
-              });
+            set(databaseRef(db, "users/" + activeUserData.uid), {
+              userid: activeUserData.uid,
+              username: activeUserData.displayName,
+              useremail: activeUserData.email,
+              userprofile: downloadURL,
             });
-            set(push(databaseRef(db , "groupmessege/")) , {
-              type: "groupmanagment/groupphoto-changed",
-              groupuid: activeGroupData.groupuid,
-              whochanged: activeUserData.displayName,
-              senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-            })
-          }).then(() => {
-            localStorage.setItem("activeGroup", JSON.stringify({ ...activeGroupData, groupphoto: downloadURL }));
-            dispatch(activeGroup({ ...activeGroupData, groupphoto: downloadURL }));
-            toast.success("Group profile picture has been uploaded successfully",{
+            localStorage.setItem(
+              "user",
+              JSON.stringify({ ...activeUserData, photoURL: downloadURL })
+            );
+            dispatch(activeUser({ ...activeUserData, photoURL: downloadURL }));
+            toast.success("Your profile picture has been uploaded successfully", {
               position: "bottom-center",
               autoClose: 2500,
             });
             setUploadLoadingButton(false);
             setImage("");
             modalClose(false);
-          })
+          }).catch((error) => {});
         });
       });
     }
   };
 
+  const modalRef = useRef();
+  const boxRef = useRef();
+
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
       if (modalRef.current?.contains(e.target) && !boxRef.current?.contains(e.target)) {
-        modalClose(false);
+        modalClose(false)
       }
     });
   }, []);
@@ -139,9 +93,9 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   return (
     <section
       ref={modalRef}
-      className={`w-full h-dvh bg-white/70 fixed z-50 top-0 left-0 ${
-        modalShow ? "flex" : "hidden"
-      } justify-center items-center`}
+      className={
+        `w-full h-dvh bg-white/70 fixed top-0 left-0 ${modalShow ? "flex" : "hidden"} justify-center items-center z-50`
+      }
     >
       <div
         ref={boxRef}
@@ -156,7 +110,7 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
         {!image ? (
           <Box className={"ml-[40px]"}>
             <Typography className="text-lg text-center font-bold mb-3">
-              Choose Group Photo
+              Choose profile picture
             </Typography>
             <Box className={"w-[300px] mx-auto"}>
               <label
@@ -176,13 +130,13 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
         ) : (
           <>
             <Typography className="text-lg text-center font-bold mb-3">
-              Upload New Photo As Group Photo
+              Upload New Photo As Profile Picture
             </Typography>
             <Box className={"flex items-center"}>
               <Box className="box w-[350px] mr-[15px]">
-                <div className="img-preview overflow-hidden mx-auto max-w-[300px] min-w-[300px] max-h-[300px] min-h-[300px]  aspect-square rounded-full" />
+                <div className="img-preview overflow-hidden mx-auto max-w-[300px] min-w-[300px] max-h-[300px] min-h-[300px] aspect-square rounded-full" />
               </Box>
-              <Box>
+              <Box className={""}>
                 <Cropper
                   ref={cropperRef}
                   style={{ height: 400, width: 600 }}
@@ -242,4 +196,4 @@ const GroupPhotoUploadModal = ({ modalShow, modalClose }) => {
   );
 };
 
-export default GroupPhotoUploadModal;
+export default ProfileUploadModal;

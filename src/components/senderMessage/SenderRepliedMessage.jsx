@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import Box from "./Box";
-import Typography from "./Typography";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { FaReply } from "react-icons/fa";
-import Flex from "./Flex";
+import Flex from "../layout/Flex";
 import { FaFaceSmile } from "react-icons/fa6";
-import Button from "./Button";
+import Button from "../layout/Button";
 import moment from "moment";
-import Image from "./Image";
+import Image from "../layout/Image";
 import { useSelector } from "react-redux";
 import { FaFileArchive } from "react-icons/fa";
 import { getDatabase, onValue, ref } from "firebase/database";

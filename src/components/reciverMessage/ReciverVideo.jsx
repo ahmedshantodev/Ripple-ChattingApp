@@ -1,25 +1,24 @@
 import React from "react";
-import Box from "./Box";
-import Typography from "./Typography";
-import ModalImage from "react-modal-image";
-import Flex from "./Flex";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
+import Flex from "../layout/Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { IoShareSocialSharp } from "react-icons/io5";
 import { FaReply } from "react-icons/fa";
 import { FaFaceSmile } from "react-icons/fa6";
-import Image from "./Image";
 import moment from "moment";
+import Image from "../layout/Image";
 
-const ReciverImage = ({
+const ReciverVideo = ({
   name,
   profile,
-  image,
-  imageType,
+  video,
+  videoType,
   sentTime,
   replyButton,
   forwardButton,
 }) => {
-  return imageType == "forward" ? (
+  return videoType == "forward" ? (
     <Box className={"mt-4 group flex justify-between items-end"}>
       <Box className={"w-[40px]"}>
         <Image
@@ -32,13 +31,13 @@ const ReciverImage = ({
         <Box className={"flex items-center gap-x-1 mr-2 mb-1"}>
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           <Typography className="text-secoundaryText text-[15px]">
-            {name} forwarded a Image
+            {name} forwarded a video
           </Typography>
         </Box>
         <Box className={"max-w-[75%] inline-block text-start relative"}>
-          <ModalImage
-            small={image}
-            large={image}
+          <video
+            src={video}
+            controls
             className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
           />
           <Flex
@@ -106,9 +105,9 @@ const ReciverImage = ({
       </Box>
       <Box className={"w-[calc(100%-48px)]"}>
         <Box className={"max-w-[75%] inline-block text-start relative"}>
-          <ModalImage
-            small={image}
-            large={image}
+          <video
+            src={video}
+            controls
             className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
           />
           <Flex
@@ -168,4 +167,4 @@ const ReciverImage = ({
   );
 };
 
-export default ReciverImage;
+export default ReciverVideo;

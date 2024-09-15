@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import Box from "./Box";
-import Typography from "./Typography";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
 import moment from "moment";
 import { MdThumbUpAlt } from "react-icons/md";
 

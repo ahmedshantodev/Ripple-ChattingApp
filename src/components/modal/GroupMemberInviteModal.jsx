@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
-import Typography from "./Typography";
-import Box from "./Box";
-import GroupInviteListItem from "./GroupInviteListItem";
-import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
+import Typography from "../layout/Typography";
+import Box from "../layout/Box";
+import GroupInviteListItem from "../layout/GroupInvitationItem";
+import { getDatabase, onValue, ref, remove, set } from "firebase/database";
 import { useSelector } from "react-redux";
-import SearchBox from './SearchBox';
+import SearchBox from '../layout/SearchBox';
 
 const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
   const db = getDatabase();

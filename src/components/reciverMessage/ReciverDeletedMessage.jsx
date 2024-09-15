@@ -1,8 +1,8 @@
 import React from "react";
-import Box from "./Box";
-import Typography from "./Typography";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
 import moment from "moment";
-import Image from "./Image";
+import Image from "../layout/Image";
 
 const ReciverDeletedMessage = ({ senderName, senderProfile, sentTime }) => {
   return (

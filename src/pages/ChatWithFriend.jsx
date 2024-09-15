@@ -1,21 +1,37 @@
 import Box from "../components/layout/Box";
 import Flex from "../components/layout/Flex";
-import Modal from "../components/layout/Modal";
+import Modal from "../components/modal/Modal";
 import Input from "../components/layout/Input";
 import Image from "../components/layout/Image";
 import Button from "../components/layout/Button";
-import SenderImage from "../components/layout/SenderImage";
 import React, { useEffect, useRef, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import Typography from "../components/layout/Typography";
-import ReciverImage from "../components/layout/ReciverImage";
-import SenderVideo from "../components/layout/SenderVideo";
-import ReciverVideo from "../components/layout/ReciverVideo";
-import SenderFile from "../components/layout/SenderFile";
-import ReciverFile from "../components/layout/ReciverFile";
-import SenderGif from "../components/layout/SenderGif";
-import SenderNormalMessage from "../components/layout/SenderNormalMessage";
-import ReciverNormalMessege from "../components/layout/ReciverNormalMessege";
+
+import SenderImage from "../components/senderMessage/SenderImage";
+import SenderVideo from "../components/senderMessage/SenderVideo";
+import SenderFile from "../components/senderMessage/SenderFile";
+import SenderGif from "../components/senderMessage/SenderGif";
+import SenderNormalMessage from "../components/senderMessage/SenderNormalMessage";
+import SenderForwardMessage from "../components/senderMessage/SenderForwardMessage";
+import SenderRepliedMessage from "../components/senderMessage/SenderRepliedMessage";
+import SenderDeletedMessage from "../components/senderMessage/SenderDeletedMessage";
+import SenderEditedMessage from "../components/senderMessage/SenderEditedMessage";
+import SenderVoiceMessage from "../components/senderMessage/SenderVoiceMessage";
+import SenderLike from "../components/senderMessage/SenderLike";
+
+import ReciverImage from "../components/reciverMessage/ReciverImage";
+import ReciverVideo from "../components/reciverMessage/ReciverVideo";
+import ReciverFile from "../components/reciverMessage/ReciverFile";
+import ReciverNormalMessege from "../components/reciverMessage/ReciverNormalMessege";
+import ReciverGif from "../components/reciverMessage/ReciverGif";
+import ReciverForwardMessege from "../components/reciverMessage/ReciverForwardMessege";
+import ReciverRepliedMessege from "../components/reciverMessage/ReciverRepliedMessege";
+import ReciverDeletedMessage from "../components/reciverMessage/ReciverDeletedMessage";
+import ReciverEditedMessage from "../components/reciverMessage/ReciverEditedMessage";
+import ReciverLike from "../components/reciverMessage/ReciverLike";
+import ReciverVoiceMessage from "../components/reciverMessage/ReciverVoiceMessage";
+
 import { FaRegImage } from "react-icons/fa6";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import {
@@ -49,28 +65,19 @@ import {
 } from "firebase/storage";
 import { useSelector } from "react-redux";
 import noGroupPHoto from "/public/images/no chat image.jpg";
-import EmojiPicker from "emoji-picker-react";
 import GifPicker from "gif-picker-react";
-import SenderForwardMessage from "./../components/layout/SenderForwardMessage";
-import ReciverGif from "./../components/layout/ReciverGif";
-import ReciverForwardMessege from "./../components/layout/ReciverForwardMessege";
-import SenderRepliedMessage from "../components/layout/SenderRepliedMessage";
-import ReciverRepliedMessege from "../components/layout/ReciverRepliedMessege";
+import EmojiPicker from "emoji-picker-react";
+
 import MediaImageItem from "../components/layout/MediaImageItem";
 import MediaVideoItem from "../components/layout/MediaVideoItem";
 import MediaFileItem from "../components/layout/MediaFileItem";
-import ModalImage from "react-modal-image";
-import SenderDeletedMessage from "../components/layout/SenderDeletedMessage";
-import ReciverDeletedMessage from "../components/layout/ReciverDeletedMessage";
-import SenderEditedMessage from "../components/layout/SenderEditedMessage";
-import ReciverEditedMessage from "../components/layout/ReciverEditedMessage";
-import ReciverLike from "../components/layout/ReciverLike";
-import SenderLike from "../components/layout/SenderLike";
 
+
+
+
+import ModalImage from "react-modal-image";
+import MessageForwardModal from "../components/modal/MessageForwardModal";
 import { AudioRecorder } from "react-audio-voice-recorder";
-import SenderVoiceMessage from "../components/layout/SenderVoiceMessage";
-import ReciverVoiceMessage from "../components/layout/ReciverVoiceMessage";
-import MessageForwardModal from "../components/layout/MessageForwardModal";
 
 const ChatWithFriend = () => {
   const db = getDatabase();

@@ -1,68 +1,63 @@
 import React from "react";
-import Typography from "./Typography";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
+import ModalImage from "react-modal-image";
+import Flex from "../layout/Flex";
+import { BsFillTriangleFill } from "react-icons/bs";
+import { IoShareSocialSharp } from "react-icons/io5";
 import { FaReply } from "react-icons/fa";
 import { FaFaceSmile } from "react-icons/fa6";
-import { IoShareSocialSharp } from "react-icons/io5";
+import Image from "../layout/Image";
 import moment from "moment";
-import Box from "./Box";
-import Image from "./Image";
-import Flex from "./Flex";
 
-const ReciverVoiceMessage = ({
+const ReciverImage = ({
   name,
   profile,
-  voiceType,
-  voice,
+  image,
+  imageType,
   sentTime,
-  // reactButton,
   replyButton,
   forwardButton,
 }) => {
-  return voiceType == "forward" ? (
-    <Box className={"mt-5 flex justify-between items-end w-full group"}>
+  return imageType == "forward" ? (
+    <Box className={"mt-4 group flex justify-between items-end"}>
       <Box className={"w-[40px]"}>
         <Image
           src={profile}
           alt={name}
-          title={name}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
-      <Box className={"w-[calc(100%-55px)]"}>
-      <Box className={"flex items-center gap-x-1 mr-2 mb-1"}>
+      <Box className={"w-[calc(100%-48px)]"}>
+        <Box className={"flex items-center gap-x-1 mr-2 mb-1"}>
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           <Typography className="text-secoundaryText text-[15px]">
-            {name} forwarded a voice message
+            {name} forwarded a Image
           </Typography>
         </Box>
-        <Box className={"relative max-w-[70%] inline-block"}>
-          <audio src={voice} controls />
+        <Box className={"max-w-[75%] inline-block text-start relative"}>
+          <ModalImage
+            small={image}
+            large={image}
+            className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
+          />
           <Flex
             alignItems={"center"}
             className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
-            // className={
-            //   "hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"
-            // }
+            // className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
           >
-            {/* <Box className={"relative group/tooltip z-10"}>
-              <FaFaceSmile
-                onClick={reactButton}
-                className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
-              />
+            {/* <Box className={"relative group/tooltip"}>
+              <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
               <Typography
                 variant="span"
                 className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
               >
                 React
-                <Box
-                  className={
-                    "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                  }
-                ></Box>
+                <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
             </Box> */}
 
-            <Box className={"relative group/tooltip z-10"}>
+            <Box className={"relative group/tooltip"}>
               <FaReply
                 onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -72,11 +67,7 @@ const ReciverVoiceMessage = ({
                 className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
               >
                 Reply
-                <Box
-                  className={
-                    "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                  }
-                ></Box>
+                <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
             </Box>
 
@@ -99,50 +90,44 @@ const ReciverVoiceMessage = ({
             </Box>
           </Flex>
         </Box>
-        <Typography className="font-poppins text-xs font-medium text-secoundaryText">
+        <Typography className="font-poppins text-xs font-medium text-secoundaryText ml-1">
           {moment(sentTime, "YYYYMMDDh:mm").fromNow()}
         </Typography>
       </Box>
     </Box>
   ) : (
-    <Box className={"mt-5 flex justify-between items-end w-full group"}>
+    <Box className={"mt-4 group flex justify-between items-end"}>
       <Box className={"w-[40px]"}>
         <Image
           src={profile}
           alt={name}
-          title={name}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
-      <Box className={"w-[calc(100%-55px)]"}>
-        <Box className={"relative max-w-[70%] inline-block"}>
-          <audio src={voice} controls />
+      <Box className={"w-[calc(100%-48px)]"}>
+        <Box className={"max-w-[75%] inline-block text-start relative"}>
+          <ModalImage
+            small={image}
+            large={image}
+            className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
+          />
           <Flex
             alignItems={"center"}
             className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
-            // className={
-            //   "hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"
-            // }
+            // className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
           >
-            {/* <Box className={"relative group/tooltip z-10"}>
-              <FaFaceSmile
-                onClick={reactButton}
-                className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
-              />
+            {/* <Box className={"relative group/tooltip"}>
+              <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
               <Typography
                 variant="span"
                 className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
               >
                 React
-                <Box
-                  className={
-                    "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                  }
-                ></Box>
+                <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
             </Box> */}
 
-            <Box className={"relative group/tooltip z-10"}>
+            <Box className={"relative group/tooltip"}>
               <FaReply
                 onClick={replyButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -152,11 +137,7 @@ const ReciverVoiceMessage = ({
                 className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
               >
                 Reply
-                <Box
-                  className={
-                    "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                  }
-                ></Box>
+                <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
             </Box>
             
@@ -179,7 +160,7 @@ const ReciverVoiceMessage = ({
             </Box>
           </Flex>
         </Box>
-        <Typography className="font-poppins text-xs font-medium text-secoundaryText">
+        <Typography className="font-poppins text-xs font-medium text-secoundaryText ml-1">
           {moment(sentTime, "YYYYMMDDh:mm").fromNow()}
         </Typography>
       </Box>
@@ -187,4 +168,4 @@ const ReciverVoiceMessage = ({
   );
 };
 
-export default ReciverVoiceMessage;
+export default ReciverImage;

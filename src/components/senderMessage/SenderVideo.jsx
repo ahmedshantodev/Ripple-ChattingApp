@@ -1,21 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import Box from "./Box";
-import Typography from "./Typography";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
+import Flex from "../layout/Flex";
+import { BsFillTriangleFill } from "react-icons/bs";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
-import { FaFaceSmile } from "react-icons/fa6";
 import { FaReply } from "react-icons/fa";
-import Flex from "./Flex";
-import Button from "./Button";
+import { FaFaceSmile } from "react-icons/fa6";
+import Button from "../layout/Button";
 import moment from "moment";
 
-const SenderVoiceMessage = ({
-  voiceType,
-  voice,
+const SenderVideo = ({
+  video,
+  videoType,
   sentTime,
-  // reactButton,
+  removeButton,
   replyButton,
   forwardButton,
-  removeButton,
 }) => {
   const [menuShow, setMenuShow] = useState(false);
   const buttonRef = useRef();
@@ -28,16 +28,20 @@ const SenderVoiceMessage = ({
     });
   }, []);
 
-  return voiceType == "forward" ? (
-    <Box className={"mt-5 group text-end"}>
+  return videoType == "forward" ? (
+    <Box className={"mt-4 text-end group"}>
       <Box className={"flex justify-end items-center gap-x-2 mr-2 mb-1"}>
         <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
         <Typography className="text-secoundaryText text-[15px]">
-          You forwarded a voice message
+          You forwarded a video
         </Typography>
       </Box>
-      <Box className={"max-w-[50%] inline-block relative"}>
-        <audio src={voice} controls />
+      <Box className={"max-w-[75%] inline-block text-start relative"}>
+        <video
+          src={video}
+          controls
+          className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
+        />
         <Flex
           alignItems={"center"}
           className={
@@ -61,18 +65,14 @@ const SenderVoiceMessage = ({
             {menuShow && (
               <Box
                 className={
-                  "w-[110px] rounded-md p-1 absolute left-2/4 -translate-x-2/4 bottom-[45px] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] bg-white"
+                  "w-[120px] bg-white rounded-md p-1 absolute left-2/4 -translate-x-2/4 bottom-[50px] z-[1] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px]"
                 }
               >
-                <Box
-                  className={
-                    "w-[12px] h-[12px] bg-white rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                  }
-                ></Box>
+                <BsFillTriangleFill className=" absolute left-2/4 -translate-x-2/4 top-[99%] rotate-180 text-[#ffffff] " />
                 <Button
                   onClick={removeButton}
                   className={
-                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
+                    "w-full py-2 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
                 >
                   Remove
@@ -80,7 +80,7 @@ const SenderVoiceMessage = ({
                 <Button
                   onClick={forwardButton}
                   className={
-                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
+                    "w-full py-2 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
                 >
                   Forward
@@ -89,7 +89,7 @@ const SenderVoiceMessage = ({
             )}
           </button>
 
-          <Box className={"relative group/tooltip z-10"}>
+          <Box className={"relative group/tooltip"}>
             <FaReply
               onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -99,29 +99,18 @@ const SenderVoiceMessage = ({
               className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
             >
               Reply
-              <Box
-                className={
-                  "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                }
-              ></Box>
+              <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box>
 
-          {/* <Box className={"relative group/tooltip z-10"}>
-            <FaFaceSmile
-              onClick={reactButton}
-              className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
-            />
+          {/* <Box className={"relative group/tooltip"}>
+            <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
               className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
             >
               React
-              <Box
-                className={
-                  "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                }
-              ></Box>
+              <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box> */}
         </Flex>
@@ -131,9 +120,13 @@ const SenderVoiceMessage = ({
       </Typography>
     </Box>
   ) : (
-    <Box className={"mt-5 group text-end"}>
-      <Box className={"max-w-[50%] inline-block relative"}>
-        <audio src={voice} controls />
+    <Box className={"mt-4 text-end group"}>
+      <Box className={"max-w-[75%] inline-block text-start relative"}>
+        <video
+          src={video}
+          controls
+          className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
+        />
         <Flex
           alignItems={"center"}
           className={
@@ -157,18 +150,14 @@ const SenderVoiceMessage = ({
             {menuShow && (
               <Box
                 className={
-                  "w-[110px] rounded-md p-1 absolute left-2/4 -translate-x-2/4 bottom-[45px] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] bg-white"
+                  "w-[120px] bg-white rounded-md p-1 absolute left-2/4 -translate-x-2/4 bottom-[50px] z-[1] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px]"
                 }
               >
-                <Box
-                  className={
-                    "w-[12px] h-[12px] bg-white rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                  }
-                ></Box>
+                <BsFillTriangleFill className=" absolute left-2/4 -translate-x-2/4 top-[99%] rotate-180 text-[#ffffff] " />
                 <Button
                   onClick={removeButton}
                   className={
-                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
+                    "w-full py-2 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
                 >
                   Remove
@@ -176,7 +165,7 @@ const SenderVoiceMessage = ({
                 <Button
                   onClick={forwardButton}
                   className={
-                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
+                    "w-full py-2 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
                   }
                 >
                   Forward
@@ -185,7 +174,7 @@ const SenderVoiceMessage = ({
             )}
           </button>
 
-          <Box className={"relative group/tooltip z-10"}>
+          <Box className={"relative group/tooltip"}>
             <FaReply
               onClick={replyButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -195,29 +184,18 @@ const SenderVoiceMessage = ({
               className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
             >
               Reply
-              <Box
-                className={
-                  "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                }
-              ></Box>
+              <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box>
 
-          {/* <Box className={"relative group/tooltip z-10"}>
-            <FaFaceSmile
-              onClick={reactButton}
-              className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
-            />
+          {/* <Box className={"relative group/tooltip"}>
+            <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
               className="bg-[#323436] text-white py-1 px-3 rounded-lg absolute left-2/4 -translate-x-2/4 bottom-[42px] hidden group-hover/tooltip:block"
             >
               React
-              <Box
-                className={
-                  "w-[10px] h-[10px] bg-[#323436] rotate-45 absolute left-2/4 -translate-x-2/4 top-full -translate-y-2/4"
-                }
-              ></Box>
+              <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box> */}
         </Flex>
@@ -229,4 +207,4 @@ const SenderVoiceMessage = ({
   );
 };
 
-export default SenderVoiceMessage;
+export default SenderVideo;

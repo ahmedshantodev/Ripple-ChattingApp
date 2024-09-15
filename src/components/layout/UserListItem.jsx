@@ -59,7 +59,7 @@ const UserListItem = ({
 
   return (
     <Box
-      key={index}
+      key={key}
       className={`${className} border border-primaryBorder rounded-md overflow-hidden`}
     >
       <Image src={userProfile} alt={userName} className={"w-full"} />

@@ -1,18 +1,18 @@
 import React from "react";
-import Typography from "./Typography";
-import { IoShareSocialSharp } from "react-icons/io5";
+import Typography from "../layout/Typography";
 import { FaReply } from "react-icons/fa";
 import { FaFaceSmile } from "react-icons/fa6";
+import { IoShareSocialSharp } from "react-icons/io5";
 import moment from "moment";
-import Box from "./Box";
-import Image from "./Image";
-import Flex from "./Flex";
+import Box from "../layout/Box";
+import Image from "../layout/Image";
+import Flex from "../layout/Flex";
 
-const ReciverEditedMessage = ({
-  message,
-  sentTime,
+const ReciverNormalMessege = ({
   name,
   profile,
+  message,
+  sentTime,
   // reactButton,
   replyButton,
   forwardButton,
@@ -23,18 +23,13 @@ const ReciverEditedMessage = ({
         <Image
           src={profile}
           alt={name}
-          title={name}  
+          title={name}
           className={"w-full object-cover aspect-square rounded-full"}
         />
       </Box>
       <Box className={"w-[calc(100%-55px)]"}>
-        <Box className={"flex items-center gap-x-1"}>
-          <Typography className="text-secoundaryText text-[15px]">
-            Edited
-          </Typography>
-        </Box>
         <Box className={"relative max-w-[70%] inline-block mb-1"}>
-          <Typography className="text-start break-words bg-[#f0f0f0] rounded-[20px] py-2.5 px-5 text-black font-open-sans text-[15px]">
+          <Typography className="text-start break-words bg-[#f0f0f0] text-black rounded-[20px] py-2.5 px-5 font-open-sans text-[15px]">
             {message}
           </Typography>
           <Box className={"absolute bottom-0 -left-[17px] flex"}>
@@ -49,8 +44,9 @@ const ReciverEditedMessage = ({
           </Box>
           <Flex
             alignItems={"center"}
-            className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
-            // className={"hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"}
+            className={
+              "hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"
+            }
           >
             {/* <Box className={"relative group/tooltip z-10"}>
               <FaFaceSmile
@@ -87,7 +83,7 @@ const ReciverEditedMessage = ({
                 ></Box>
               </Typography>
             </Box>
-            
+
             <Box className={"relative group/tooltip z-10"}>
               <IoShareSocialSharp
                 onClick={forwardButton}
@@ -115,4 +111,4 @@ const ReciverEditedMessage = ({
   );
 };
 
-export default ReciverEditedMessage;
+export default ReciverNormalMessege;

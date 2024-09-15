@@ -1,20 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
-import Box from "./Box";
-import Typography from "./Typography";
-import Flex from "./Flex";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
+import Flex from "../layout/Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { FaReply } from "react-icons/fa";
 import { FaFaceSmile } from "react-icons/fa6";
-import Button from "./Button";
+import Button from "../layout/Button";
 import moment from "moment";
+import { FaFileArchive } from "react-icons/fa";
 
-const SenderVideo = ({
-  video,
-  videoType,
+const SenderFile = ({
+  file,
+  fileName,
+  fileType,
   sentTime,
-  removeButton,
   replyButton,
+  removeButton,
   forwardButton,
 }) => {
   const [menuShow, setMenuShow] = useState(false);
@@ -28,20 +30,25 @@ const SenderVideo = ({
     });
   }, []);
 
-  return videoType == "forward" ? (
+  return fileType == "forward" ? (
     <Box className={"mt-4 text-end group"}>
       <Box className={"flex justify-end items-center gap-x-2 mr-2 mb-1"}>
         <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
         <Typography className="text-secoundaryText text-[15px]">
-          You forwarded a video
+          You forwarded a file
         </Typography>
       </Box>
-      <Box className={"max-w-[75%] inline-block text-start relative"}>
-        <video
-          src={video}
-          controls
-          className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
-        />
+      <Box className={"max-w-[35%] inline-block text-start relative mb-1"}>
+        <a
+          href={file}
+          target="_blank"
+          className="w-full h-full flex items-center justify-between gap-x-3 py-4 px-4 bg-[#f0f0f0] border border-primaryBorder rounded-[10px]"
+        >
+          <FaFileArchive className="text-5xl box-content text-secoundaryText" />
+          <Typography className="text-lg font-semibold text-[#65676b]">
+            {fileName}
+          </Typography>
+        </a>
         <Flex
           alignItems={"center"}
           className={
@@ -121,12 +128,17 @@ const SenderVideo = ({
     </Box>
   ) : (
     <Box className={"mt-4 text-end group"}>
-      <Box className={"max-w-[75%] inline-block text-start relative"}>
-        <video
-          src={video}
-          controls
-          className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
-        />
+      <Box className={"max-w-[35%] inline-block text-start relative mb-1"}>
+        <a
+          href={file}
+          target="_blank"
+          className="w-full h-full flex items-center justify-between gap-x-3 py-4 px-4 bg-[#f0f0f0] border border-primaryBorder rounded-[10px]"
+        >
+          <FaFileArchive className="text-5xl box-content text-secoundaryText" />
+          <Typography className="text-lg font-semibold text-[#65676b]">
+            {fileName}
+          </Typography>
+        </a>
         <Flex
           alignItems={"center"}
           className={
@@ -207,4 +219,4 @@ const SenderVideo = ({
   );
 };
 
-export default SenderVideo;
+export default SenderFile;

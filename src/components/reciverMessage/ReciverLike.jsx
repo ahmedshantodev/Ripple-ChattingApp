@@ -1,8 +1,8 @@
 import React from "react";
-import Typography from "./Typography";
+import Typography from "../layout/Typography";
 import moment from "moment";
-import Box from "./Box";
-import Image from "./Image";
+import Box from "../layout/Box";
+import Image from "../layout/Image";
 import { MdThumbUpAlt } from "react-icons/md";
 
 const ReciverLike = ({

@@ -1,26 +1,28 @@
 import React from "react";
-import Box from "./Box";
-import Typography from "./Typography";
-import Flex from "./Flex";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
+import ModalImage from "react-modal-image";
+import Flex from "../layout/Flex";
 import { BsFillTriangleFill } from "react-icons/bs";
 import { IoShareSocialSharp } from "react-icons/io5";
 import { FaReply } from "react-icons/fa";
 import { FaFaceSmile } from "react-icons/fa6";
+import Image from "../layout/Image";
 import moment from "moment";
-import Image from "./Image";
 
-const ReciverVideo = ({
+const ReciverGif = ({
   name,
   profile,
-  video,
-  videoType,
+  gif,
+  gifName,
+  gifType,
   sentTime,
   replyButton,
   forwardButton,
 }) => {
-  return videoType == "forward" ? (
+  return gifType == "forward" ? (
     <Box className={"mt-4 group flex justify-between items-end"}>
-      <Box className={"w-[40px]"}>
+      <Box className={"w-[40px] mb-1"}>
         <Image
           src={profile}
           alt={name}
@@ -31,19 +33,22 @@ const ReciverVideo = ({
         <Box className={"flex items-center gap-x-1 mr-2 mb-1"}>
           <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
           <Typography className="text-secoundaryText text-[15px]">
-            {name} forwarded a video
+            {name} forwarded a gif
           </Typography>
         </Box>
         <Box className={"max-w-[75%] inline-block text-start relative"}>
-          <video
-            src={video}
-            controls
+          <ModalImage
+            small={gif}
+            large={gif}
+            alt={gifName}
             className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
           />
           <Flex
             alignItems={"center"}
             className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
-            // className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
+            // className={
+            //   "absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex"
+            // }
           >
             {/* <Box className={"relative group/tooltip"}>
               <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
@@ -96,7 +101,7 @@ const ReciverVideo = ({
     </Box>
   ) : (
     <Box className={"mt-4 group flex justify-between items-end"}>
-      <Box className={"w-[40px]"}>
+      <Box className={"w-[40px] mb-1"}>
         <Image
           src={profile}
           alt={name}
@@ -105,15 +110,18 @@ const ReciverVideo = ({
       </Box>
       <Box className={"w-[calc(100%-48px)]"}>
         <Box className={"max-w-[75%] inline-block text-start relative"}>
-          <video
-            src={video}
-            controls
+          <ModalImage
+            small={gif}
+            large={gif}
+            alt={gifName}
             className={"w-[300px] rounded-[10px] border border-[#dcdcdc]"}
           />
           <Flex
             alignItems={"center"}
             className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
-            // className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
+            // className={
+            //   "absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex"
+            // }
           >
             {/* <Box className={"relative group/tooltip"}>
               <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
@@ -167,4 +175,4 @@ const ReciverVideo = ({
   );
 };
 
-export default ReciverVideo;
+export default ReciverGif;

@@ -11,7 +11,7 @@ import { ref, onValue, getDatabase } from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Button from "../components/layout/Button";
-import GroupCreateModal from "../components/layout/GroupCreateModal";
+import GroupCreateModal from "../components/modal/GroupCreateModal";
 import GroupItem from "../components/layout/GroupItem";
 import { activeGroup } from "../slices/activeGroupSlice";
 import { activeChat } from "../slices/activeChatSlice";

@@ -8,7 +8,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { PiUsersThree } from "react-icons/pi";
 import { FcInvite } from "react-icons/fc";
 import { FaDna } from "react-icons/fa";
-import GroupCreateModal from "../components/layout/GroupCreateModal";
+import GroupCreateModal from "../components/modal/GroupCreateModal";
 
 const Groups = () => {
   const { pathname } = useLocation();

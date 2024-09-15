@@ -1,12 +1,12 @@
 import React from "react";
-import Typography from "./Typography";
+import Typography from "../layout/Typography";
 import { IoShareSocialSharp } from "react-icons/io5";
 import { FaReply } from "react-icons/fa";
 import { FaFaceSmile } from "react-icons/fa6";
 import moment from "moment";
-import Box from "./Box";
-import Image from "./Image";
-import Flex from "./Flex";
+import Box from "../layout/Box";
+import Image from "../layout/Image";
+import Flex from "../layout/Flex";
 
 const ReciverForwardMessege = ({
   message,

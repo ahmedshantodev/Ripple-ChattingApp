@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
-import MessageForwardListItem from "./MessageForwardListItem";
-import Box from "./Box";
-import SearchBox from "./SearchBox";
-import Typography from "./Typography";
+import MessageForwardListItem from "../layout/MessageForwardListItem";
+import Box from "../layout/Box";
+import SearchBox from "../layout/SearchBox";
+import Typography from "../layout/Typography";
 import { useSelector } from "react-redux";
 import { getDatabase, onValue, push, ref, set } from "firebase/database";
 

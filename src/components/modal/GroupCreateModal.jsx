@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
-import Typography from "./Typography";
-import Box from "./Box";
-import Input from "./Input";
-import Button from "./Button";
+import Typography from "../layout/Typography";
+import Box from "../layout/Box";
+import Input from "../layout/Input";
+import Button from "../layout/Button";
 import { getDatabase, push, ref, set } from "firebase/database";
 import { useSelector } from "react-redux";
 import { ColorRing } from "react-loader-spinner";

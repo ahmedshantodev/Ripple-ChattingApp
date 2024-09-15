@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import Box from "./Box";
-import Typography from "./Typography";
+import Box from "../layout/Box";
+import Typography from "../layout/Typography";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { FaReply } from "react-icons/fa";
-import Flex from "./Flex";
+import Flex from "../layout/Flex";
 import { FaFaceSmile } from "react-icons/fa6";
-import Button from "./Button";
+import Button from "../layout/Button";
 import moment from "moment";
 
-const SenderEditedMessage = ({
+const SenderForwardMessage = ({
   message,
   sentTime,
   // reactButton,
   replyButton,
-  editButton,
   removeButton,
   forwardButton,
 }) => {
@@ -30,9 +29,10 @@ const SenderEditedMessage = ({
 
   return (
     <Box className={"mt-5 group text-end"}>
-      <Box className={"flex justify-end items-center gap-x-2 mr-2"}>
+      <Box className={"flex justify-end items-center gap-x-2 mr-2 mb-1"}>
+        <FaReply className="box-content scale-x-[-1] text-secoundaryText" />
         <Typography className="text-secoundaryText text-[15px]">
-          Edited
+          You forwarded a message
         </Typography>
       </Box>
       <Box className={"max-w-[67%] inline-block relative mb-1 "}>
@@ -81,14 +81,6 @@ const SenderEditedMessage = ({
                   }
                 ></Box>
                 <Button
-                  onClick={editButton}
-                  className={
-                    "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
-                  }
-                >
-                  Edit
-                </Button>
-                <Button
                   onClick={removeButton}
                   className={
                     "w-full py-1 font-semibold rounded-lg hover:bg-[#f2f2f2] text-[#6a6b6d]"
@@ -107,7 +99,7 @@ const SenderEditedMessage = ({
               </Box>
             )}
           </button>
-          
+
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
               onClick={replyButton}
@@ -125,6 +117,7 @@ const SenderEditedMessage = ({
               ></Box>
             </Typography>
           </Box>
+
           {/* <Box className={"relative group/tooltip z-10"}>
             <FaFaceSmile
               onClick={reactButton}
@@ -151,4 +144,4 @@ const SenderEditedMessage = ({
   );
 };
 
-export default SenderEditedMessage;
+export default SenderForwardMessage;
