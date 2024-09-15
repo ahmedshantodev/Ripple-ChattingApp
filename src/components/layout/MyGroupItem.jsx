@@ -7,25 +7,35 @@ import Button from "./Button";
 import { BsThreeDots } from "react-icons/bs";
 import { getDatabase, onValue, ref } from "firebase/database";
 
-const MyGroupItem = ({ groupuid, groupName, groupPhoto, className, viewButton }) => {
-  const db = getDatabase()
-  const [groupMemberList, setGroupMemberList] = useState([])
+const MyGroupItem = ({
+  key,
+  groupuid,
+  groupName,
+  groupPhoto,
+  className,
+  viewButton,
+}) => {
+  const db = getDatabase();
+  const [groupMemberList, setGroupMemberList] = useState([]);
 
   useEffect(() => {
-    let memberListRef = ref(db , "groupmembers")
-    onValue(memberListRef , (snapshot) => {
-      let array = []
+    let memberListRef = ref(db, "groupmembers");
+    onValue(memberListRef, (snapshot) => {
+      let array = [];
       snapshot.forEach((item) => {
         if (item.val().groupuid == groupuid) {
-          array.push(item.val())
+          array.push(item.val());
         }
-      })
-      setGroupMemberList(array)
-    })
-  } , [])
-  
+      });
+      setGroupMemberList(array);
+    });
+  }, []);
+
   return (
-    <Box className={`${className} p-5 rounded-[10px] border broder-[#dedede]`}>
+    <Box
+      key={key}
+      className={`${className} p-5 rounded-[10px] border broder-[#dedede]`}
+    >
       <Flex alignItems={"end"} className={"gap-x-4"}>
         <Image
           src={groupPhoto}

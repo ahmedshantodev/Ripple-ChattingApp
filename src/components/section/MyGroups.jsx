@@ -89,8 +89,9 @@ const MyGroups = () => {
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[12px]"}>
-            {filteredList.map((item) => (
+            {filteredList.map((item , index) => (
               <MyGroupItem
+                key={index}
                 className={"w-[49.5%] mb-3"}
                 groupuid={item.groupuid}
                 groupName={item.groupname}

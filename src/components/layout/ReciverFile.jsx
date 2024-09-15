@@ -49,9 +49,10 @@ const ReciverFile = ({
           </a>
           <Flex
             alignItems={"center"}
-            className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
+            className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
+            // className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
           >
-            <Box className={"relative group/tooltip"}>
+            {/* <Box className={"relative group/tooltip"}>
               <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
               <Typography
                 variant="span"
@@ -60,7 +61,8 @@ const ReciverFile = ({
                 React
                 <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
-            </Box>
+            </Box> */}
+
             <Box className={"relative group/tooltip"}>
               <FaReply
                 onClick={replyButton}
@@ -74,6 +76,7 @@ const ReciverFile = ({
                 <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
             </Box>
+
             <Box className={"relative group/tooltip z-10"}>
               <IoShareSocialSharp
                 onClick={forwardButton}
@@ -121,9 +124,10 @@ const ReciverFile = ({
           </a>
           <Flex
             alignItems={"center"}
-            className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
+            className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
+            // className={`absolute top-2/4 -translate-y-2/4 -right-[120px] hidden group-hover:flex`}
           >
-            <Box className={"relative group/tooltip"}>
+            {/* <Box className={"relative group/tooltip"}>
               <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
               <Typography
                 variant="span"
@@ -132,7 +136,8 @@ const ReciverFile = ({
                 React
                 <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
-            </Box>
+            </Box> */}
+
             <Box className={"relative group/tooltip"}>
               <FaReply
                 onClick={replyButton}
@@ -146,6 +151,7 @@ const ReciverFile = ({
                 <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
               </Typography>
             </Box>
+            
             <Box className={"relative group/tooltip z-10"}>
               <IoShareSocialSharp
                 onClick={forwardButton}

@@ -6,6 +6,7 @@ import Button from "./Button";
 import Flex from "./Flex";
 
 const OthersGroupListItem = ({
+  key,
   className,
   groupPhoto,
   groupName,
@@ -17,6 +18,7 @@ const OthersGroupListItem = ({
 }) => {
   return (
     <Box
+      key={key}
       className={`${className} overflow-hidden rounded-[10px] border broder-[#dedede]`}
     >
       <Image

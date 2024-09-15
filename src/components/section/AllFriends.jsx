@@ -105,8 +105,9 @@ const AllFriends = () => {
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[12px]"}>
-            {filteredList.map((item) => (
+            {filteredList.map((item , index) => (
               <FriendListItem
+                key={index}
                 className={"w-[49.5%] mb-[15px]"}
                 uid={activeUserData.uid == item.senderuid ? item.reciveruid : item.senderuid}
                 name={activeUserData.uid == item.senderuid ? item.recivername : item.sendername}

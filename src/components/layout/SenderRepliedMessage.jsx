@@ -20,7 +20,7 @@ const SenderRepliedMessage = ({
   repliedMessageId,
   repliedTo,
   sentTime,
-  reactButton,
+  // reactButton,
   replyButton,
   editButton,
   removeButton,
@@ -127,9 +127,14 @@ const SenderRepliedMessage = ({
           alignItems={"center"}
           className={
             menuShow
-              ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
-              : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
           }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -176,6 +181,7 @@ const SenderRepliedMessage = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
               onClick={replyButton}
@@ -193,7 +199,8 @@ const SenderRepliedMessage = ({
               ></Box>
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip z-10"}>
+
+          {/* <Box className={"relative group/tooltip z-10"}>
             <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -209,7 +216,7 @@ const SenderRepliedMessage = ({
                 }
               ></Box>
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText -ml-1">
@@ -265,9 +272,14 @@ const SenderRepliedMessage = ({
           alignItems={"center"}
           className={
             menuShow
-              ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
-              : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
           }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -314,6 +326,7 @@ const SenderRepliedMessage = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
               onClick={replyButton}
@@ -331,7 +344,8 @@ const SenderRepliedMessage = ({
               ></Box>
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip z-10"}>
+
+          {/* <Box className={"relative group/tooltip z-10"}>
             <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -347,7 +361,7 @@ const SenderRepliedMessage = ({
                 }
               ></Box>
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText -ml-1">
@@ -376,7 +390,11 @@ const SenderRepliedMessage = ({
             </Typography>
           ) : (
             <Box className={""}>
-              <audio src={item.voice} controls className={"max-w-[40%] ml-auto bg-[#f1f3f4] pb-5 -mb-4 rounded-3xl"}/>
+              <audio
+                src={item.voice}
+                controls
+                className={"box-content max-w-[40%] ml-auto bg-[#f1f3f4] pb-6 -mb-7 rounded-3xl"}
+              />
             </Box>
           )
         )}
@@ -399,9 +417,14 @@ const SenderRepliedMessage = ({
           alignItems={"center"}
           className={
             menuShow
-              ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
-              : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
           }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -448,6 +471,7 @@ const SenderRepliedMessage = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
               onClick={replyButton}
@@ -465,7 +489,8 @@ const SenderRepliedMessage = ({
               ></Box>
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip z-10"}>
+
+          {/* <Box className={"relative group/tooltip z-10"}>
             <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -481,7 +506,7 @@ const SenderRepliedMessage = ({
                 }
               ></Box>
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText -ml-1">
@@ -537,9 +562,14 @@ const SenderRepliedMessage = ({
           alignItems={"center"}
           className={
             menuShow
-              ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
-              : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
           }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -586,6 +616,7 @@ const SenderRepliedMessage = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
               onClick={replyButton}
@@ -603,7 +634,8 @@ const SenderRepliedMessage = ({
               ></Box>
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip z-10"}>
+
+          {/* <Box className={"relative group/tooltip z-10"}>
             <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -619,7 +651,7 @@ const SenderRepliedMessage = ({
                 }
               ></Box>
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText -ml-1">
@@ -685,9 +717,14 @@ const SenderRepliedMessage = ({
           alignItems={"center"}
           className={
             menuShow
-              ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
-              : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
           }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -734,6 +771,7 @@ const SenderRepliedMessage = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
               onClick={replyButton}
@@ -751,7 +789,8 @@ const SenderRepliedMessage = ({
               ></Box>
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip z-10"}>
+
+          {/* <Box className={"relative group/tooltip z-10"}>
             <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -767,7 +806,7 @@ const SenderRepliedMessage = ({
                 }
               ></Box>
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText -ml-1">
@@ -825,9 +864,14 @@ const SenderRepliedMessage = ({
             alignItems={"center"}
             className={
               menuShow
-                ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
-                : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+                ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+                : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
             }
+            // className={
+            //   menuShow
+            //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+            //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+            // }
           >
             <button ref={buttonRef} className={"relative"}>
               <PiDotsThreeOutlineVerticalFill
@@ -874,6 +918,7 @@ const SenderRepliedMessage = ({
                 </Box>
               )}
             </button>
+
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
                 onClick={replyButton}
@@ -891,7 +936,8 @@ const SenderRepliedMessage = ({
                 ></Box>
               </Typography>
             </Box>
-            <Box className={"relative group/tooltip z-10"}>
+
+            {/* <Box className={"relative group/tooltip z-10"}>
               <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -907,7 +953,7 @@ const SenderRepliedMessage = ({
                   }
                 ></Box>
               </Typography>
-            </Box>
+            </Box> */}
           </Flex>
         </Box>
         <Typography className="font-poppins text-xs font-medium text-secoundaryText -ml-1">

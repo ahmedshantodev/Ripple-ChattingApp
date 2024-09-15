@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
 
-const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
+const ChatItem = ({ keys, frienduid, friendprofile, friendname, onClick }) => {
   const db = getDatabase();
   let location = useLocation().pathname;
   const activeUserData = useSelector((state) => state.user.information);
@@ -35,6 +35,7 @@ const ChatItem = ({ frienduid, friendprofile, friendname, onClick }) => {
 
   return (
     <Box
+      key={keys}
       onClick={onClick}
       className={
         activeChatData?.uid == frienduid &&

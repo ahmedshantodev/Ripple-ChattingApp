@@ -7,6 +7,7 @@ import { getDatabase, onValue, ref } from "firebase/database";
 import { useSelector } from "react-redux";
 
 const FriendRequstItem = ({
+  key,
   className,
   userId,
   userName,
@@ -56,6 +57,7 @@ const FriendRequstItem = ({
 
   return (
     <Box
+      key={key}
       className={`${className} border border-primaryBorder rounded-md overflow-hidden`}
     >
       <Image

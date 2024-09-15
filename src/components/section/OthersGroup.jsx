@@ -125,8 +125,9 @@ const OthersGroup = () => {
             alignItems={"baseline"}
             className={"flex-wrap w-full gap-x-[12px]"}
           >
-            {filteredList.map((item) => (
+            {filteredList.map((item , index) => (
               <OthersGroupListItem
+                key={index}
                 className={"w-[24.2%] mb-3"}
                 groupPhoto={item.groupphoto}
                 groupName={item.groupname}

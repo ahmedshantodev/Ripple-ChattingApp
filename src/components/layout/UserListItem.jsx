@@ -8,6 +8,7 @@ import { FaUserTimes } from "react-icons/fa";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useSelector } from "react-redux";
 const UserListItem = ({
+  key,
   className,
   userId,
   userName,
@@ -58,6 +59,7 @@ const UserListItem = ({
 
   return (
     <Box
+      key={index}
       className={`${className} border border-primaryBorder rounded-md overflow-hidden`}
     >
       <Image src={userProfile} alt={userName} className={"w-full"} />

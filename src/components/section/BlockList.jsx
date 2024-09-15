@@ -69,8 +69,9 @@ const BlockList = () => {
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[12px]"}>
-            {filteredList.map((item) => (
+            {filteredList.map((item , index) => (
               <BlockListItem
+                key={index}
                 className={"w-[18.50%] mb-[22px]"}
                 profile={item.blockeduserprofile}
                 userName={item.blockedusername}

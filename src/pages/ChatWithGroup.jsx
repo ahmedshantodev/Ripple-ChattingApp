@@ -90,6 +90,7 @@ const ChatWithGroup = () => {
   const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
   const activeGroupData = useSelector((state) => state.activeGroup.information);
+  const [voiceMessage, setVoiceMessage] = useState("");
   const [voiceMessageUrl, setVoiceMessageUrl] = useState("");
   const [messege, setMessege] = useState("");
   const [messegeList, setMessegeList] = useState([]);
@@ -107,8 +108,7 @@ const ChatWithGroup = () => {
   const [removedMessageInfo, setRemovedMessageInfo] = useState("");
   const [memberInviteModal, setMemberInviteModal] = useState(false);
   const [groupNameChangeModal, setGroupNameChangeModal] = useState(false);
-  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] =
-    useState(false);
+  const [groupPhotoUploadModalShow, setGroupPhotoUploadModalShow] = useState(false);
   const [mediaDropdownOpen, setMediaDropdownOpen] = useState(true);
   const [chatInfoShow, setChatInfoShow] = useState(false);
   const [chatImageList, setChatImageList] = useState([]);
@@ -125,6 +125,8 @@ const ChatWithGroup = () => {
   const [fileSizeErrorShow, setFileSizeErrorShow] = useState(false);
   const anotherFileSelectButtonRef = useRef();
   const lastMessageRef = useRef();
+  const [memberRemoveModal, setMemberRemoveModal] = useState(false);
+  const [removedMemberInfo, setRemovedMemberInfo] = useState("");
 
   const time = new Date();
   const year = time.getFullYear();
@@ -185,9 +187,6 @@ const ChatWithGroup = () => {
       });
     });
   };
-
-  const [memberRemoveModal, setMemberRemoveModal] = useState(false);
-  const [removedMemberInfo, setRemovedMemberInfo] = useState("");
 
   const handleMemberRemoveModalShow = (item) => {
     setRemovedMemberInfo(item);
@@ -391,10 +390,7 @@ const ChatWithGroup = () => {
         });
       }
     } else if (editedMessageInfo) {
-      if (
-        editedMessageInfo.type == "text/normal" ||
-        editedMessageInfo.type == "text/edited"
-      ) {
+      if (editedMessageInfo.type == "text/normal" || editedMessageInfo.type == "text/edited") {
         set(ref(db, "groupmessege/" + editedMessageInfo.messageId), {
           type: "text/edited",
           text: messege,
@@ -447,24 +443,32 @@ const ChatWithGroup = () => {
   };
 
   const addAudioElement = (blob) => {
+    setVoiceMessage(blob);
     const url = URL.createObjectURL(blob);
     setVoiceMessageUrl(url);
   };
 
   const handleSendVoiceMessage = () => {
-    set(push(ref(db, "groupmessege/")), {
-      type: "voice/normal",
-      voice: voiceMessageUrl,
-      groupuid: activeGroupData.groupuid,
-      groupname: activeGroupData.groupname,
-      groupphoto: activeGroupData.groupphoto,
-      senderuid: activeUserData.uid,
-      sendername: activeUserData.displayName,
-      senderprofile: activeUserData.photoURL,
-      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    }).then(() => {
-      setVoiceMessageUrl("");
-      lastMessageSendTimeUpdate();
+    const voiceRef = storageRef(storage, "voice as a messege/" + Date.now());
+
+    uploadBytes(voiceRef, voiceMessage).then((snapshot) => {
+      getDownloadURL(voiceRef).then((downloadURL) => {
+        set(push(ref(db, "singlemessege/")), {
+          type: "voice/normal",
+          voice: downloadURL,
+          groupuid: activeGroupData.groupuid,
+          groupname: activeGroupData.groupname,
+          groupphoto: activeGroupData.groupphoto,
+          senderuid: activeUserData.uid,
+          sendername: activeUserData.displayName,
+          senderprofile: activeUserData.photoURL,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        }).then(() => {
+          setVoiceMessage("");
+          setVoiceMessageUrl("");
+          lastMessageSendTimeUpdate();
+        });
+      });
     });
   };
 

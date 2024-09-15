@@ -5,6 +5,7 @@ import Typography from "./Typography";
 import Button from "./Button";
 
 const BlockListItem = ({
+  key,
   className,
   profile,
   userName,
@@ -12,6 +13,7 @@ const BlockListItem = ({
 }) => {
   return (
     <Box
+      key={key}
       className={`${className} border border-primaryBorder rounded-md overflow-hidden`}
     >
       <Image

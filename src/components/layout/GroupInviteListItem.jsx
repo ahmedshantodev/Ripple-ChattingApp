@@ -6,6 +6,7 @@ import Flex from "./Flex";
 import Button from "./Button";
 
 const GroupInviteListItem = ({
+  key,
   profile,
   name,
   buttonType,
@@ -14,6 +15,7 @@ const GroupInviteListItem = ({
 }) => {
   return (
     <Box
+      key={key}
       className={
         "border border-[#dddcea] py-2 rounded-lg px-2 flex items-center justify-between mb-2"
       }

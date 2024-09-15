@@ -14,7 +14,7 @@ const ReciverVoiceMessage = ({
   voiceType,
   voice,
   sentTime,
-  reactButton,
+  // reactButton,
   replyButton,
   forwardButton,
 }) => {
@@ -39,11 +39,12 @@ const ReciverVoiceMessage = ({
           <audio src={voice} controls />
           <Flex
             alignItems={"center"}
-            className={
-              "hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"
-            }
+            className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
+            // className={
+            //   "hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"
+            // }
           >
-            <Box className={"relative group/tooltip z-10"}>
+            {/* <Box className={"relative group/tooltip z-10"}>
               <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -59,7 +60,8 @@ const ReciverVoiceMessage = ({
                   }
                 ></Box>
               </Typography>
-            </Box>
+            </Box> */}
+
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
                 onClick={replyButton}
@@ -77,6 +79,7 @@ const ReciverVoiceMessage = ({
                 ></Box>
               </Typography>
             </Box>
+
             <Box className={"relative group/tooltip z-10"}>
               <IoShareSocialSharp
                 onClick={forwardButton}
@@ -116,11 +119,12 @@ const ReciverVoiceMessage = ({
           <audio src={voice} controls />
           <Flex
             alignItems={"center"}
-            className={
-              "hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"
-            }
+            className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
+            // className={
+            //   "hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"
+            // }
           >
-            <Box className={"relative group/tooltip z-10"}>
+            {/* <Box className={"relative group/tooltip z-10"}>
               <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -136,7 +140,8 @@ const ReciverVoiceMessage = ({
                   }
                 ></Box>
               </Typography>
-            </Box>
+            </Box> */}
+
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
                 onClick={replyButton}
@@ -154,6 +159,7 @@ const ReciverVoiceMessage = ({
                 ></Box>
               </Typography>
             </Box>
+            
             <Box className={"relative group/tooltip z-10"}>
               <IoShareSocialSharp
                 onClick={forwardButton}

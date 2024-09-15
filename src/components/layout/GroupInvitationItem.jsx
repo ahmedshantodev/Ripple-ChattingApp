@@ -6,6 +6,7 @@ import Typography from "./Typography";
 import Button from "./Button";
 
 const GroupInvitationItem = ({
+  key,
   groupPhoto,
   groupName,
   inviteByname,
@@ -15,7 +16,10 @@ const GroupInvitationItem = ({
   deleteButton,
 }) => {
   return (
-    <Box className={`${className} p-4 rounded-[10px] border broder-[#dedede]`}>
+    <Box
+      key={key}
+      className={`${className} p-4 rounded-[10px] border broder-[#dedede]`}
+    >
       <Flex alignItems={"end"} className={"gap-x-4"}>
         <Image
           src={groupPhoto}

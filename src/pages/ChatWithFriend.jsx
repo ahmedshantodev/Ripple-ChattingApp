@@ -79,6 +79,7 @@ const ChatWithFriend = () => {
   const activeChatData = useSelector((state) => state.activeChat.information);
   const [messegeList, setMessegeList] = useState([]);
   const [messege, setMessege] = useState("");
+  const [voiceMessage, setVoiceMessage] = useState("");
   const [voiceMessageUrl, setVoiceMessageUrl] = useState("");
   const [blockList, setBlockList] = useState([]);
   const [blockModalShow, setBlockModalShow] = useState(false);
@@ -290,10 +291,7 @@ const ChatWithFriend = () => {
         });
       }
     } else if (editedMessageInfo) {
-      if (
-        editedMessageInfo.type == "text/normal" ||
-        editedMessageInfo.type == "text/edited"
-      ) {
+      if (editedMessageInfo.type == "text/normal" || editedMessageInfo.type == "text/edited") {
         set(ref(db, "singlemessege/" + editedMessageInfo.messegeid), {
           type: "text/edited",
           text: messege,
@@ -358,31 +356,39 @@ const ChatWithFriend = () => {
   };
 
   const addAudioElement = (blob) => {
-    const url = URL.createObjectURL(blob);
-    setVoiceMessageUrl(url);
+    setVoiceMessage(blob);
+    const url = URL.createObjectURL(blob)
+    setVoiceMessageUrl(url)
   };
 
   const handleSendVoiceMessage = () => {
-    set(push(ref(db, "singlemessege/")), {
-      type: "voice/normal",
-      voice: voiceMessageUrl,
-      reciveruid: activeChatData?.uid,
-      recivername: activeChatData?.name,
-      reciverprofile: activeChatData?.profile,
-      senderuid: activeUserData.uid,
-      sendername: activeUserData.displayName,
-      senderprofile: activeUserData.photoURL,
-      senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
-    }).then(() => {
-      setVoiceMessageUrl("");
-      set(ref(db, "friends/" + activeChatData.friendid), {
-        reciveruid: activeChatData.uid,
-        recivername: activeChatData.name,
-        reciverprofile: activeChatData.profile,
-        senderuid: activeUserData.uid,
-        sendername: activeUserData.displayName,
-        senderprofile: activeUserData.photoURL,
-        lastmessagesent: Date.now(),
+    const voiceRef = storageRef(storage, "voice as a messege/" + Date.now());
+
+    uploadBytes(voiceRef, voiceMessage).then((snapshot) => {
+      getDownloadURL(voiceRef).then((downloadURL) => {
+        set(push(ref(db, "singlemessege/")), {
+          type: "voice/normal",
+          voice: downloadURL,
+          reciveruid: activeChatData?.uid,
+          recivername: activeChatData?.name,
+          reciverprofile: activeChatData?.profile,
+          senderuid: activeUserData.uid,
+          sendername: activeUserData.displayName,
+          senderprofile: activeUserData.photoURL,
+          senttime: `${year}/${month}/${date}/${hours}:${minutes}`,
+        }).then(() => {
+          setVoiceMessage("");
+          setVoiceMessageUrl("");
+          set(ref(db, "friends/" + activeChatData.friendid), {
+            reciveruid: activeChatData.uid,
+            recivername: activeChatData.name,
+            reciverprofile: activeChatData.profile,
+            senderuid: activeUserData.uid,
+            sendername: activeUserData.displayName,
+            senderprofile: activeUserData.photoURL,
+            lastmessagesent: Date.now(),
+          });
+        });
       });
     });
   };
@@ -1374,7 +1380,7 @@ const ChatWithFriend = () => {
                     </Box>
                   )}
                 </div>
-                {voiceMessageUrl == "" && (
+                {voiceMessage == "" && (
                   <Box className={"relative group/tooltip"}>
                     <Box>
                       <AudioRecorder
@@ -1399,11 +1405,11 @@ const ChatWithFriend = () => {
                   </Box>
                 )}
               </Flex>
-              {voiceMessageUrl ? (
+              {voiceMessage ? (
                 <Flex alignItems={"center"} className={"w-full"}>
                   <Box className={"relative group/tooltip mr-[5px]"}>
                     <MdCancel
-                      onClick={() => setVoiceMessageUrl("")}
+                      onClick={() => setVoiceMessage("")}
                       className="box-content text-[#007bf5] text-[30px] p-2 rounded-[20%] cursor-pointer transition-all ease-in-out duration-300 hover:bg-[#dedede]"
                     />
                     <Typography

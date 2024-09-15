@@ -11,7 +11,7 @@ import moment from "moment";
 const SenderForwardMessage = ({
   message,
   sentTime,
-  reactButton,
+  // reactButton,
   replyButton,
   removeButton,
   forwardButton,
@@ -53,9 +53,14 @@ const SenderForwardMessage = ({
           alignItems={"center"}
           className={
             menuShow
-              ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
-              : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
           }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -94,6 +99,7 @@ const SenderForwardMessage = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip z-10"}>
             <FaReply
               onClick={replyButton}
@@ -111,7 +117,8 @@ const SenderForwardMessage = ({
               ></Box>
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip z-10"}>
+
+          {/* <Box className={"relative group/tooltip z-10"}>
             <FaFaceSmile
               onClick={reactButton}
               className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -127,7 +134,7 @@ const SenderForwardMessage = ({
                 }
               ></Box>
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText -ml-1">

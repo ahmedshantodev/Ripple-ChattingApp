@@ -94,8 +94,9 @@ const FriendRequsts = () => {
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[22px]"}>
-            {filteredList.map((item) => (
+            {filteredList.map((item , index) => (
               <FriendRequstItem
+                key={index}
                 className={"w-[18.50%] mb-[15px]"}
                 userId={
                   activeUserData.uid == item.senderuid

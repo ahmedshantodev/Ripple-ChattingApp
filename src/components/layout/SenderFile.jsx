@@ -51,9 +51,16 @@ const SenderFile = ({
         </a>
         <Flex
           alignItems={"center"}
-          className={`absolute top-2/4 -translate-y-2/4 -left-[120px] ${
-            menuShow ? "flex" : "hidden"
-          } group-hover:flex`}
+          className={
+            menuShow
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
+          }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -88,6 +95,7 @@ const SenderFile = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip"}>
             <FaReply
               onClick={replyButton}
@@ -101,7 +109,8 @@ const SenderFile = ({
               <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip"}>
+
+          {/* <Box className={"relative group/tooltip"}>
             <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
@@ -110,7 +119,7 @@ const SenderFile = ({
               React
               <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText">
@@ -132,9 +141,16 @@ const SenderFile = ({
         </a>
         <Flex
           alignItems={"center"}
-          className={`absolute top-2/4 -translate-y-2/4 -left-[120px] ${
-            menuShow ? "flex" : "hidden"
-          } group-hover:flex`}
+          className={
+            menuShow
+              ? "flex absolute top-2/4 -translate-y-2/4 -left-[80px]"
+              : "hidden absolute top-2/4 -translate-y-2/4 -left-[80px] group-hover:flex"
+          }
+          // className={
+          //   menuShow
+          //     ? "flex absolute top-2/4 -translate-y-2/4 -left-[120px]"
+          //     : "hidden absolute top-2/4 -translate-y-2/4 -left-[120px] group-hover:flex"
+          // }
         >
           <button ref={buttonRef} className={"relative"}>
             <PiDotsThreeOutlineVerticalFill
@@ -169,6 +185,7 @@ const SenderFile = ({
               </Box>
             )}
           </button>
+
           <Box className={"relative group/tooltip"}>
             <FaReply
               onClick={replyButton}
@@ -182,7 +199,8 @@ const SenderFile = ({
               <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
           </Box>
-          <Box className={"relative group/tooltip"}>
+
+          {/* <Box className={"relative group/tooltip"}>
             <FaFaceSmile className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]" />
             <Typography
               variant="span"
@@ -191,7 +209,7 @@ const SenderFile = ({
               React
               <BsFillTriangleFill className="text-[#323436] rotate-180 absolute left-2/4 -translate-x-2/4 top-[75%] " />
             </Typography>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
       <Typography className="font-poppins text-xs font-medium text-secoundaryText">

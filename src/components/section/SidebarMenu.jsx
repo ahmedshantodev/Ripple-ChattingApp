@@ -11,12 +11,9 @@ import { IoNewspaperOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import coverphoto from "/public/images/1711471680698.jpg";
 import { GoKey } from "react-icons/go";
-import { RiDeleteBin2Line } from "react-icons/ri";
 import { MdPhotoCamera } from "react-icons/md";
 import { RiUserSettingsLine } from "react-icons/ri";
 import Button from "../layout/Button";
-import { PiNewspaperClipping } from "react-icons/pi";
-import { IoImagesSharp } from "react-icons/io5";
 import ProfileUploadModal from "../layout/ProfileUploadModal";
 import { MdLogout } from "react-icons/md";
 import Modal from "./../layout/Modal";
@@ -25,7 +22,6 @@ import { activeUser } from "../../slices/activeUserSlice";
 import { activeGroup } from "../../slices/activeGroupSlice";
 import { activeChat } from "../../slices/activeChatSlice";
 import Flex from "../layout/Flex";
-import { IoMdNotificationsOutline } from "react-icons/io";
 
 const SidebarMenu = () => {
   const auth = getAuth();
@@ -105,18 +101,6 @@ const SidebarMenu = () => {
                 <IoNewspaperOutline className="text-[24px]" /> Group
               </NavLink>
             </ListItem>
-            {/* <ListItem className={"mb-3"}>
-              <NavLink
-                to={"/pages/notification"}
-                className={
-                  pathname.includes("/pages/notification")
-                    ? "w-[160px] mx-auto bg-[#32375c] text-white py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px]"
-                    : "w-[160px] mx-auto py-3 px-4 rounded-[5px] flex items-center gap-x-2 text-[18px] transition-all duration-200 ease-linear hover:bg-[#32375c] hover:text-white"
-                }
-              >
-                <IoMdNotificationsOutline className="text-[24px]" /> Notification
-              </NavLink>
-            </ListItem> */}
           </List>
         </nav>
         <Box>

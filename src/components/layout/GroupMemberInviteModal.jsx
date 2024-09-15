@@ -134,8 +134,9 @@ const GroupMemberInviteModal = ({ modalShow, modalClose }) => {
           />
         </Box>
         <Box className={"overflow-y-auto h-[79%] text-start"}>
-          {filteredList.map((item) => (
+          {filteredList.map((item , index) => (
             <GroupInviteListItem
+              key={index}
               profile={activeUserData.uid == item.reciveruid ? item.senderprofile : item.reciverprofile}
               name={activeUserData.uid == item.reciveruid ? item.sendername : item.recivername}
               buttonType={

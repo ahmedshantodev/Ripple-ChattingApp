@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 import { getDatabase, onValue, ref } from "firebase/database";
 import moment from "moment";
 
-const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
+const GroupItem = ({ keys, groupId, groupName, groupPhoto, onClick }) => {
   const db = getDatabase();
   let location = useLocation().pathname;
   const activeUserData = useSelector((state) => state.user.information);
@@ -30,6 +30,7 @@ const GroupItem = ({ groupId, groupName, groupPhoto, onClick }) => {
 
   return (
     <Box
+      key={keys}
       onClick={onClick}
       className={
         activeGroupData?.groupuid == groupId &&

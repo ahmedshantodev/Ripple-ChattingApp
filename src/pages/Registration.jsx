@@ -318,7 +318,7 @@ const Registration = () => {
                     registrationError.lastName
                       ? "placeholder:text-red-600"
                       : "placeholder:text-secoundaryText"
-                  } placeholder:text-[13px]  sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
+                  } placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
                 />
                 {registrationError.lastName && (
                   <Typography className="absolute -bottom-[12px] sm:-bottom-[17px] ;md:-bottom-[15px] lg:-bottom-[20px] xl:-bottom-[22px] left-[12px] sm:left-[16px] md:left-[20px] text-red-600 text-[8px] sm:text-[11px] md:text-[10px] lg:text-[14px]">

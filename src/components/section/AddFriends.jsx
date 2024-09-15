@@ -128,8 +128,9 @@ const AddFriends = () => {
           </Box>
         ) : (
           <Flex className={"gap-x-[22px] flex-wrap"}>
-            {filteredList.map((item) => (
+            {filteredList.map((item , index) => (
               <UserListItem
+                key={index}
                 className={"w-[18.50%] mb-[15px]"}
                 userId={item.userid}
                 userName={item.username}

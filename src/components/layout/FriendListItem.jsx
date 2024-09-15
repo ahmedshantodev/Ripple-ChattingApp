@@ -8,6 +8,7 @@ import { getDatabase, onValue, ref } from "firebase/database";
 import { useSelector } from "react-redux";
 
 const FriendListItem = ({
+  key,
   className,
   uid,
   name,
@@ -72,6 +73,7 @@ const FriendListItem = ({
 
   return (
     <Box
+      key={key}
       className={`${className} border border-[#dedede] rounded-md flex justify-between items-center p-2.5 transition-all ease-in-out duration-200`}
     >
       <Box className={"flex items-center"}>

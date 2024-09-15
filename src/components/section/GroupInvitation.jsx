@@ -103,8 +103,9 @@ const GroupInvitation = () => {
           </Box>
         ) : (
           <Flex className={"flex-wrap w-full gap-x-[12px]"}>
-            {filteredList.map((item) => (
+            {filteredList.map((item , index) => (
               <GroupInvitationItem
+                key={index}
                 groupPhoto={item.groupphoto}
                 groupName={item.groupname}
                 inviteByname={item.invitationsendername}

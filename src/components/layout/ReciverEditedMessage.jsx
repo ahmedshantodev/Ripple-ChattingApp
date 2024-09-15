@@ -13,7 +13,7 @@ const ReciverEditedMessage = ({
   sentTime,
   name,
   profile,
-  reactButton,
+  // reactButton,
   replyButton,
   forwardButton,
 }) => {
@@ -49,9 +49,10 @@ const ReciverEditedMessage = ({
           </Box>
           <Flex
             alignItems={"center"}
-            className={"hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"}
+            className={"hidden absolute top-2/4 -translate-y-2/4 -right-[75px] group-hover:flex"}
+            // className={"hidden absolute top-2/4 -translate-y-2/4 -right-[120px] group-hover:flex"}
           >
-            <Box className={"relative group/tooltip z-10"}>
+            {/* <Box className={"relative group/tooltip z-10"}>
               <FaFaceSmile
                 onClick={reactButton}
                 className="box-content text-lg p-2 text-[#9f9f9f] rounded-full cursor-pointer hover:bg-[#f2f2f2]"
@@ -67,7 +68,8 @@ const ReciverEditedMessage = ({
                   }
                 ></Box>
               </Typography>
-            </Box>
+            </Box> */}
+
             <Box className={"relative group/tooltip z-10"}>
               <FaReply
                 onClick={replyButton}
@@ -85,6 +87,7 @@ const ReciverEditedMessage = ({
                 ></Box>
               </Typography>
             </Box>
+            
             <Box className={"relative group/tooltip z-10"}>
               <IoShareSocialSharp
                 onClick={forwardButton}

@@ -200,9 +200,10 @@ const Chat = () => {
               </Box>
             </Box>
           ) : (
-            filteredChatItem.map((item) =>
+            filteredChatItem.map((item , index) =>
               item.friendid ? (
                 <ChatItem
+                  keys={index}
                   friendname={activeUserData?.uid == item.senderuid ? item.recivername : item.sendername}
                   frienduid={activeUserData?.uid == item.senderuid ? item.reciveruid : item.senderuid}
                   friendprofile={activeUserData?.uid == item.senderuid ? item.reciverprofile : item.senderprofile}
@@ -210,6 +211,7 @@ const Chat = () => {
                 />
               ) : (
                 <GroupItem
+                  keys={index}
                   groupId={item.groupuid}
                   groupName={item.groupname}
                   groupPhoto={item.groupphoto}
