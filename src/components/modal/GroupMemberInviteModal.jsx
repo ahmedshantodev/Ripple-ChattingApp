@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import Typography from "../layout/Typography";
 import Box from "../layout/Box";
-import GroupInviteListItem from "../layout/GroupInvitationItem";
+import GroupInviteListItem from "../layout/GroupInviteListItem";
 import { getDatabase, onValue, ref, remove, set } from "firebase/database";
 import { useSelector } from "react-redux";
 import SearchBox from '../layout/SearchBox';

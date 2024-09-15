@@ -57,16 +57,15 @@ const Chat = () => {
     });
   }, []);
 
-// group admin user ke group theke kick korle user ar redux ar data faka hoye jabe
-  const groupExists = groupList.some((item) => item.groupuid === activeGroupData?.groupuid);
+  // // group admin user ke group theke kick korle user ar redux ar data faka hoye jabe
+  // const groupExists = groupList.some((item) => item.groupuid === activeGroupData?.groupuid);
   
-  useEffect(() => {
-    if (groupExists == false) {
-      localStorage.removeItem("activeGroup");
-      dispatch(activeGroup(null));
-    }
-    
-  }, [chatList]);
+  // useEffect(() => {
+  //   if (groupExists == false) {
+  //     localStorage.removeItem("activeGroup");
+  //     dispatch(activeGroup(null));
+  //   }
+  // }, [chatList]);
 
   const filteredChatItem = chatList.filter((item) => {
     let name = activeUserData?.uid == item.senderuid ? item.recivername : item.sendername;

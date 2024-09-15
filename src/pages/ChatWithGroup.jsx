@@ -88,7 +88,7 @@ import MessageForwardModal from "../components/modal/MessageForwardModal";
 
 const ChatWithGroup = () => {
   const db = getDatabase();
-  const storage = getStorage();
+  const storage = getStorage()
   const dispatch = useDispatch();
   const activeUserData = useSelector((state) => state.user.information);
   const activeGroupData = useSelector((state) => state.activeGroup.information);
@@ -455,7 +455,7 @@ const ChatWithGroup = () => {
 
     uploadBytes(voiceRef, voiceMessage).then((snapshot) => {
       getDownloadURL(voiceRef).then((downloadURL) => {
-        set(push(ref(db, "singlemessege/")), {
+        set(push(ref(db, "groupmessege/")), {
           type: "voice/normal",
           voice: downloadURL,
           groupuid: activeGroupData.groupuid,

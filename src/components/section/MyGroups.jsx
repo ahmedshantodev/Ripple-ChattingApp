@@ -34,9 +34,9 @@ const MyGroups = () => {
     return searchValue == "" ? item : item.groupname.toLowerCase().includes(searchValue.toLowerCase())
   })
 
-  const handleViewGroup = (item) => {
-    navigate("/pages/chat/chat-with-group")
+  const handleViewGroup = (item) => {  
     dispatch(activeGroup({
+      groupmemberid: item.groupmemberid,
       groupuid: item.groupuid,
       groupname: item.groupname,
       groupphoto: item.groupphoto,
@@ -44,7 +44,8 @@ const MyGroups = () => {
       groupadminname: item.groupadminname,
       groupadminprofile: item.groupadminprofile,
     }));
-    localStorage.setItem("activeGroup", JSON.stringify({
+    localStorage.setItem("activeGroup",JSON.stringify({
+      groupmemberid: item.groupmemberid,
       groupuid: item.groupuid,
       groupname: item.groupname,
       groupphoto: item.groupphoto,
@@ -52,6 +53,7 @@ const MyGroups = () => {
       groupadminname: item.groupadminname,
       groupadminprofile: item.groupadminprofile,
     }));
+     navigate("/pages/chat/chat-with-group");
   }
 
   return (

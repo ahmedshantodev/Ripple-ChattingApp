@@ -65,8 +65,7 @@ const Registration = () => {
 
   const handleSignUp = () => {
     let email = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-    let password = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-
+  
     if (!registrationData.firstName) {
       setRegistrationError((prev) => ({
         ...prev,
@@ -92,18 +91,9 @@ const Registration = () => {
         ...prev,
         password: "Please enter your Password",
       }));
-    } else if (!password.test(registrationData.password)) {
-      setRegistrationError((prev) => ({
-        ...prev,
-        password: "Minimum six characters, at least one letter and one number:",
-      }));
     } else {
       setSignupLodingBtnShow(!signupLodingBtnShow);
-      createUserWithEmailAndPassword(
-        auth,
-        registrationData.email,
-        registrationData.password
-      )
+      createUserWithEmailAndPassword(auth,registrationData.email,registrationData.password)
         .then((userCredential) => {
           const userInformation = userCredential?.user;
           updateProfile(auth.currentUser, {
@@ -111,8 +101,10 @@ const Registration = () => {
             photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779",
           })
             .then(() => {
+
               localStorage.setItem("user", JSON.stringify(userInformation));
               dispatch(activeUser(userInformation));
+
               set(ref(db, "users/" + userInformation.uid), {
                 userid: userInformation.uid,
                 username: userInformation.displayName,
@@ -121,24 +113,23 @@ const Registration = () => {
               });
             })
             .then(() => {
-              // sendEmailVerification(auth.currentUser).then(() => {
-              //   toast.success(
-              //     "Registration Successfull, Please check your email for verification",
-              //     {
-              //       position: "bottom-center",
-              //       autoClose: 2500,
-              //     }
-              //   );
+              sendEmailVerification(auth.currentUser).then(() => {
+                toast.success(
+                  "Registration Successfull, Please check your email for verification",
+                  {
+                    position: "bottom-center",
+                    autoClose: 2500,
+                  }
+                );
                 setRegistrationData({
                   firstName: "",
                   lastName: "",
                   email: "",
                   password: "",
                 });
-                // navigate("/email-verification");
+                navigate("/");
                 setSignupLodingBtnShow(false);
-                navigate("/pages/chat/chat-with-friend");
-              // });
+              });
             })
             .catch((error) => {
               setSignupLodingBtnShow(false);
@@ -279,19 +270,11 @@ const Registration = () => {
                   name={"firstName"}
                   onChange={handleRegistrationData}
                   placeholder={"First Name"}
-                  className={`w-full border ${
+                  className={
                     registrationError.firstName
-                      ? "border-red-600"
-                      : "border-primaryBorder"
-                  } ${
-                    registrationError.firstName
-                      ? "focus:outline-red-600"
-                      : "focus:outline-[#141975]"
-                  } ${
-                    registrationError.firstName
-                      ? "placeholder:text-red-600"
-                      : "placeholder:text-secoundaryText"
-                  } placeholder:text-[13px]  sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
+                      ? "w-full border border-red-600 focus:outline-red-600 placeholder:text-red-600 placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                      : "w-full border border-primaryBorder focus:outline-[#141975] placeholder:text-secoundaryText placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                  }
                 />
                 {registrationError.firstName && (
                   <Typography className="absolute -bottom-[12px] sm:-bottom-[17px] ;md:-bottom-[15px] lg:-bottom-[20px] xl:-bottom-[22px] left-[12px] sm:left-[16px] md:left-[20px] text-red-600 text-[8px] sm:text-[11px] md:text-[10px] lg:text-[14px]">
@@ -306,19 +289,11 @@ const Registration = () => {
                   name={"lastName"}
                   onChange={handleRegistrationData}
                   placeholder={"Last Name"}
-                  className={`w-full border ${
+                  className={
                     registrationError.lastName
-                      ? "border-red-600"
-                      : "border-primaryBorder"
-                  } ${
-                    registrationError.lastName
-                      ? "focus:outline-red-600"
-                      : "focus:outline-[#141975]"
-                  } ${
-                    registrationError.lastName
-                      ? "placeholder:text-red-600"
-                      : "placeholder:text-secoundaryText"
-                  } placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
+                      ? "w-full border border-red-600 focus:outline-red-600 placeholder:text-red-600 placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                      : "w-full border border-primaryBorder focus:outline-[#141975] placeholder:text-secoundaryText placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                  }
                 />
                 {registrationError.lastName && (
                   <Typography className="absolute -bottom-[12px] sm:-bottom-[17px] ;md:-bottom-[15px] lg:-bottom-[20px] xl:-bottom-[22px] left-[12px] sm:left-[16px] md:left-[20px] text-red-600 text-[8px] sm:text-[11px] md:text-[10px] lg:text-[14px]">
@@ -334,19 +309,11 @@ const Registration = () => {
                 name={"email"}
                 onChange={handleRegistrationData}
                 placeholder={"Enter Your Email"}
-                className={`w-full border ${
+                className={
                   registrationError.email
-                    ? "border-red-600"
-                    : "border-primaryBorder"
-                } ${
-                  registrationError.email
-                    ? "focus:outline-red-600"
-                    : "focus:outline-[#141975]"
-                } ${
-                  registrationError.email
-                    ? "placeholder:text-red-600"
-                    : "placeholder:text-secoundaryText"
-                } placeholder:text-[13px]  sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
+                    ? "w-full border border-red-600 focus:outline-red-600 placeholder:text-red-600 placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                    : "w-full border border-primaryBorder focus:outline-[#141975] placeholder:text-secoundaryText placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                }
               />
               {registrationError.email && (
                 <Typography className="absolute -bottom-[12px] sm:-bottom-[17px] ;md:-bottom-[15px] lg:-bottom-[20px] xl:-bottom-[22px] left-[12px] sm:left-[16px] md:left-[20px] text-red-600 text-[8px] sm:text-[11px] md:text-[10px] lg:text-[14px]">
@@ -361,19 +328,11 @@ const Registration = () => {
                 name={"password"}
                 onChange={handleRegistrationData}
                 placeholder={"Enter Your Password ( 6+ characters )"}
-                className={`w-full border ${
+                className={
                   registrationError.password
-                    ? "border-red-600"
-                    : "border-primaryBorder"
-                } ${
-                  registrationError.password
-                    ? "focus:outline-red-600"
-                    : "focus:outline-[#141975]"
-                } ${
-                  registrationError.password
-                    ? "placeholder:text-red-600"
-                    : "placeholder:text-secoundaryText"
-                } placeholder:text-[13px]  sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]`}
+                    ? "w-full border border-red-600 focus:outline-red-600 placeholder:text-red-600 placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                    : "w-full border border-primaryBorder focus:outline-[#141975] placeholder:text-secoundaryText placeholder:text-[13px] sm:placeholder:text-[14px] lg:placeholder:text-[15px] xl:placeholder:text-[16px] py-[6px] sm:py-2.5 md:py-3 lg:py-4 px-2.5 sm:px-4 md:px-5 rounded-[40px]"
+                }
               />
               {passwordShow ? (
                 <IoEye

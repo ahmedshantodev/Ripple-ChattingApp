@@ -12,6 +12,8 @@ const Pages = () => {
   useEffect(() => {
     if (!activeUserData?.email) {
       navigate("/");
+    } else if(activeUserData?.emailVerified == false) {
+      navigate("/");
     }
   }, []);
 

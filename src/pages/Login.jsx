@@ -42,8 +42,10 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (activeUserData?.email) {
+    if (activeUserData?.emailVerified == true) {
       navigate("/pages/chat/chat-with-friend");
+    } else {
+      navigate("/");
     }
   }, []);
 
@@ -80,27 +82,37 @@ const Login = () => {
         password: "Please enter your Password",
       }));
     } else {
-      setLoginLodingBtnShow(!loginLodingBtnShow);
       signInWithEmailAndPassword(auth, loginData.email, loginData.password)
         .then((userCredential) => {
-          const userInformation = userCredential?.user;
-          localStorage.setItem("user", JSON.stringify(userInformation));
-          dispatch(activeUser(userInformation));
-          toast.success(
-            "You've successfully logged in. Enjoy your experience!",
-            {
-              position: "bottom-center",
-              autoClose: 2500,
-            }
-          );
-          setLoginData({
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-          });
-          navigate("/pages/chat/chat-with-friend");
-          setLoginLodingBtnShow(false);
+          if (userCredential.user.emailVerified == false) {
+            toast.error(
+              "To access your account, please verify your email address.",
+              {
+                position: "bottom-center",
+                autoClose: 2500,
+              }
+            );
+          } else {
+            setLoginLodingBtnShow(!loginLodingBtnShow);
+            const userInformation = userCredential?.user;
+            localStorage.setItem("user", JSON.stringify(userInformation));
+            dispatch(activeUser(userInformation));
+            toast.success(
+              "You've successfully logged in. Enjoy your experience!",
+              {
+                position: "bottom-center",
+                autoClose: 2500,
+              }
+            );
+            setLoginData({
+              firstName: "",
+              lastName: "",
+              email: "",
+              password: "",
+            });
+            navigate("/pages/chat/chat-with-friend");
+            setLoginLodingBtnShow(false);
+          }
         })
         .catch((error) => {
           setLoginLodingBtnShow(false);
@@ -119,19 +131,27 @@ const Login = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const userInformation = result.user;
-        localStorage.setItem("user", JSON.stringify({
-          ...userInformation,
-          photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779"
-        }));
-        dispatch(activeUser({
-          ...userInformation,
-          photoURL: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779"
-        }));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...userInformation,
+            photoURL:
+              "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779",
+          })
+        );
+        dispatch(
+          activeUser({
+            ...userInformation,
+            photoURL:
+              "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779",
+          })
+        );
         set(ref(db, "users/" + userInformation.uid), {
           userid: userInformation.uid,
           username: userInformation.displayName,
           useremail: userInformation.email,
-          userprofile: "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779",
+          userprofile:
+            "https://firebasestorage.googleapis.com/v0/b/ripple-6421f.appspot.com/o/default%20profile%2Fdefault-profile-picture1.jpg?alt=media&token=257626d5-45bb-45ac-b367-7addff57e779",
         });
         navigate("/pages/chat/chat-with-friend");
       })
